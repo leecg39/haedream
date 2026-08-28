@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FIRM_EDIT_FIELDS, type FirmEditField } from "@/components/fit/firm/firmEditFields";
 import { WEATHER_STATION_GROUPS } from "@/lib/fit-mocks/weather-stations";
 import type { FirmRow } from "@/lib/fit-mocks/firm";
@@ -86,10 +86,12 @@ interface FirmEditModalProps {
  */
 export function FirmEditModal({ row, onClose, onOpenMap }: FirmEditModalProps) {
   const [values, setValues] = useState<FormValues>({});
+  const [loadedRow, setLoadedRow] = useState<FirmRow | null>(null);
 
-  useEffect(() => {
+  if (row !== loadedRow) {
+    setLoadedRow(row);
     setValues(toFormValues(row));
-  }, [row]);
+  }
 
   const update = (id: string, value: string) =>
     setValues((current) => ({ ...current, [id]: value }));

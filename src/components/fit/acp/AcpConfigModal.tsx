@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { AcpConfig } from "@/lib/fit-mocks/acp";
 
 /** 원본 #acpRatePeak 게이지는 0~100 을 5 단위로 끊은 21칸이다. */
@@ -32,11 +32,12 @@ interface AcpConfigModalProps {
  */
 export function AcpConfigModal({ open, config, onClose }: AcpConfigModalProps) {
   const [draft, setDraft] = useState<AcpConfig>(config);
+  const [loadedConfig, setLoadedConfig] = useState(config);
 
-  // 설비를 바꾸면 원본도 해당 설비 설정을 다시 불러온다.
-  useEffect(() => {
+  if (config !== loadedConfig) {
+    setLoadedConfig(config);
     setDraft(config);
-  }, [config]);
+  }
 
   const update = <K extends keyof AcpConfig>(key: K, value: AcpConfig[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));

@@ -15,7 +15,15 @@ export type StatOrderBy =
   | "frugalRatioDESC"
   | "frugalRatioASC"
   | "frugalMonthDESC"
-  | "frugalMonthASC";
+  | "frugalMonthASC"
+  | "peakRatio-0"
+  | "peakRatio-1"
+  | "eoiTime-0"
+  | "eoiTime-1"
+  | "conLen-0"
+  | "conLen-1"
+  | "kepcoRatio-0"
+  | "kepcoRatio-1";
 
 /** 랭킹 필터(#rankingFilter) 가 지원하는 값 */
 export type StatRankingPeriod = "today" | "week" | "month" | "year";

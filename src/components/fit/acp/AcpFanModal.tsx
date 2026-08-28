@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { driveModeLabel, fanSpeedLabel, statusLabel, type AcpFacility } from "@/lib/fit-mocks/acp";
 
 interface AcpFanModalProps {
@@ -16,10 +16,12 @@ interface AcpFanModalProps {
  */
 export function AcpFanModal({ facility, onClose }: AcpFanModalProps) {
   const [setTemperature, setSetTemperature] = useState("");
+  const [loadedFacility, setLoadedFacility] = useState<AcpFacility | null>(null);
 
-  useEffect(() => {
+  if (facility !== loadedFacility) {
+    setLoadedFacility(facility);
     if (facility) setSetTemperature(String(facility.setTemperature));
-  }, [facility]);
+  }
 
   return (
     <div className={facility ? undefined : "disable"} id="modalFan">
