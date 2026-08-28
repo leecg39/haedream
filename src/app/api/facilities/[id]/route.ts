@@ -9,7 +9,10 @@ import {
   readJson,
   requestId,
 } from "@/lib/http";
-import { facilityUpdateSchema } from "@/features/facilities/schema";
+import {
+  facilityUpdateSchema,
+  facilityVersionSchema,
+} from "@/features/facilities/schema";
 import {
   deleteFacility,
   findFacility,
@@ -72,8 +75,14 @@ export async function DELETE(request: NextRequest, context: Context) {
     assertSameOrigin(request);
     const user = requirePermission(request, "facility:delete");
     enforceRateLimit(`facility:delete:${user.id}`, 30);
+    const { version } = facilityVersionSchema.parse(await readJson(request));
     return apiSuccess(
-      deleteFacility(user, await facilityId(context), requestIdentifier),
+      deleteFacility(
+        user,
+        await facilityId(context),
+        version,
+        requestIdentifier,
+      ),
       requestIdentifier,
       200,
       { "Cache-Control": "private, no-store" },

@@ -42,6 +42,7 @@ export interface Facility {
   updatedByName: string;
   deletedAt: string | null;
   deletedBy: string | null;
+  deletedByName: string | null;
 }
 
 export interface PaginatedFacilities {

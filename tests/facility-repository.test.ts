@@ -98,12 +98,32 @@ describe("facility repository integration", () => {
     expect(() =>
       createFacility(
         admin,
-        { ...input, name: "다른 설비" },
+        {
+          ...input,
+          name: "다른 설비",
+          gatewayId: null,
+          nodeNumber: null,
+          channelNumber: null,
+        },
         "request-duplicate",
         db,
       ),
     ).toThrowError(
       expect.objectContaining({ code: "DUPLICATE_FACILITY_CODE" }),
+    );
+  });
+
+  it("prevents two active facilities from sharing a gateway endpoint", () => {
+    createFacility(admin, input, "request-create", db);
+    expect(() =>
+      createFacility(
+        admin,
+        { ...input, code: "F-TEST-02", name: "중복 연결 설비" },
+        "request-duplicate-endpoint",
+        db,
+      ),
+    ).toThrowError(
+      expect.objectContaining({ code: "DUPLICATE_GATEWAY_ENDPOINT" }),
     );
   });
 
@@ -141,10 +161,26 @@ describe("facility repository integration", () => {
 
   it("soft deletes idempotently, restores, then purges only deleted data", () => {
     const created = createFacility(admin, input, "request-create", db);
-    const deleted = deleteFacility(admin, created.id, "request-delete", db);
+    expect(() =>
+      deleteFacility(
+        admin,
+        created.id,
+        created.version + 1,
+        "request-stale-delete",
+        db,
+      ),
+    ).toThrowError(expect.objectContaining({ code: "VERSION_CONFLICT" }));
+    const deleted = deleteFacility(
+      admin,
+      created.id,
+      created.version,
+      "request-delete",
+      db,
+    );
     const deletedAgain = deleteFacility(
       admin,
       created.id,
+      deleted.version,
       "request-delete-again",
       db,
     );
@@ -152,9 +188,19 @@ describe("facility repository integration", () => {
     expect(deletedAgain.version).toBe(deleted.version);
     expect(() => findFacility(admin, created.id, false, db)).toThrow(AppError);
 
+    expect(() =>
+      restoreFacility(
+        admin,
+        created.id,
+        deleted.version + 1,
+        "request-stale-restore",
+        db,
+      ),
+    ).toThrowError(expect.objectContaining({ code: "VERSION_CONFLICT" }));
     const restored = restoreFacility(
       admin,
       created.id,
+      deleted.version,
       "request-restore",
       db,
     );
@@ -172,6 +218,7 @@ describe("facility repository integration", () => {
     const deletedForPurge = deleteFacility(
       admin,
       created.id,
+      restored.version,
       "request-delete-2",
       db,
     );
@@ -196,12 +243,29 @@ describe("facility repository integration", () => {
   });
 
   it("rejects a gateway from another tenant or inactive gateway", () => {
-    db.prepare("UPDATE gateways SET status = 'INACTIVE' WHERE id = ?").run(
-      input.gatewayId,
-    );
+    const inactiveGateway = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+    const now = new Date().toISOString();
+    db.prepare(
+      `INSERT INTO gateways
+       (id, tenant_id, code, name, status, created_at, updated_at)
+       VALUES (?, ?, 'GATE-OFF', '비활성 게이트웨이', 'INACTIVE', ?, ?)`,
+    ).run(inactiveGateway, admin.tenantId, now, now);
     expect(() =>
-      createFacility(admin, input, "request-invalid-gateway", db),
+      createFacility(
+        admin,
+        { ...input, gatewayId: inactiveGateway },
+        "request-invalid-gateway",
+        db,
+      ),
     ).toThrowError(expect.objectContaining({ code: "INVALID_GATEWAY" }));
+  });
+
+  it("prevents disabling a gateway that still has active facilities", () => {
+    expect(() =>
+      db.prepare("UPDATE gateways SET status = 'INACTIVE' WHERE id = ?").run(
+        input.gatewayId,
+      ),
+    ).toThrow(/active facilities/);
   });
 
   it("does not expose a process that exists only on deleted data", () => {
@@ -211,21 +275,72 @@ describe("facility repository integration", () => {
       "request-create",
       db,
     );
-    deleteFacility(admin, created.id, "request-delete", db);
+    deleteFacility(
+      admin,
+      created.id,
+      created.version,
+      "request-delete",
+      db,
+    );
     expect(listProcesses(admin, db).map((item) => item.processName)).not.toContain(
       "삭제 전용 공정",
     );
   });
 
   it("blocks restore when its gateway became inactive", () => {
-    const created = createFacility(admin, input, "request-create", db);
-    deleteFacility(admin, created.id, "request-delete", db);
+    const gatewayId = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+    const now = new Date().toISOString();
+    db.prepare(
+      `INSERT INTO gateways
+       (id, tenant_id, code, name, status, created_at, updated_at)
+       VALUES (?, ?, 'GATE-RESTORE', '복구 검증 게이트웨이', 'ACTIVE', ?, ?)`,
+    ).run(gatewayId, admin.tenantId, now, now);
+    const created = createFacility(
+      admin,
+      { ...input, gatewayId },
+      "request-create",
+      db,
+    );
+    const deleted = deleteFacility(
+      admin,
+      created.id,
+      created.version,
+      "request-delete",
+      db,
+    );
     db.prepare("UPDATE gateways SET status = 'INACTIVE' WHERE id = ?").run(
-      input.gatewayId,
+      gatewayId,
     );
     expect(() =>
-      restoreFacility(admin, created.id, "request-restore", db),
+      restoreFacility(
+        admin,
+        created.id,
+        deleted.version,
+        "request-restore",
+        db,
+      ),
     ).toThrowError(expect.objectContaining({ code: "INVALID_GATEWAY" }));
+  });
+
+  it("enforces immutable identity, version increments, and append-only audits", () => {
+    const created = createFacility(admin, input, "request-create", db);
+
+    expect(() =>
+      db.prepare(
+        `UPDATE facilities
+         SET code = 'F-CHANGED', version = version + 1
+         WHERE id = ?`,
+      ).run(created.id),
+    ).toThrow(/immutable/);
+    expect(() =>
+      db.prepare("UPDATE facilities SET name = name WHERE id = ?").run(created.id),
+    ).toThrow(/version must increment/);
+    expect(() =>
+      db.prepare(
+        `UPDATE audit_logs SET request_id = 'tampered'
+         WHERE entity_id = ?`,
+      ).run(created.id),
+    ).toThrow(/append only/);
   });
 
   it("enforces actor tenant consistency at the database boundary", () => {

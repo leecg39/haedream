@@ -4,6 +4,8 @@ import { getDb } from "@/lib/db";
 import { AppError, isSqliteConstraint } from "@/lib/errors";
 import {
   facilityCreateSchema,
+  facilityUpdateSchema,
+  facilityVersionSchema,
   type FacilityCreateInput,
   type FacilityListQuery,
   type FacilityUpdateInput,
@@ -40,12 +42,17 @@ const facilitySelect = `
     f.updated_by AS updatedBy,
     updater.name AS updatedByName,
     f.deleted_at AS deletedAt,
-    f.deleted_by AS deletedBy
+    f.deleted_by AS deletedBy,
+    deleter.name AS deletedByName
   FROM facilities f
   LEFT JOIN gateways g
     ON g.id = f.gateway_id AND g.tenant_id = f.tenant_id
-  INNER JOIN users creator ON creator.id = f.created_by
-  INNER JOIN users updater ON updater.id = f.updated_by
+  INNER JOIN users creator
+    ON creator.id = f.created_by AND creator.tenant_id = f.tenant_id
+  INNER JOIN users updater
+    ON updater.id = f.updated_by AND updater.tenant_id = f.tenant_id
+  LEFT JOIN users deleter
+    ON deleter.id = f.deleted_by AND deleter.tenant_id = f.tenant_id
 `;
 
 function dbFor(database?: AppDatabase) {
@@ -124,6 +131,23 @@ function audit(
 
 function duplicateError(error: unknown): never {
   if (isSqliteConstraint(error, "SQLITE_CONSTRAINT_UNIQUE")) {
+    if (
+      error instanceof Error &&
+      error.message.includes(
+        "facilities.tenant_id, facilities.gateway_id, facilities.node_number, facilities.channel_number",
+      )
+    ) {
+      throw new AppError(
+        409,
+        "DUPLICATE_GATEWAY_ENDPOINT",
+        "이미 다른 설비가 사용 중인 게이트웨이 노드·채널입니다.",
+        {
+          gatewayId: ["이미 다른 설비가 사용 중인 연결 위치입니다."],
+          nodeNumber: ["게이트웨이 안에서 노드·채널 조합은 고유해야 합니다."],
+          channelNumber: ["게이트웨이 안에서 노드·채널 조합은 고유해야 합니다."],
+        },
+      );
+    }
     throw new AppError(
       409,
       "DUPLICATE_FACILITY_CODE",
@@ -233,12 +257,12 @@ export function createFacility(
 ) {
   const db = dbFor(database);
   const data = facilityCreateSchema.parse(input);
-  assertGateway(data.gatewayId, user.tenantId, db);
   const id = randomUUID();
   const now = new Date().toISOString();
 
   try {
     return db.transaction(() => {
+      assertGateway(data.gatewayId, user.tenantId, db);
       db.prepare(
         `INSERT INTO facilities
          (id, tenant_id, code, name, process_name, group_name, priority,
@@ -269,7 +293,7 @@ export function createFacility(
       const created = getFacility(id, user.tenantId, false, db);
       audit(db, user, id, "CREATE", requestId, null, created);
       return created;
-    })();
+    }).immediate();
   } catch (error) {
     return duplicateError(error);
   }
@@ -283,6 +307,7 @@ export function updateFacility(
   database?: AppDatabase,
 ) {
   const db = dbFor(database);
+  const patch = facilityUpdateSchema.parse(input);
   const before = getFacility(id, user.tenantId, true, db);
   if (before.deletedAt) {
     throw new AppError(
@@ -292,30 +317,30 @@ export function updateFacility(
     );
   }
   const merged = facilityCreateSchema.parse({
-    code: input.code ?? before.code,
-    name: input.name ?? before.name,
-    processName: input.processName ?? before.processName,
-    groupName: input.groupName ?? before.groupName,
-    priority: input.priority ?? before.priority,
-    baseTemperature: input.baseTemperature ?? before.baseTemperature,
+    code: before.code,
+    name: patch.name ?? before.name,
+    processName: patch.processName ?? before.processName,
+    groupName: patch.groupName ?? before.groupName,
+    priority: patch.priority ?? before.priority,
+    baseTemperature: patch.baseTemperature ?? before.baseTemperature,
     peakControlPercent:
-      input.peakControlPercent ?? before.peakControlPercent,
+      patch.peakControlPercent ?? before.peakControlPercent,
     gatewayId:
-      input.gatewayId === undefined ? before.gatewayId : input.gatewayId,
+      patch.gatewayId === undefined ? before.gatewayId : patch.gatewayId,
     nodeNumber:
-      input.nodeNumber === undefined ? before.nodeNumber : input.nodeNumber,
+      patch.nodeNumber === undefined ? before.nodeNumber : patch.nodeNumber,
     channelNumber:
-      input.channelNumber === undefined
+      patch.channelNumber === undefined
         ? before.channelNumber
-        : input.channelNumber,
-    controlMode: input.controlMode ?? before.controlMode,
-    status: input.status ?? before.status,
+        : patch.channelNumber,
+    controlMode: patch.controlMode ?? before.controlMode,
+    status: patch.status ?? before.status,
   });
-  assertGateway(merged.gatewayId, user.tenantId, db);
   const now = new Date().toISOString();
 
   try {
     return db.transaction(() => {
+      assertGateway(merged.gatewayId, user.tenantId, db);
       const result = db.prepare(
         `UPDATE facilities SET
            code = ?, name = ?, process_name = ?, group_name = ?, priority = ?,
@@ -340,7 +365,7 @@ export function updateFacility(
         user.id,
         id,
         user.tenantId,
-        input.version,
+        patch.version,
       );
       if (result.changes === 0) {
         throw new AppError(
@@ -352,7 +377,7 @@ export function updateFacility(
       const updated = getFacility(id, user.tenantId, false, db);
       audit(db, user, id, "UPDATE", requestId, before, updated);
       return updated;
-    })();
+    }).immediate();
   } catch (error) {
     if (error instanceof AppError) throw error;
     return duplicateError(error);
@@ -362,50 +387,73 @@ export function updateFacility(
 export function deleteFacility(
   user: SessionUser,
   id: string,
+  expectedVersion: number,
   requestId: string,
   database?: AppDatabase,
 ) {
   const db = dbFor(database);
+  const { version } = facilityVersionSchema.parse({ version: expectedVersion });
   const before = getFacility(id, user.tenantId, true, db);
   if (before.deletedAt) return before;
   const now = new Date().toISOString();
 
   return db.transaction(() => {
-    db.prepare(
+    const result = db.prepare(
       `UPDATE facilities
        SET deleted_at = ?, deleted_by = ?, updated_at = ?, updated_by = ?,
            version = version + 1
-       WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL`,
-    ).run(now, user.id, now, user.id, id, user.tenantId);
+       WHERE id = ? AND tenant_id = ? AND version = ? AND deleted_at IS NULL`,
+    ).run(now, user.id, now, user.id, id, user.tenantId, version);
+    if (result.changes !== 1) {
+      throw new AppError(
+        409,
+        "VERSION_CONFLICT",
+        "다른 사용자가 먼저 변경했습니다. 최신 정보를 다시 불러와 주세요.",
+      );
+    }
     const deleted = getFacility(id, user.tenantId, true, db);
     audit(db, user, id, "DELETE", requestId, before, deleted);
     return deleted;
-  })();
+  }).immediate();
 }
 
 export function restoreFacility(
   user: SessionUser,
   id: string,
+  expectedVersion: number,
   requestId: string,
   database?: AppDatabase,
 ) {
   const db = dbFor(database);
+  const { version } = facilityVersionSchema.parse({ version: expectedVersion });
   const before = getFacility(id, user.tenantId, true, db);
   if (!before.deletedAt) return before;
-  assertGateway(before.gatewayId, user.tenantId, db);
   const now = new Date().toISOString();
 
-  return db.transaction(() => {
-    db.prepare(
-      `UPDATE facilities
-       SET deleted_at = NULL, deleted_by = NULL, updated_at = ?, updated_by = ?,
-           version = version + 1
-       WHERE id = ? AND tenant_id = ? AND deleted_at IS NOT NULL`,
-    ).run(now, user.id, id, user.tenantId);
-    const restored = getFacility(id, user.tenantId, false, db);
-    audit(db, user, id, "RESTORE", requestId, before, restored);
-    return restored;
-  })();
+  try {
+    return db.transaction(() => {
+      assertGateway(before.gatewayId, user.tenantId, db);
+      const result = db.prepare(
+        `UPDATE facilities
+         SET deleted_at = NULL, deleted_by = NULL, updated_at = ?, updated_by = ?,
+             version = version + 1
+         WHERE id = ? AND tenant_id = ? AND version = ? AND deleted_at IS NOT NULL`,
+      ).run(now, user.id, id, user.tenantId, version);
+      if (result.changes !== 1) {
+        throw new AppError(
+          409,
+          "VERSION_CONFLICT",
+          "다른 사용자가 먼저 변경했습니다. 최신 정보를 다시 불러와 주세요.",
+        );
+      }
+      const restored = getFacility(id, user.tenantId, false, db);
+      audit(db, user, id, "RESTORE", requestId, before, restored);
+      return restored;
+    }).immediate();
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    return duplicateError(error);
+  }
 }
 
 export function purgeFacility(
@@ -450,7 +498,7 @@ export function purgeFacility(
         "다른 사용자가 먼저 변경했습니다. 최신 정보를 다시 불러와 주세요.",
       );
     }
-  })();
+  }).immediate();
 }
 
 export function listGateways(

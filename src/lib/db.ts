@@ -6,6 +6,26 @@ export type AppDatabase = Database.Database;
 
 const databases = new Map<string, AppDatabase>();
 
+function retryBusy<T>(operation: () => T, attempts = 100): T {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return operation();
+    } catch (error) {
+      const code =
+        error && typeof error === "object" && "code" in error
+          ? String(error.code)
+          : "";
+      if (
+        !["SQLITE_BUSY", "SQLITE_LOCKED"].includes(code) ||
+        attempt >= attempts
+      ) {
+        throw error;
+      }
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25);
+    }
+  }
+}
+
 function resolveDatabasePath(databasePath?: string) {
   if (
     process.env.NODE_ENV === "production" &&
@@ -55,17 +75,17 @@ export function migrateDatabase(db: AppDatabase) {
 
   for (const name of migrations) {
     const sql = readFileSync(path.join(migrationDirectory, name), "utf8");
-    applyMigration.immediate(name, sql);
+    retryBusy(() => applyMigration.immediate(name, sql));
   }
 }
 
 export function openDatabase(databasePath?: string) {
   const absolutePath = resolveDatabasePath(databasePath);
   mkdirSync(path.dirname(absolutePath), { recursive: true });
-  const db = new Database(absolutePath);
+  const db = new Database(absolutePath, { timeout: 10_000 });
   db.pragma("busy_timeout = 10000");
   db.pragma("foreign_keys = ON");
-  db.pragma("journal_mode = WAL");
+  retryBusy(() => db.pragma("journal_mode = WAL"));
   migrateDatabase(db);
   return db;
 }

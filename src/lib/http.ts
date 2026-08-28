@@ -10,6 +10,15 @@ export function requestId(request: NextRequest) {
     : randomUUID();
 }
 
+function responseHeaders(id: string, headers?: HeadersInit) {
+  const response = new Headers(headers);
+  response.set("X-Request-Id", id);
+  if (!response.has("Cache-Control")) {
+    response.set("Cache-Control", "private, no-store");
+  }
+  return response;
+}
+
 export function apiSuccess<T>(
   data: T,
   id: string,
@@ -18,7 +27,7 @@ export function apiSuccess<T>(
 ) {
   return NextResponse.json(
     { ok: true, requestId: id, data },
-    { status, headers },
+    { status, headers: responseHeaders(id, headers) },
   );
 }
 
@@ -34,7 +43,7 @@ export function apiError(error: unknown, id: string) {
           fieldErrors: error.flatten().fieldErrors,
         },
       },
-      { status: 422 },
+      { status: 422, headers: responseHeaders(id) },
     );
   }
 
@@ -49,7 +58,7 @@ export function apiError(error: unknown, id: string) {
           ...(error.fieldErrors ? { fieldErrors: error.fieldErrors } : {}),
         },
       },
-      { status: error.status },
+      { status: error.status, headers: responseHeaders(id) },
     );
   }
 
@@ -70,13 +79,44 @@ export function apiError(error: unknown, id: string) {
         message: "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
       },
     },
-    { status: 500 },
+    { status: 500, headers: responseHeaders(id) },
   );
 }
 
 export async function readJson(request: NextRequest) {
+  const maxBytes = 64 * 1024;
+  const contentType = request.headers.get("content-type")?.split(";")[0].trim();
+  if (contentType !== "application/json") {
+    throw new AppError(
+      415,
+      "UNSUPPORTED_MEDIA_TYPE",
+      "Content-Type은 application/json이어야 합니다.",
+    );
+  }
+  const declaredLength = Number(request.headers.get("content-length") ?? 0);
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+    throw new AppError(
+      413,
+      "PAYLOAD_TOO_LARGE",
+      "요청 본문은 64KB를 초과할 수 없습니다.",
+    );
+  }
+
+  let text: string;
   try {
-    return await request.json();
+    text = await request.text();
+  } catch {
+    throw new AppError(400, "INVALID_JSON", "올바른 JSON 요청이 아닙니다.");
+  }
+  if (new TextEncoder().encode(text).byteLength > maxBytes) {
+    throw new AppError(
+      413,
+      "PAYLOAD_TOO_LARGE",
+      "요청 본문은 64KB를 초과할 수 없습니다.",
+    );
+  }
+  try {
+    return JSON.parse(text) as unknown;
   } catch {
     throw new AppError(400, "INVALID_JSON", "올바른 JSON 요청이 아닙니다.");
   }

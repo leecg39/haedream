@@ -4,6 +4,7 @@ import {
   facilityListQuerySchema,
   facilityUpdateSchema,
 } from "@/features/facilities/schema";
+import { seoulDateBoundary } from "@/features/facilities/date-range";
 
 const valid = {
   code: " dc-main_01 ",
@@ -77,6 +78,20 @@ describe("facility schema", () => {
     expect(
       facilityUpdateSchema.safeParse({ name: "새 이름", version: 1 }).success,
     ).toBe(true);
+    expect(
+      facilityUpdateSchema.safeParse({
+        code: "IMMUTABLE",
+        name: "새 이름",
+        version: 1,
+      }).success,
+    ).toBe(false);
+    expect(
+      facilityUpdateSchema.safeParse({
+        name: "새 이름",
+        tenantId: "other",
+        version: 1,
+      }).success,
+    ).toBe(false);
   });
 
   it("caps pagination and rejects arbitrary sort columns", () => {
@@ -99,5 +114,26 @@ describe("facility schema", () => {
     });
     expect(result.from).toBe("2026-08-28T00:00:00.000Z");
     expect(result.to).toBe("2026-08-28T01:00:00.000Z");
+  });
+
+  it("rejects a reversed date range", () => {
+    expect(
+      facilityListQuerySchema.safeParse({
+        from: "2026-08-29T00:00:00+09:00",
+        to: "2026-08-28T23:59:59+09:00",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("converts Seoul calendar dates to inclusive UTC boundaries", () => {
+    expect(seoulDateBoundary("2026-08-28", "start")).toBe(
+      "2026-08-27T15:00:00.000Z",
+    );
+    expect(seoulDateBoundary("2026-08-28", "end")).toBe(
+      "2026-08-28T14:59:59.999Z",
+    );
+    expect(() => seoulDateBoundary("2026-02-30", "start")).toThrow(
+      "올바른 날짜",
+    );
   });
 });

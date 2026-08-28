@@ -13,7 +13,7 @@ function numericInput(schema: z.ZodNumber) {
   }, schema);
 }
 
-const facilityFields = z.object({
+const facilityFields = z.strictObject({
     code: z
       .string()
       .trim()
@@ -111,6 +111,7 @@ export const facilityCreateSchema = facilityFields
   });
 
 export const facilityUpdateSchema = facilityFields
+  .omit({ code: true })
   .partial()
   .extend({
     version: numericInput(
@@ -122,29 +123,45 @@ export const facilityUpdateSchema = facilityFields
     "수정할 항목을 하나 이상 입력해 주세요.",
   );
 
-export const facilityListQuerySchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(10),
-  q: z.string().trim().max(100).default(""),
-  status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
-  controlMode: z.enum(["AUTO", "MANUAL"]).optional(),
-  processName: z.string().trim().max(50).optional(),
-  gatewayId: z.string().uuid().optional(),
-  deleted: z.enum(["exclude", "only", "include"]).default("exclude"),
-  sort: z
-    .enum(["updatedAt", "createdAt", "name", "code", "priority", "processName"])
-    .default("updatedAt"),
-  order: z.enum(["asc", "desc"]).default("desc"),
-  from: z
-    .string()
-    .datetime({ offset: true })
-    .transform((value) => new Date(value).toISOString())
-    .optional(),
-  to: z
-    .string()
-    .datetime({ offset: true })
-    .transform((value) => new Date(value).toISOString())
-    .optional(),
+export const facilityListQuerySchema = z
+  .strictObject({
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(10),
+    q: z.string().trim().max(100).default(""),
+    status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+    controlMode: z.enum(["AUTO", "MANUAL"]).optional(),
+    processName: z.string().trim().max(50).optional(),
+    gatewayId: z.string().uuid().optional(),
+    deleted: z.enum(["exclude", "only", "include"]).default("exclude"),
+    sort: z
+      .enum(["updatedAt", "createdAt", "name", "code", "priority", "processName"])
+      .default("updatedAt"),
+    order: z.enum(["asc", "desc"]).default("desc"),
+    from: z
+      .string()
+      .datetime({ offset: true })
+      .transform((value) => new Date(value).toISOString())
+      .optional(),
+    to: z
+      .string()
+      .datetime({ offset: true })
+      .transform((value) => new Date(value).toISOString())
+      .optional(),
+  })
+  .superRefine((value, context) => {
+    if (value.from && value.to && value.from > value.to) {
+      context.addIssue({
+        code: "custom",
+        path: ["to"],
+        message: "종료일은 시작일보다 빠를 수 없습니다.",
+      });
+    }
+  });
+
+export const facilityVersionSchema = z.strictObject({
+  version: numericInput(
+    z.number().int().positive("버전 정보가 올바르지 않습니다."),
+  ),
 });
 
 export type FacilityCreateInput = z.infer<typeof facilityCreateSchema>;

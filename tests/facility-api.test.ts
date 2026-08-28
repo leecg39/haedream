@@ -68,6 +68,7 @@ describe("facility API integration", () => {
   let adminCookie: string;
   let operatorCookie: string;
   let viewerCookie: string;
+  let outsiderCookie: string;
   let createdId: string;
   let createdVersion: number;
 
@@ -94,11 +95,15 @@ describe("facility API integration", () => {
     adminCookie = await login("admin");
     operatorCookie = await login("operator");
     viewerCookie = await login("viewer");
+    process.env.DEFAULT_TENANT_ID = "999";
+    outsiderCookie = await login("admin");
+    process.env.DEFAULT_TENANT_ID = "121";
   });
 
   afterAll(() => {
     closeDatabasesForTests();
     delete process.env.DATABASE_PATH;
+    delete process.env.DEFAULT_TENANT_ID;
     rmSync(directory, { recursive: true, force: true });
   });
 
@@ -135,7 +140,7 @@ describe("facility API integration", () => {
     expect((await json(response)).data?.tenantId).toBe("121");
   });
 
-  it("ignores a client-supplied tenant override during login", async () => {
+  it("rejects a client-supplied tenant override during login", async () => {
     const loginResponse = await tokenPost(
       request("/api/tokens", "POST", undefined, {
         cf: "login",
@@ -145,12 +150,9 @@ describe("facility API integration", () => {
       }),
       { params: Promise.resolve({ path: ["tokens"] }) },
     );
-    expect(loginResponse.status).toBe(200);
-    const cookie = loginResponse.cookies.get(SESSION_COOKIE)?.value;
-    const sessionResponse = await sessionGet(
-      request("/api/auth/session", "GET", cookie),
-    );
-    expect((await json(sessionResponse)).data?.tenantId).toBe("121");
+    expect(loginResponse.status).toBe(422);
+    expect((await json(loginResponse)).error?.code).toBe("VALIDATION_ERROR");
+    expect(loginResponse.cookies.get(SESSION_COOKIE)).toBeUndefined();
   });
 
   it("does not expose other tenants in the legacy members payload", async () => {
@@ -190,6 +192,8 @@ describe("facility API integration", () => {
       }),
     );
     expect(created.status).toBe(201);
+    expect(created.headers.get("x-request-id")).toBeTruthy();
+    expect(created.headers.get("cache-control")).toBe("private, no-store");
     const createdBody = await json(created);
     expect(createdBody.ok).toBe(true);
     createdId = String(createdBody.data?.id);
@@ -214,6 +218,90 @@ describe("facility API integration", () => {
     );
     expect(detail.status).toBe(200);
     expect((await json(detail)).data?.name).toBe("API 통합 설비");
+
+    const otherTenantDetail = await facilityGet(
+      request(`/api/facilities/${createdId}`, "GET", outsiderCookie),
+      { params: Promise.resolve({ id: createdId }) },
+    );
+    expect(otherTenantDetail.status).toBe(404);
+  });
+
+  it("rejects missing fields, duplicate codes, immutable fields, and unknown input", async () => {
+    const missing = await facilitiesPost(
+      request("/api/facilities", "POST", adminCookie, { name: "필드 누락" }),
+    );
+    expect(missing.status).toBe(422);
+
+    const duplicate = await facilitiesPost(
+      request("/api/facilities", "POST", adminCookie, {
+        code: "F-API-01",
+        name: "중복 코드 설비",
+        processName: "검증 공정",
+        groupName: "",
+        priority: 1,
+        baseTemperature: 25,
+        peakControlPercent: 10,
+        gatewayId: null,
+        nodeNumber: null,
+        channelNumber: null,
+        controlMode: "AUTO",
+        status: "ACTIVE",
+      }),
+    );
+    expect(duplicate.status).toBe(409);
+    expect((await json(duplicate)).error?.code).toBe(
+      "DUPLICATE_FACILITY_CODE",
+    );
+
+    const immutable = await facilityPatch(
+      request(`/api/facilities/${createdId}`, "PATCH", adminCookie, {
+        code: "F-CHANGED",
+        version: createdVersion,
+      }),
+      { params: Promise.resolve({ id: createdId }) },
+    );
+    expect(immutable.status).toBe(422);
+
+    const massAssignment = await facilityPatch(
+      request(`/api/facilities/${createdId}`, "PATCH", adminCookie, {
+        name: "허용되지 않을 수정",
+        tenantId: "999",
+        version: createdVersion,
+      }),
+      { params: Promise.resolve({ id: createdId }) },
+    );
+    expect(massAssignment.status).toBe(422);
+  });
+
+  it("distinguishes invalid, missing, and reversed-range queries", async () => {
+    const invalidId = await facilityGet(
+      request("/api/facilities/not-a-uuid", "GET", adminCookie),
+      { params: Promise.resolve({ id: "not-a-uuid" }) },
+    );
+    expect(invalidId.status).toBe(422);
+
+    const missing = await facilityGet(
+      request(
+        "/api/facilities/00000000-0000-4000-8000-000000000000",
+        "GET",
+        adminCookie,
+      ),
+      {
+        params: Promise.resolve({
+          id: "00000000-0000-4000-8000-000000000000",
+        }),
+      },
+    );
+    expect(missing.status).toBe(404);
+
+    const reversedRange = await facilitiesGet(
+      request(
+        "/api/facilities?from=2026-08-29T00%3A00%3A00%2B09%3A00&to=2026-08-28T23%3A59%3A59%2B09%3A00",
+        "GET",
+        adminCookie,
+      ),
+    );
+    expect(reversedRange.status).toBe(422);
   });
 
   it("updates with optimistic locking and rejects a stale version", async () => {
@@ -227,11 +315,12 @@ describe("facility API integration", () => {
     expect(updated.status).toBe(200);
     const updatedBody = await json(updated);
     expect(updatedBody.data?.name).toBe("API 수정 설비");
+    createdVersion = Number(updatedBody.data?.version);
 
     const conflict = await facilityPatch(
       request(`/api/facilities/${createdId}`, "PATCH", adminCookie, {
         name: "충돌 수정",
-        version: createdVersion,
+        version: createdVersion - 1,
       }),
       { params: Promise.resolve({ id: createdId }) },
     );
@@ -240,11 +329,22 @@ describe("facility API integration", () => {
   });
 
   it("soft deletes, excludes, exposes to admins, and restores", async () => {
+    const staleDelete = await facilityDelete(
+      request(`/api/facilities/${createdId}`, "DELETE", adminCookie, {
+        version: createdVersion - 1,
+      }),
+      { params: Promise.resolve({ id: createdId }) },
+    );
+    expect(staleDelete.status).toBe(409);
+
     const deleted = await facilityDelete(
-      request(`/api/facilities/${createdId}`, "DELETE", adminCookie, {}),
+      request(`/api/facilities/${createdId}`, "DELETE", adminCookie, {
+        version: createdVersion,
+      }),
       { params: Promise.resolve({ id: createdId }) },
     );
     expect(deleted.status).toBe(200);
+    const deletedVersion = Number((await json(deleted)).data?.version);
 
     const hidden = await facilityGet(
       request(`/api/facilities/${createdId}`, "GET", adminCookie),
@@ -269,12 +369,23 @@ describe("facility API integration", () => {
     );
     expect(viewerDeletedList.status).toBe(403);
 
+    const staleRestore = await facilityRestore(
+      request(
+        `/api/facilities/${createdId}/restore`,
+        "POST",
+        adminCookie,
+        { version: deletedVersion - 1 },
+      ),
+      { params: Promise.resolve({ id: createdId }) },
+    );
+    expect(staleRestore.status).toBe(409);
+
     const restored = await facilityRestore(
       request(
         `/api/facilities/${createdId}/restore`,
         "POST",
         adminCookie,
-        {},
+        { version: deletedVersion },
       ),
       { params: Promise.resolve({ id: createdId }) },
     );
@@ -305,6 +416,39 @@ describe("facility API integration", () => {
     expect((await json(response)).error?.code).toBe("CSRF_REJECTED");
   });
 
+  it("rejects unsupported and oversized facility request bodies", async () => {
+    const unsupported = await facilitiesPost(
+      new NextRequest(`${origin}/api/facilities`, {
+        method: "POST",
+        headers: {
+          cookie: `${SESSION_COOKIE}=${adminCookie}`,
+          "content-type": "text/plain",
+          origin,
+        },
+        body: "{}",
+      }),
+    );
+    expect(unsupported.status).toBe(415);
+    expect((await json(unsupported)).error?.code).toBe(
+      "UNSUPPORTED_MEDIA_TYPE",
+    );
+
+    const oversized = await facilitiesPost(
+      new NextRequest(`${origin}/api/facilities`, {
+        method: "POST",
+        headers: {
+          cookie: `${SESSION_COOKIE}=${adminCookie}`,
+          "content-type": "application/json",
+          "content-length": String(65 * 1024),
+          origin,
+        },
+        body: "{}",
+      }),
+    );
+    expect(oversized.status).toBe(413);
+    expect((await json(oversized)).error?.code).toBe("PAYLOAD_TOO_LARGE");
+  });
+
   it("requires admin, current code, and current version for purge", async () => {
     const createdResponse = await facilitiesPost(
       request("/api/facilities", "POST", adminCookie, {
@@ -325,9 +469,12 @@ describe("facility API integration", () => {
     const created = (await json(createdResponse)).data as {
       id: string;
       code: string;
+      version: number;
     };
     const deleteResponse = await facilityDelete(
-      request(`/api/facilities/${created.id}`, "DELETE", adminCookie, {}),
+      request(`/api/facilities/${created.id}`, "DELETE", adminCookie, {
+        version: created.version,
+      }),
       { params: Promise.resolve({ id: created.id }) },
     );
     const deleted = (await json(deleteResponse)).data as {

@@ -2,6 +2,25 @@ import Database from "better-sqlite3";
 import { mkdirSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
+function retryBusy(operation, attempts = 100) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return operation();
+    } catch (error) {
+      if (
+        !error ||
+        typeof error !== "object" ||
+        !("code" in error) ||
+        !["SQLITE_BUSY", "SQLITE_LOCKED"].includes(String(error.code)) ||
+        attempt >= attempts
+      ) {
+        throw error;
+      }
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25);
+    }
+  }
+}
+
 export function resolveDatabasePath() {
   if (
     process.env.NODE_ENV === "production" &&
@@ -29,10 +48,10 @@ export function resolveDatabasePath() {
 export function migrate() {
   const databasePath = resolveDatabasePath();
   mkdirSync(path.dirname(databasePath), { recursive: true });
-  const db = new Database(databasePath);
+  const db = new Database(databasePath, { timeout: 10_000 });
   db.pragma("busy_timeout = 10000");
   db.pragma("foreign_keys = ON");
-  db.pragma("journal_mode = WAL");
+  retryBusy(() => db.pragma("journal_mode = WAL"));
   db.exec(`
     CREATE TABLE IF NOT EXISTS _migrations (
       name TEXT PRIMARY KEY,
@@ -57,7 +76,7 @@ export function migrate() {
 
   for (const name of names) {
     const sql = readFileSync(path.join(migrationDirectory, name), "utf8");
-    if (applyMigration.immediate(name, sql)) {
+    if (retryBusy(() => applyMigration.immediate(name, sql))) {
       console.log(`Applied ${name}`);
     }
   }

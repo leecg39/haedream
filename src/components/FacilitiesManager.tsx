@@ -10,6 +10,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { seoulDateBoundary } from "@/features/facilities/date-range";
 import { facilityCreateSchema } from "@/features/facilities/schema";
 import type {
   ApiErrorBody,
@@ -28,6 +29,9 @@ interface Filters {
   status: string;
   controlMode: string;
   processName: string;
+  gatewayId: string;
+  fromDate: string;
+  toDate: string;
   deleted: "exclude" | "only" | "include";
   sort: string;
   order: "asc" | "desc";
@@ -71,6 +75,9 @@ const defaultFilters: Filters = {
   status: "",
   controlMode: "",
   processName: "",
+  gatewayId: "",
+  fromDate: "",
+  toDate: "",
   deleted: "exclude",
   sort: "updatedAt",
   order: "desc",
@@ -103,6 +110,23 @@ function formFromFacility(facility: Facility): FormState {
     controlMode: facility.controlMode,
     status: facility.status,
     version: facility.version,
+  };
+}
+
+function facilityPayload(form: FormState) {
+  return {
+    code: form.code,
+    name: form.name,
+    processName: form.processName,
+    groupName: form.groupName,
+    priority: form.priority,
+    baseTemperature: form.baseTemperature,
+    peakControlPercent: form.peakControlPercent,
+    gatewayId: form.gatewayId || null,
+    nodeNumber: form.nodeNumber || null,
+    channelNumber: form.channelNumber || null,
+    controlMode: form.controlMode,
+    status: form.status,
   };
 }
 
@@ -156,7 +180,9 @@ export function FacilitiesManager() {
     facility: Facility;
   } | null>(null);
   const [confirmText, setConfirmText] = useState("");
+  const pageTitleRef = useRef<HTMLHeadingElement>(null);
   const dialogTitleRef = useRef<HTMLHeadingElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   const listRequestSequence = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -175,6 +201,13 @@ export function FacilitiesManager() {
     if (filters.status) params.set("status", filters.status);
     if (filters.controlMode) params.set("controlMode", filters.controlMode);
     if (filters.processName) params.set("processName", filters.processName);
+    if (filters.gatewayId) params.set("gatewayId", filters.gatewayId);
+    if (filters.fromDate) {
+      params.set("from", seoulDateBoundary(filters.fromDate, "start"));
+    }
+    if (filters.toDate) {
+      params.set("to", seoulDateBoundary(filters.toDate, "end"));
+    }
     return `/api/facilities?${params.toString()}`;
   }, [filters]);
 
@@ -185,6 +218,16 @@ export function FacilitiesManager() {
     try {
       const result = await api<PaginatedFacilities>(listUrl);
       if (sequence === listRequestSequence.current) {
+        if (
+          result.meta.totalPages > 0 &&
+          result.meta.page > result.meta.totalPages
+        ) {
+          setFilters((current) => ({
+            ...current,
+            page: result.meta.totalPages,
+          }));
+          return;
+        }
         setFacilities(result);
       }
     } catch (caught) {
@@ -263,10 +306,39 @@ export function FacilitiesManager() {
 
   function applyFilters(event: FormEvent) {
     event.preventDefault();
+    if (
+      filterDraft.fromDate &&
+      filterDraft.toDate &&
+      filterDraft.fromDate > filterDraft.toDate
+    ) {
+      setError("종료일은 시작일보다 빠를 수 없습니다.");
+      return;
+    }
+    setError("");
     setFilters({ ...filterDraft, page: 1 });
   }
 
+  function rememberFocus() {
+    returnFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+  }
+
+  function restoreFocus() {
+    const target = returnFocusRef.current;
+    returnFocusRef.current = null;
+    window.requestAnimationFrame(() => {
+      if (target?.isConnected) {
+        target.focus();
+      } else {
+        pageTitleRef.current?.focus();
+      }
+    });
+  }
+
   function openCreate() {
+    rememberFocus();
     setSelected(null);
     setForm(emptyForm);
     setFieldErrors({});
@@ -276,6 +348,7 @@ export function FacilitiesManager() {
   }
 
   function openFacility(facility: Facility, mode: "detail" | "edit") {
+    rememberFocus();
     setSelected(facility);
     setForm(formFromFacility(facility));
     setFieldErrors({});
@@ -291,6 +364,19 @@ export function FacilitiesManager() {
     setDialogMode(null);
     setDirty(false);
     setDirtyFields(new Set());
+    restoreFocus();
+  }
+
+  function openConfirm(action: ConfirmAction, facility: Facility) {
+    rememberFocus();
+    setConfirm({ action, facility });
+    setConfirmText("");
+  }
+
+  function closeConfirm() {
+    setConfirm(null);
+    setConfirmText("");
+    restoreFocus();
   }
 
   function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -302,15 +388,17 @@ export function FacilitiesManager() {
 
   async function saveFacility(event: FormEvent) {
     event.preventDefault();
-    const payload = {
-      ...form,
-      gatewayId: form.gatewayId || null,
-      nodeNumber: form.nodeNumber || null,
-      channelNumber: form.channelNumber || null,
-    };
+    const payload = facilityPayload(form);
     const parsed = facilityCreateSchema.safeParse(payload);
     if (!parsed.success) {
-      setFieldErrors(parsed.error.flatten().fieldErrors);
+      const errors = parsed.error.flatten().fieldErrors;
+      setFieldErrors(errors);
+      const field = Object.keys(errors)[0];
+      window.requestAnimationFrame(() => {
+        if (field) {
+          document.querySelector<HTMLElement>(`[name="${field}"]`)?.focus();
+        }
+      });
       return;
     }
     const isEdit = dialogMode === "edit" && selected;
@@ -337,6 +425,7 @@ export function FacilitiesManager() {
       setDirty(false);
       setDirtyFields(new Set());
       setDialogMode(null);
+      restoreFocus();
       showToast(isEdit ? "설비 정보를 수정했습니다." : "새 설비를 등록했습니다.");
       await loadFacilities();
     } catch (caught) {
@@ -345,7 +434,15 @@ export function FacilitiesManager() {
         fieldErrors?: Record<string, string[]>;
         requestId?: string;
       };
-      if (failure.fieldErrors) setFieldErrors(failure.fieldErrors);
+      if (failure.fieldErrors) {
+        setFieldErrors(failure.fieldErrors);
+        const field = Object.keys(failure.fieldErrors)[0];
+        window.requestAnimationFrame(() => {
+          if (field) {
+            document.querySelector<HTMLElement>(`[name="${field}"]`)?.focus();
+          }
+        });
+      }
       if (failure.code === "VERSION_CONFLICT" && selected) {
         try {
           const latest = await api<Facility>(
@@ -380,12 +477,13 @@ export function FacilitiesManager() {
       if (action === "delete") {
         await api<Facility>(`/api/facilities/${facility.id}`, {
           method: "DELETE",
+          body: JSON.stringify({ version: facility.version }),
         });
         showToast("설비를 삭제했습니다. 삭제 데이터에서 복구할 수 있습니다.");
       } else if (action === "restore") {
         await api<Facility>(`/api/facilities/${facility.id}/restore`, {
           method: "POST",
-          body: "{}",
+          body: JSON.stringify({ version: facility.version }),
         });
         showToast("설비를 복구했습니다.");
       } else {
@@ -402,11 +500,22 @@ export function FacilitiesManager() {
         );
         showToast("설비를 영구 삭제했습니다.");
       }
-      setConfirm(null);
-      setConfirmText("");
+      closeConfirm();
       await loadFacilities();
     } catch (caught) {
-      setError((caught as Error).message);
+      const failure = caught as Error & {
+        code?: string;
+        requestId?: string;
+      };
+      setError(
+        `${failure.message}${
+          failure.requestId ? ` (요청 ${failure.requestId})` : ""
+        }`,
+      );
+      if (failure.code === "VERSION_CONFLICT") {
+        closeConfirm();
+        await loadFacilities();
+      }
     } finally {
       setSaving(false);
     }
@@ -453,7 +562,11 @@ export function FacilitiesManager() {
               <span aria-hidden="true">/</span>
               <span>설비관리</span>
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1
+              ref={pageTitleRef}
+              tabIndex={-1}
+              className="text-2xl font-semibold tracking-tight outline-none"
+            >
               주요설비 관리
             </h1>
             <p className="mt-1 text-sm text-white/55">
@@ -491,7 +604,7 @@ export function FacilitiesManager() {
 
         <form
           onSubmit={applyFilters}
-          className="mb-5 grid gap-3 rounded-2xl border border-white/15 bg-[#171942]/85 p-4 md:grid-cols-2 xl:grid-cols-[2fr_repeat(5,1fr)_auto]"
+          className="mb-5 grid gap-3 rounded-2xl border border-white/15 bg-[#171942]/85 p-4 md:grid-cols-2 xl:grid-cols-4"
           aria-label="설비 검색 및 필터"
         >
           <label className="text-xs text-white/60">
@@ -541,6 +654,51 @@ export function FacilitiesManager() {
             options={[["", "전체"], ...processes.map((item) => [item, item])]}
           />
           <FilterSelect
+            label="게이트웨이 필터"
+            value={filterDraft.gatewayId}
+            onChange={(value) =>
+              setFilterDraft((current) => ({ ...current, gatewayId: value }))
+            }
+            options={[
+              ["", "전체"],
+              ...gateways
+                .filter((gateway) => gateway.status === "ACTIVE")
+                .map((gateway) => [
+                  gateway.id,
+                  `${gateway.code} · ${gateway.name}`,
+                ]),
+            ]}
+          />
+          <label className="text-xs text-white/60">
+            수정일 시작
+            <input
+              type="date"
+              value={filterDraft.fromDate}
+              onChange={(event) =>
+                setFilterDraft((current) => ({
+                  ...current,
+                  fromDate: event.target.value,
+                }))
+              }
+              className="mt-1 h-10 w-full rounded-lg border border-white/20 bg-[#111332] px-3 text-sm text-white outline-none focus:border-sky-400"
+            />
+          </label>
+          <label className="text-xs text-white/60">
+            수정일 종료
+            <input
+              type="date"
+              min={filterDraft.fromDate || undefined}
+              value={filterDraft.toDate}
+              onChange={(event) =>
+                setFilterDraft((current) => ({
+                  ...current,
+                  toDate: event.target.value,
+                }))
+              }
+              className="mt-1 h-10 w-full rounded-lg border border-white/20 bg-[#111332] px-3 text-sm text-white outline-none focus:border-sky-400"
+            />
+          </label>
+          <FilterSelect
             label="데이터"
             value={filterDraft.deleted}
             onChange={(value) =>
@@ -580,6 +738,17 @@ export function FacilitiesManager() {
             className="h-10 self-end rounded-lg bg-sky-600 px-5 text-sm font-semibold hover:bg-sky-500 focus:outline-2 focus:outline-offset-2 focus:outline-sky-300"
           >
             조회
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFilterDraft(defaultFilters);
+              setFilters(defaultFilters);
+              setError("");
+            }}
+            className="h-10 self-end rounded-lg border border-white/20 px-5 text-sm font-semibold hover:bg-white/10 focus:outline-2 focus:outline-offset-2 focus:outline-white"
+          >
+            초기화
           </button>
         </form>
 
@@ -670,10 +839,7 @@ export function FacilitiesManager() {
                         canWrite={Boolean(canWrite)}
                         canPurge={Boolean(canPurge)}
                         onOpen={openFacility}
-                        onConfirm={(action) => {
-                          setConfirm({ action, facility });
-                          setConfirmText("");
-                        }}
+                        onConfirm={(action) => openConfirm(action, facility)}
                       />
                     ))}
                   </tbody>
@@ -687,10 +853,7 @@ export function FacilitiesManager() {
                     canWrite={Boolean(canWrite)}
                     canPurge={Boolean(canPurge)}
                     onOpen={openFacility}
-                    onConfirm={(action) => {
-                      setConfirm({ action, facility });
-                      setConfirmText("");
-                    }}
+                    onConfirm={(action) => openConfirm(action, facility)}
                   />
                 ))}
               </div>
@@ -736,10 +899,7 @@ export function FacilitiesManager() {
           text={confirmText}
           saving={saving}
           onText={setConfirmText}
-          onCancel={() => {
-            setConfirm(null);
-            setConfirmText("");
-          }}
+          onCancel={closeConfirm}
           onConfirm={() => void runConfirmAction()}
         />
       ) : null}
@@ -1093,10 +1253,15 @@ function FacilityDialog({
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="grid gap-4 p-5 sm:grid-cols-2">
+        <form
+          onSubmit={onSubmit}
+          noValidate
+          className="grid gap-4 p-5 sm:grid-cols-2"
+        >
           <FormField
             label="설비 코드"
             name="code"
+            required
             value={form.code}
             error={fieldErrors.code?.[0]}
             readOnly={readOnly || mode === "edit"}
@@ -1106,6 +1271,7 @@ function FacilityDialog({
           <FormField
             label="설비 이름"
             name="name"
+            required
             value={form.name}
             error={fieldErrors.name?.[0]}
             readOnly={readOnly}
@@ -1114,6 +1280,7 @@ function FacilityDialog({
           <FormField
             label="공정 이름"
             name="processName"
+            required
             value={form.processName}
             error={fieldErrors.processName?.[0]}
             readOnly={readOnly}
@@ -1130,6 +1297,7 @@ function FacilityDialog({
           <FormField
             label="우선순위"
             name="priority"
+            required
             type="number"
             min="0"
             max="254"
@@ -1141,6 +1309,7 @@ function FacilityDialog({
           <FormField
             label="기본 설정 온도 (℃)"
             name="baseTemperature"
+            required
             type="number"
             min="0"
             max="999"
@@ -1153,6 +1322,7 @@ function FacilityDialog({
           <FormField
             label="피크 제어 수치 (%)"
             name="peakControlPercent"
+            required
             type="number"
             min="0"
             max="100"
@@ -1256,8 +1426,11 @@ function FacilityDialog({
               </div>
               {selected.deletedAt ? (
                 <div>
-                  <dt className="text-xs text-white/45">삭제일</dt>
-                  <dd>{dateTime(selected.deletedAt)}</dd>
+                  <dt className="text-xs text-white/45">삭제자 / 삭제일</dt>
+                  <dd>
+                    {selected.deletedByName ?? selected.deletedBy ?? "-"} ·{" "}
+                    {dateTime(selected.deletedAt)}
+                  </dd>
                 </div>
               ) : null}
             </dl>
@@ -1294,6 +1467,7 @@ function FormField({
   onChange,
   error,
   hint,
+  required,
   type = "text",
   readOnly,
   min,
@@ -1306,6 +1480,7 @@ function FormField({
   onChange: (value: string) => void;
   error?: string;
   hint?: string;
+  required?: boolean;
   type?: string;
   readOnly?: boolean;
   min?: string;
@@ -1315,7 +1490,10 @@ function FormField({
   const description = error ? `${name}-error` : hint ? `${name}-hint` : undefined;
   return (
     <label className="text-sm">
-      <span className="text-white/70">{label}</span>
+      <span className="text-white/70">
+        {label}
+        {required ? <span aria-hidden="true"> *</span> : null}
+      </span>
       <input
         name={name}
         type={type}
@@ -1323,6 +1501,7 @@ function FormField({
         min={min}
         max={max}
         step={step}
+        required={required}
         readOnly={readOnly}
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={Boolean(error)}

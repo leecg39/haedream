@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
@@ -38,7 +38,9 @@ describe("database operations", () => {
         .prepare("SELECT COUNT(*) AS count FROM _migrations")
         .get() as { count: number };
       db.close();
-      expect(count.count).toBe(2);
+      const migrationCount = readdirSync(path.join(root, "db", "migrations"))
+        .filter((name) => name.endsWith(".sql")).length;
+      expect(count.count).toBe(migrationCount);
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }

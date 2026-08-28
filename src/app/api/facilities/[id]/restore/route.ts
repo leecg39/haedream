@@ -6,8 +6,10 @@ import {
   apiSuccess,
   assertSameOrigin,
   enforceRateLimit,
+  readJson,
   requestId,
 } from "@/lib/http";
+import { facilityVersionSchema } from "@/features/facilities/schema";
 import { restoreFacility } from "@/features/facilities/repository";
 
 type Context = { params: Promise<{ id: string }> };
@@ -22,8 +24,9 @@ export async function POST(request: NextRequest, context: Context) {
       .string()
       .uuid("올바른 설비 ID가 아닙니다.")
       .parse((await context.params).id);
+    const { version } = facilityVersionSchema.parse(await readJson(request));
     return apiSuccess(
-      restoreFacility(user, id, requestIdentifier),
+      restoreFacility(user, id, version, requestIdentifier),
       requestIdentifier,
       200,
       { "Cache-Control": "private, no-store" },

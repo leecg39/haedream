@@ -8,6 +8,57 @@ async function login(page: import("@playwright/test").Page, username: string) {
   await expect(page).toHaveURL(/\/main\.html$/);
 }
 
+type ApiFacility = {
+  id: string;
+  code: string;
+  version: number;
+};
+
+async function createFacility(
+  page: import("@playwright/test").Page,
+  code: string,
+  index: number,
+) {
+  const response = await page.request.post("/api/facilities", {
+    data: {
+      code,
+      name: `페이지 검증 설비 ${index}`,
+      processName: "페이지 검증 공정",
+      groupName: "E2E",
+      priority: index,
+      baseTemperature: 25,
+      peakControlPercent: 20,
+      gatewayId: null,
+      nodeNumber: null,
+      channelNumber: null,
+      controlMode: index % 2 ? "AUTO" : "MANUAL",
+      status: index % 2 ? "ACTIVE" : "INACTIVE",
+    },
+  });
+  expect(response.status()).toBe(201);
+  return ((await response.json()) as { data: ApiFacility }).data;
+}
+
+async function purgeFacility(
+  page: import("@playwright/test").Page,
+  facility: ApiFacility,
+) {
+  const deletedResponse = await page.request.delete(
+    `/api/facilities/${facility.id}`,
+    { data: { version: facility.version } },
+  );
+  expect(deletedResponse.ok()).toBe(true);
+  const deleted = ((await deletedResponse.json()) as { data: ApiFacility }).data;
+  const purgedResponse = await page.request.delete(
+    `/api/facilities/${facility.id}/purge`,
+    {
+      headers: { "x-confirm-purge": facility.code },
+      data: { code: facility.code, version: deleted.version },
+    },
+  );
+  expect(purgedResponse.ok()).toBe(true);
+}
+
 test.describe.serial("주요설비 CRUD", () => {
   const code = `E2E-${Date.now()}`;
 
@@ -26,7 +77,10 @@ test.describe.serial("주요설비 CRUD", () => {
     await page.getByRole("spinbutton", { name: "우선순위" }).fill("21");
     await page.getByLabel("기본 설정 온도 (℃)").fill("120");
     await page.getByLabel("피크 제어 수치 (%)").fill("35");
-    await page.getByLabel("게이트웨이").selectOption({ index: 1 });
+    await page
+      .getByRole("dialog")
+      .locator('select[name="gatewayId"]')
+      .selectOption({ index: 1 });
     await page.getByLabel("노드 번호").fill("6");
     await page.getByLabel("채널 번호").fill("2");
     await page.getByRole("button", { name: "저장" }).click();
@@ -141,6 +195,75 @@ test.describe.serial("주요설비 CRUD", () => {
     await expect(page.getByLabel("설비 이름")).toBeVisible();
   });
 
+  test("검색·필터·정렬·날짜 범위·페이지네이션·빈 상태", async ({ page }) => {
+    await login(page, "admin");
+    const prefix = `PAGE-${Date.now()}`;
+    const created: ApiFacility[] = [];
+    try {
+      for (let index = 1; index <= 11; index += 1) {
+        created.push(
+          await createFacility(
+            page,
+            `${prefix}-${String(index).padStart(2, "0")}`,
+            index,
+          ),
+        );
+      }
+
+      await page.goto("/admin/facilities");
+      await page.getByRole("textbox", { name: "검색" }).fill(prefix);
+      await page.getByLabel("정렬").selectOption("code:asc");
+      await page.getByRole("button", { name: "조회" }).click();
+      await expect(page.getByText("1 / 2")).toBeVisible();
+      await expect(page.locator("tbody tr").first()).toContainText(
+        `${prefix}-01`,
+      );
+      await page.getByRole("button", { name: "다음" }).click();
+      await expect(page.getByText("2 / 2")).toBeVisible();
+      await expect(page.locator("tbody tr")).toHaveCount(1);
+
+      await page.getByLabel("상태").selectOption("INACTIVE");
+      await page.getByRole("button", { name: "조회" }).click();
+      await expect(page.locator("tbody tr")).toHaveCount(5);
+
+      const today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date());
+      await page.getByLabel("상태").selectOption("");
+      await page.getByLabel("수정일 시작").fill(today);
+      await page.getByLabel("수정일 종료").fill(today);
+      await page.getByRole("button", { name: "조회" }).click();
+      await expect(page.getByText("1 / 2")).toBeVisible();
+
+      await page.getByRole("textbox", { name: "검색" }).fill(
+        "존재하지-않는-설비",
+      );
+      await page.getByRole("button", { name: "조회" }).click();
+      await expect(page.getByText("조회 결과가 없습니다")).toBeVisible();
+    } finally {
+      for (const facility of created) {
+        await purgeFacility(page, facility);
+      }
+    }
+  });
+
+  test("입력 오류를 필드에 연결하고 첫 오류로 포커스를 이동함", async ({
+    page,
+  }) => {
+    await login(page, "operator");
+    await page.goto("/admin/facilities");
+    await page.getByRole("button", { name: "+ 설비 등록" }).click();
+    await page.getByRole("button", { name: "저장" }).click();
+    await expect(page.getByLabel("설비 코드")).toBeFocused();
+    await expect(page.locator("#code-error")).toContainText(
+      "설비 코드는 2자 이상",
+    );
+    await page.getByRole("button", { name: "취소" }).click();
+  });
+
   test("두 사용자의 서로 다른 필드 수정이 충돌 후 보존됨", async ({
     browser,
   }) => {
@@ -216,11 +339,11 @@ test.describe.serial("주요설비 CRUD", () => {
   test("삭제 확인창이 키보드 포커스를 내부에 유지함", async ({ page }) => {
     await login(page, "operator");
     await page.goto("/admin/facilities");
-    await page
+    const deleteButton = page
       .getByRole("row")
       .filter({ hasText: "F-DC-02" })
-      .getByRole("button", { name: "삭제" })
-      .click();
+      .getByRole("button", { name: "삭제" });
+    await deleteButton.click();
     const dialog = page.getByRole("alertdialog");
     const confirmButton = dialog.getByRole("button", {
       name: "삭제",
@@ -232,6 +355,7 @@ test.describe.serial("주요설비 CRUD", () => {
     await expect(cancelButton).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
+    await expect(deleteButton).toBeFocused();
   });
 
   test("설비 편집창의 역방향 포커스도 내부에 유지함", async ({ page }) => {
@@ -245,5 +369,8 @@ test.describe.serial("주요설비 CRUD", () => {
     await expect(dialog.getByRole("button", { name: "저장" })).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "+ 설비 등록" }),
+    ).toBeFocused();
   });
 });

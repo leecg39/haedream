@@ -1,16 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { logoutUser } from "@/lib/auth";
-import { apiError, assertSameOrigin, requestId } from "@/lib/http";
+import { apiError, apiSuccess, assertSameOrigin, requestId } from "@/lib/http";
 
 export async function POST(request: NextRequest) {
   const id = requestId(request);
   try {
     assertSameOrigin(request);
-    const response = NextResponse.json({
-      ok: true,
-      requestId: id,
-      data: { loggedOut: true },
-    });
+    const response = apiSuccess({ loggedOut: true }, id);
     logoutUser(request, response, id);
     return response;
   } catch (error) {

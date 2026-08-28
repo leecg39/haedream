@@ -13,6 +13,7 @@
     "db:setup": "npm run db:migrate",
     "db:seed:demo": "ALLOW_DEMO_SEED=true node scripts/seed.mjs",
     "db:setup:demo": "npm run db:migrate && npm run db:seed:demo",
+    "db:setup:e2e": "node scripts/setup-e2e.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

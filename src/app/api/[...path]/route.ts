@@ -22,7 +22,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const loginSchema = z.object({
+const loginSchema = z.strictObject({
   cf: z.literal("login").optional(),
   id: z.string().trim().min(1).max(80),
   pw: z.string().min(1).max(256),
@@ -127,6 +127,8 @@ async function handle(req: NextRequest, path: string[]) {
             authName: session.user.name,
             role: session.user.role,
           });
+          response.headers.set("X-Request-Id", id);
+          response.headers.set("Cache-Control", "private, no-store");
           setSessionCookie(response, session.token);
           return response;
         }

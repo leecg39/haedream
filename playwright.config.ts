@@ -23,7 +23,7 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      "npm run db:setup:demo && npm run dev -- -p 3456",
+      "npm run db:setup:e2e && DATABASE_PATH=data/solarsimz-e2e.db NEXT_DIST_DIR=.next-e2e npm run dev -- -p 3456",
     url: "http://localhost:3456",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

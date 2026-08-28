@@ -14,7 +14,7 @@ import { purgeFacility } from "@/features/facilities/repository";
 
 type Context = { params: Promise<{ id: string }> };
 
-const confirmationSchema = z.object({
+const confirmationSchema = z.strictObject({
   code: z.string().trim().min(2).max(32),
   version: z.number().int().positive(),
 });
@@ -24,7 +24,7 @@ export async function DELETE(request: NextRequest, context: Context) {
   try {
     assertSameOrigin(request);
     const user = requirePermission(request, "facility:purge");
-    enforceRateLimit(`facility:purge:${user.id}`, 10);
+    enforceRateLimit(`facility:purge:${user.id}`, 30);
     const id = z
       .string()
       .uuid("올바른 설비 ID가 아닙니다.")
