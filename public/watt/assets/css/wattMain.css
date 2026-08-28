@@ -1,0 +1,198 @@
+*{margin:0}
+.contents{display:grid;grid-template-columns:9fr 10fr;grid-template-rows:4fr 5fr 5fr;height:calc(100vh - 80px);gap:1rem;padding:1rem;color:#f8f8f8}
+main.contents{padding:1rem}
+.inArea{display:flex;flex-direction:column}
+.inHead{padding:.2rem 1rem .1rem;border-radius:.6rem .6rem 0 0;background-color:rgba(32, 98, 191, 0.4);font-size:1rem;font-weight:500}
+.inBody{flex-grow:1;border-radius:0 0 1rem 1rem}
+
+.realPeakContent{display:flex;flex-direction:column;padding-right:1rem;border-radius:.6rem;background-color:rgba(13,71,161,.2)}
+.realPeakFlex{display:flex}
+.realPeakChart{display:flex;flex-direction:column;flex-grow:2}
+.realPeakBoard{flex-grow:3}
+.realPeakHead{padding:.5rem 0;font-size:unset;text-align:center}
+.realHeadText{font-size:1.5rem;text-shadow:2px 2px #000}
+.realHeadMark{color:#00e5ff;font-size:1.5rem;font-weight:700;text-shadow:2px 2px #000}
+
+.realWattContent{display:flex;gap:1rem}
+.realWattUsage{display:flex;flex-direction:column;flex-grow:10;border-radius:.6rem;background-color:rgba(13,71,161,.2)}
+.realWattHead{padding:.5rem 0;font-size:unset;text-align:center}
+.realWattBody{display:flex;gap:1rem;padding:0 1rem 0 2rem}
+.realWattBoard{flex-grow:3}
+
+.realNeon{display:flex;border:.4rem solid #00e5ff;border-radius:1rem;box-shadow:0 0 1rem #00e5ff}
+.realNeonHead{flex-grow:1;padding:1.5rem 1rem;display:flex;flex-direction:column;gap:12px;align-items:center;line-height:1}
+.realNeonTop{font-size:3rem;font-weight:600;font-family:"Open Sans", sans-serif !important}
+.realNeonInfo{flex-grow:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.realNeonDash{color:#808080}
+.realNeonDate{font-size:1rem}
+.realNeonMark{padding-bottom: 0.4rem;color:#00e5ff;line-height:1}
+.realNeonRatio{display:inline-block;color:#f95151}
+.realNeonRatio.minus{color:#51c9ff}
+.realNeonText{font-size:.86rem;color:#c0c0c0}
+
+.realWattInfo{flex-grow:2;font-size:.9rem}
+.realWattByGauge{height:1.6rem;border-radius:4px;border:1px solid #297efe;background-color:rgba(23,29,91,0.6)}
+.realWattGauge{display:inline-block;width:40%;height:100%;padding:0 .4rem;border-radius:4px;border-top-right-radius:0;border-bottom-right-radius:0;background:linear-gradient(to right, #097df1, #23b1ff);text-align:right}
+.realGaugeText{font-size:.86rem;color:#fff}
+.realGaugeEm{font-size:.82rem}
+
+#realPeakChart{margin:7px 0 0 1rem;transform:scale(0.95)}
+.realInfoText{font-size:.86rem;color:#c0c0c0}
+.realInfoRatio{display:inline-block;font-size:.86rem;color:#f95151}
+.realInfoRatio.minus{color:#03a9f4}
+.realTimeBox{padding:.6rem}
+.realTimeArea{display:flex;gap:1px;list-style:none}
+.realTime{position:relative;height:.8rem;flex-grow:1;border-radius:.2rem;background-color:#6ad123}
+.realTimeMiddle{background-color:#f4cd23}
+.realTimeHigh{background-color:#ff1317}
+.realTime.active:after{position:absolute;top:-.8rem;left:-.2rem;color:#6ad123;content:'▼';text-shadow:0 1px 1px #000}
+.realTimeMiddle.active:after{color:#f4cd23}
+.realTimeHigh.active:after{color:#ff1317}
+
+.realTimeStat{display:flex;margin:1rem 2rem 0;border-radius:.6rem;background-color:rgba(0,0,0,.4)}
+.realPeakChart .realTimeStat{margin:1rem 2rem 0 3rem}
+.realStat{flex-grow:1;padding:.2rem;border-radius:.6rem;text-align:center;font-size:.86rem;color:rgba(255,255,255,0.7)}
+.realStat.active{background-color:rgb(68 105 215 / 40%)}
+/*.high.active{border-top:1px solid #e91e63;border-left:2px solid #e91e63;border-right:2px solid #e91e63;box-shadow:0 0 0.6rem #e91e63;color:#ff1744}*/
+.high.active{border:0;background:#136cdb;color:#fff}
+.middle.active{color:#fff}
+.low.active{color:#6ad123}
+
+.realMeterArea{display:flex;align-items:center;padding:1rem 1rem .5rem 2rem}
+.realMeterLine{flex-grow:1;position:relative;height:1rem}
+.realMeter{position:absolute;left:0;top:0;width:100%;height:100%;background-image:url('data:image/svg+xml;utf8,<svg width="6" height="4" xmlns="http://www.w3.org/2000/svg"><rect width="3" height="4" x="0" y="0" /></svg>');z-index:2}
+.realMeterOn{position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(to right, #1371ff, #2ed8ff, #edfeff);z-index:1}
+.realMeterTime{width:7.4rem;text-align:right;font-variant-numeric: tabular-nums}
+
+.realConn{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-grow:1;padding:1.5rem 0.5px}
+.realConnDate{padding:.4rem 0;border-radius:.6rem;background-color:rgba(13,71,161,.4);text-align:center}
+.realConnText{display:flex;justify-content:center;align-items:baseline;line-height:1}
+.realDateText{margin-left:.4rem}
+.realDateEm{font-size:.9rem;font-style:normal}
+.realDateWeek{vertical-align:middle;font-size:.86rem}
+.realDateTime{vertical-align:middle;font-size:1rem}
+.realConnChart{flex-grow:1;border-radius:.6rem;background-color:rgba(13,71,161,.2)}
+.realChartText{margin-top:.4rem;text-align:center;font-size:.86rem}
+.realChartLabel{fill:#fff;font-size:1.6rem}
+.realChartPer{fill:#03a9f4;font-weight:700;font-size:4rem}
+.realChartEm{fill:#03a9f4;font-weight:700;font-size:2rem}
+
+.dayWatt .inBody{display:flex}
+.dayWattChart{flex-grow:1}
+.dayWattCost{width:16rem;padding:1rem}
+.dayWattHead{display:flex;justify-content:space-between;padding:.2rem 0}
+.dayWattTitle{color:rgba(255,255,255,0.8);text-shadow:2px 2px #000}
+.dayWattBody{border-right:1px solid rgb(163 194 221 / 50%);border-bottom:1px solid rgb(163 194 221 / 50%)}
+.dayWattLabel{text-align:center;font-size:.92rem}
+.dayWattText{text-align:right;font-size:.92rem}
+.dayWattLine{padding:.1rem .4rem;border-top:1px solid rgb(163 194 221 / 50%);border-left:1px solid rgb(163 194 221 / 50%)}
+.dayWattBack{background:linear-gradient(to right, rgb(68 152 255 / 30%), rgb(81 131 227 / 10%))}
+.dayWattBody{display:grid;grid-template-columns:2fr 3fr}
+
+.dashboard .inBody{display:flex;gap:1rem;}
+.boardItem{display:flex;flex-direction:column;flex-grow:1;border-radius:.8rem}
+.boardBody{display:flex;flex-direction:column;justify-content:space-evenly;flex-grow:1;align-items:center;padding:1rem 0.4rem;font-size:15px;background-color:rgba(32, 98, 191, 0.2)}
+.boardHead{padding:0.2rem 1rem 0.1rem;border-radius:0.6rem 0.6rem 0 0;background-color:rgba(32, 98, 191, 0.4)}
+.boardLabel{color: #85d4fd;font-weight:500;font-size:16px}
+.boardLink{text-decoration:none;font-size:.86rem;color: rgba(255,255,255,0.7)}
+
+.boardFacHead{display:flex;justify-content:space-evenly;width:100%;margin:.2rem 0}
+.boardFacMode{display:flex;justify-content:space-between;gap:.2rem;padding:5px 7px;border-radius:.6rem;box-shadow:inset 3px 3px 3px 0 rgba(0,0,0,.4);background-color:rgba(0,0,0,.2);font-size:.86rem}
+.boardFacLabel{color:rgba(255,255,255,0.5)}
+.boardFacStat{display:flex;justify-content:space-between;gap:2px;padding:.2rem;border-radius:.6rem;box-shadow:inset 3px 3px 3px 0 rgba(0,0,0,.4);background-color:rgba(0,0,0,.2)}
+.boardFacChip{padding:.2rem .4rem;border-radius:.6rem;background:linear-gradient(to bottom, #020f29, #07183b);text-align:center;color:rgba(255,255,255,0.6);font-size:.86rem}
+.boardFacList{overflow-y:auto;flex-grow:1;align-items:center;width:100%;height:8rem;padding:0.7rem 0.4rem 0 0.4rem}
+.boardFacList::-webkit-scrollbar{width:3px;height:3px;background-color:#131538}
+.boardFacList::-webkit-scrollbar-thumb{border-radius:3px;background:#2ba6d8;background:linear-gradient(90deg, #34bad7 0%, #4e73dd 100%)}
+.boardFacList::-webkit-scrollbar-track{border-radius:3px}
+.boardFacFoot{align-self:flex-end;padding:5px}
+.active.statOff{background:linear-gradient(to top, #036752, #068f77);color:#fff}
+.active.statSome{background:#2a99cc;color:#fff}
+.active.statEvery{background:#f95151;color:#fff}
+.boardFacItem{display:flex;gap:1rem;align-items:center;margin-bottom:.2rem;font-size:.85rem}
+.boardFacSwitch{display:flex;align-items:center;justify-content:center;width:70px;height:28px;padding:.1rem .2rem;border-radius:.4rem;background:#050c1e}
+.switchOn,.switchOff{display:inline-block;padding:.1rem;border-radius:.4rem;color:#909090;font-size:13px;flex-grow:1;text-align:center}
+.toggleOn .switchOn{background:#2a99cc;color:#fff}
+.toggleOff .switchOff{background:linear-gradient(to top, #036752, #068f77);color:#fff}
+.bottomT{color:rgba(255,255,255,0.8);font-size:13px}
+
+.boardEffortInfo{display:flex;justify-content:center;align-items:center;gap:1rem}
+.boardEffortBox{display:flex;flex-direction:column;justify-content:center;align-items:center;margin:.4rem 0;padding:.4rem;border-radius:.4rem;background-color:rgba(40,40,40,.4);font-size:.86rem}
+.boardEffortDate{text-align:center;color:rgba(255,255,255,0.8);font-size:13px}
+.boardEffortText{color:#f95151}
+.boardEffortText.minus{color:#2a99cc}
+.boardEffort{font-size:2.4rem;font-weight:600;font-family:"Open Sans", sans-serif !important}
+.boardHis{display:flex;justify-content:space-evenly;font-size:13px;gap:7px;padding:10px;align-items:center;border-radius:4px;line-height:1;background-color:#355497}
+.boardMark{color:#ede846}
+
+.rankInfo{display:flex;gap:1rem}
+.rankWeek{display:flex;flex-direction:column;flex-grow:4}
+.rankWeek .inBody{background-color:rgba(32, 98, 191, 0.2)}
+.rankFac{display:flex;flex-direction:column;flex-grow:6}
+.rankFac .inBody{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0}
+.inBody > div{width:100%}
+.rankHeadBox{width:100%;padding:.2rem;border-radius:.4rem;background-color:rgba(13,71,161,.4)}
+.rankHeadLabel{display:block;text-align:center;color:rgba(255,255,255,0.8);font-size:14px}
+.rankHeadDate{display:block;text-align:center;font-size:.86rem;color:#a0a0a0;display:none}
+.rankHeadDate +.rankHeadDate{text-align:right}
+.rankFacHead{display:flex;justify-content:space-between;font-size:.86rem}
+.rankFacHead .name{overflow:hidden;width:6rem;height:1rem;font-size:.8rem}
+.rankFacItem{margin-top:.4rem}
+.rankGauge{height:.5rem;background-color:#404040}
+.rankGaugeBar{width:50%;height:.5rem;background:linear-gradient(to right, #019d82, #6ddf8e)}
+
+/* 개별컨텐츠 최대피크 3개 */
+.maxPeakHead{padding:1rem 0}
+.maxPeakList{display:grid;grid-template-columns:1.2rem 1fr auto 1.6rem;grid-template-rows:1fr 1fr 1fr 1rem;gap:0 .2rem;flex-grow:0;padding:1rem}
+.maxPeakNo{font-size:1.2rem;font-weight:600}
+.maxPeakEx{font-size:.76rem}
+.maxPeakTime{text-align:center}
+.maxPeakWatt{text-align:right;font-size:2rem;color:#ffeb3b}
+.maxPeakUnit{text-align:right;color:#c0c0c0}
+
+/* 개별컨텐츠 오늘어제이주 사용량 */
+.usageBox{margin:1rem}
+.usageHead{padding:1.6rem 0}
+.usageHeadLabel{font-size:1.6rem}
+.usageHeadUnit{color:#c0c0c0}
+.usageBody{display:grid;grid-template-columns:auto auto;grid-template-rows:1fr 1fr 1fr 1rem;gap:.8rem}
+.usageEx{color:#c0c0c0}
+.usageValue{color:#ffeb3b}
+
+@media (max-width:1279px){
+    .contents{display:flex;flex-direction:column;gap:2rem;height:auto}
+}
+
+@media (max-width:1440px){
+    html{font-size:13px}
+}
+@media (max-width:1280px){
+    html{font-size:12px}
+}
+@media (max-width:1024px){
+    html{font-size:11px}
+}
+@media (max-width:768px){
+    html{font-size:10px}
+}
+@media (max-width:480px){
+    .realPeakContent{padding:1rem}
+    .realWattContent{display:block}
+    .realPeakFlex{flex-direction:column}
+    .realWattBody{flex-direction:column}
+    .peakWatt .inBody{height:32rem}
+    .dayWatt .inBody{flex-direction:column}
+    .dayWattChart{height:28rem}
+    .dayWattCost{width:100%}
+    .dashboard .inBody{flex-direction:column}
+    .rankWeek .inBody{height:28rem}
+    .rankInfo{flex-direction:column}
+    .realConnChart{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;width:100%;height:120px}
+    .boardFacList{height:300px}
+    .realConnDate, 
+    .realConn .realConnChart{background-color:transparent}
+    #realPeakChart{margin:0}
+    .dayWattLabel, .dayWattText{font-size:14px}
+    .boardFacItem{font-size:13px}
+    .boardHead, .inHead{font-size:16px}
+}

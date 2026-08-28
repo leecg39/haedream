@@ -1,0 +1,207 @@
+/* 에너지 컬러 */
+.wattColor{color:#e2c82b}
+.gasColor{color:#fa7e5d}
+.waterColor{color:#64ccf7}
+.dPro .light .num{color:rgb(234, 208, 10)}
+.dPro .gas .num{color:rgb(249, 158, 74)}
+.dPro .water .num{color:rgb(109, 203, 255)}
+.dPro .vol .num{color:#35e3ba}
+.dPro .wonUnit .num{color:#c827c0}
+.sheetArea{display:flex;padding:0;width:100%;min-height:calc(100vh - 180px)}
+
+/* 에너지 계통 */
+.monitBox ul{display:flex;gap:10px;align-items:center;position:relative}
+.monitBox .energyData{margin-left:auto}
+.monitBox .energyData li{padding:5px;width:200px;border-radius:5px;text-align:center}
+.monitBox .energyWatt{background-color:#494331}
+.monitBox .energyGas{background-color:#543871}
+.monitBox .energyWater{background-color:#194495}
+.energyTitle{position:relative;width:35px;font-size:12px;color:rgba(255, 255, 255, 0.85)}
+.energyTitle.light::after{background-color:rgb(234, 208, 10)}
+.energyTitle.gas::after{background-color:rgb(249, 158, 74)}
+.energyTitle.water::after{background-color:rgb(109, 203, 255)}
+.titleName{display:flex;gap:7px;align-items:baseline;justify-content:center;font-size:17px;font-weight:600}
+.titleName .unit{font-size:12px;font-weight:400;font-style:italic}
+.titleName .title{font-weight:500}
+.priceUnit{font-size:13px;font-style:italic}
+.energyTitle .pipeLine{border-right:1px solid rgb(109, 203, 255);position:absolute;right:17px;bottom:-13px;width:1000px;height:13px}
+.energyTitle.light .pipeLine{border-color:#dac20c;z-index:10;width:40px}
+.energyTitle.gas .pipeLine{border-right:1px solid #fa7e5d;border-bottom:1px solid #fa7e5d;z-index:9;width:51px}
+.energyTitle.water .pipeLine{border-right:1px solid #64ccf7;border-bottom:1px solid #64ccf7;z-index:8;width:102px}
+.energyTitle img{width:34px;height:34px}
+
+.monitCont{display:none;flex-direction:column;padding-left:48px;overflow:hidden;width:100%}
+.monitCont.mainCont{display:flex;height:63vh;overflow:auto}
+.monitCont.mainCont::-webkit-scrollbar{width:8px;height:8px}
+.monitCont.mainCont::-webkit-scrollbar-thumb{border:1px solid #3f51b5;border-radius:5px;background:rgba(69,90,100,.4)}
+.monitCont.mainCont::-webkit-scrollbar-track{background-color:#050d1e}
+.depth1 > li:last-child > .dPro .name::after{display:none}
+.depth1 > li:last-child > .active .name::after{display:block}
+.dPro{display:flex;position:relative;padding-top:12px;cursor:pointer}
+.dPro .pipeLine{display:block;border-bottom:1px solid rgb(109, 203, 255);border-left:1px solid rgb(109, 203, 255);position:absolute;bottom:20px;left:-31px;width:31px;height:2000px;content:""}
+.dPro .pipeLine.light{border-color:rgb(234, 208, 10);z-index:10;transform:translateY(-5px)}
+.dPro .pipeLine.gas{border-color:rgb(249, 158, 74);left:-37px;z-index:9;width:37px}
+.dPro .pipeLine.water{border-color:rgb(109, 203, 255);left:-43px;z-index:8;width:43px;transform:translateY(5px)}
+
+.dPro > .name{display:flex;align-items:center;justify-content:center;position:relative;width:400px;padding:0 40px;background:#0e224e url(../../assets/img/arrow-bottom.png) no-repeat right 10px bottom 50%;font-size:17px;font-weight:bold}
+.dPro.active + .monitCont{display:flex}
+.dPro.active + .facBox{display:flex}
+.dPro.active > .name{background-color:#1354b6;background-image:url(../../assets/img/arrow-bottom-active.png)}
+.monitCont .monitCont .dPro > .name{width:352px}
+.monitCont .monitCont .monitCont .dPro > .name{width:304px}
+.dPro > .name::after{display:block;position:absolute;bottom:-4px;left:50%;width:10px;height:10px;font-family:"bootstrap-icons";color:#17367b;content:"\F229";transform:translateX(-50%)}
+.dPro:last-child > .name::after{display:none}
+.dPro .infoText{display:flex;flex:1;align-items:center;justify-content:center;padding:10px 15px;background-color:#12193e;font-size:14px}
+.dPro.active .infoText{background-color:#26357e}
+.infoTextAlgin{display:flex;gap:0 15px;width:100%;letter-spacing:-0.4px}
+.infoTextAlgin > div{display:flex;gap:10px;align-items:center;justify-content:space-between;color:rgba(255, 255, 255, 0.7)}
+.infoTextAlgin .num{font-weight:500}
+
+.facBox{display:none;gap:8px;flex-wrap:wrap;row-gap:15px;padding:15px 0}
+.facBox li{padding:8px;border:1px solid #034686;width:128px;background-color:#080826;font-size:13px;line-height:1.2}
+.facBox li:hover{scale:1.1;z-index:1;overflow:hidden}
+.facBox li:hover .name{display:inline-block;width:auto;overflow:visible;animation:marquee 5s linear infinite}
+.facBox .name{margin-bottom:3px;overflow:hidden;width:100%;height:20px;line-height:20px;font-size:14px;font-weight:bold;color:rgba(255, 255, 255, 0.85);text-align:center;word-break:break-all;white-space:nowrap;text-overflow:ellipsis;transition:transform 0.5s ease}
+.facBox .infoText2 > div{display:flex;justify-content:space-between;font-size:14px;color:rgba(255, 255, 255, 0.75)}
+.facBox .num{font-size:13px;font-weight:500}
+
+.divMonit{padding:1rem;width:calc(100% - 270px)}
+.deskTool{display:flex;gap:8px;align-items:center;justify-content:start;flex-wrap:wrap;margin:0 0 20px 0;font-size:1rem;text-align:center}
+.sheetWrap{max-height: 300px;overflow-y: auto}
+.sheetWrap::-webkit-scrollbar{width:8px;height:8px}
+.sheetWrap::-webkit-scrollbar-thumb{border:1px solid #3f51b5;border-radius:5px;background:rgba(69,90,100,.4)}
+.sheetWrap::-webkit-scrollbar-track{background-color:#050d1e}
+.mTBlock{display:flex;gap:8px;align-items:center}
+.deskDash{margin-right:4px;margin-left:4px}
+
+.monitBox{display:flex;gap:20px;justify-content:start}
+
+.ck{margin-left:20px}
+input.check + label{margin:0;font-size:16px;cursor:pointer}
+input.check[type="checkbox"]{display:flex;align-items:center;justify-content:center;margin-right:7px;border:1px solid #cccccc;outline:none;width:24px;height:24px;cursor:pointer;appearance:none}
+input.check[type="checkbox"]::after{display:none;font-family:"bootstrap-icons";font-size:1rem;font-weight:bold;color:white;content:"\F633"}
+input.check[type="checkbox"]:checked{border:0;background-color:#3761ce}
+input.check[type="checkbox"]:checked::after{display:block}
+
+.select{padding:.4rem .4rem;border:1px solid #5190a5;min-width:120px;height:40px;background-color:transparent;font-size:1rem;border-radius:.4rem}
+.select option{background-color:#000000}
+.deskLabel{margin:0 8px;word-break:keep-all;color:#72bce3;}
+.inputDate{padding:.4rem;border:1px solid #5190a5;height:40px;background-color:transparent;font-size:1rem;border-radius:.4rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.deskDash{margin:0 5px}
+.iconExcel{background-position:-24px 0}
+.act{display:inline-block;height:40px;padding:.5rem 1rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#ffffff}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+
+/* 공정 분류 */
+.divProcBox{padding:1rem;border-right:1px solid rgba(255, 255, 255, 0.2);position:relative;width:270px;min-height:calc(100vh - 180px);background-color:#000000}
+.divProcBox .title{margin-bottom:15px;font-size:18px;font-weight:bold;color:#ffffff}
+.divProc{height:65vh;overflow:auto}
+.divProc::-webkit-scrollbar{width:3px;background-color:#131538}
+.divProc::-webkit-scrollbar-thumb{border-radius:3px;background:#2ba6d8;background:linear-gradient(90deg, #34bad7 0%, #4e73dd 100%)}
+.divProc::-webkit-scrollbar-track{border-radius:3px}
+.divProc a{display:flex;align-items:center;margin-bottom:6px;padding:9px 5px 9px 35px;border:1px solid #0567cd;position:relative;font-size:15px;line-height:1}
+.divProc a.active,
+.divProc a:hover{border:1px solid #03a9f4;background-color:#01579b;color:#ffffff}
+.divProc a::after{position:absolute;top:50%;left:12px;font-family:"bootstrap-icons";color:rgba(255, 255, 255, 0.8);content:"\F3D9";transform:translateY(-50%)}
+.divProc a.active::after{content:"\F3D1"}
+.divProc a::before{display:block;position:absolute;top:16px;left:-15px;width:15px;height:1px;background-color:#0567cd;content:""}
+.divProc ul{position:relative}
+.divProc ul li{position:relative}
+.divProc ul li::before{position:absolute;top:-6px;left:-15px;width:1px;height:calc(100% + 6px);background-color:#0567cd;content:""}
+.divProc ul li:last-child::before{height:24px}
+.divProc .dep1 > li > a::before{display:none}
+.divProc .dep1{margin-left:0}
+.divProc .dep2{display:none;margin-left:30px}
+.divProc a.active + .dep2{display:block}
+.divProc .dep3{margin-left:30px}
+.divProc .dep3 > li > a{padding-left:12px}
+.divProc .dep3 > li > a::after{display:none}
+.divProc a + ul::after{position:absolute;top:-8px;left:-15px;width:1px;}
+.divProcBox .btnArea{display:flex;gap:10px;flex-direction:column;position:sticky;bottom:0;left:0;width:100%;padding:1rem 0}
+.divProcBox .btnArea .edit{display:flex;gap:10px;align-items:center;justify-content:start;padding-left:20px;height:40px;background-color:#5947cc;border-radius:4px}
+.divProcBox .btnArea .edit:hover{background-color:#5f4cdc}
+.divProcBox .btnArea .editInfo{background-color:#3761ce}
+.divProcBox .btnArea .editInfo:hover{background-color:#3868e1}
+
+/* 변경이력 팝업 */
+.modalContent{padding:1rem 2rem 1rem 2rem;width:900px}
+.pop .left{display:flex;gap:30px;align-items:center;justify-content:start}
+.deskTitle{padding:0}
+.deskStat{display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0 0 0}
+.srchBox{display:flex;gap:8px}
+.editHistory{margin:0;border-bottom:1px solid rgba(255, 255, 255, 0.2);border-left:1px solid rgba(255, 255, 255, 0.2);border-collapse: separate}
+.editHistory thead{position:sticky;top:0}
+.editHistory th,
+.editHistory td{padding:3px 5px;border-top:1px solid rgba(255, 255, 255, 0.2);border-right:1px solid rgba(255, 255, 255, 0.2);font-size:15px;text-align:center}
+.editHistory th{background-color:#060613;font-weight:400}
+.editHistory th:first-child{width:100px}
+.editHistory th:nth-child(2){width:55px}
+.editHistory th:nth-child(3){width:200px}
+.editHistory th:nth-child(4){width:80px}
+.editHistory td{background-color:rgba(6, 6, 19, 0.4)}
+.editHistory td:first-child{font-variant-numeric: tabular-nums}
+.editHistory td:nth-child(2){font-variant-numeric: tabular-nums}
+.editHistory td:last-child{text-align:left}
+.editHistory td span{color:#85caf1}
+.editHistory td i{font-size:12px}
+.d2{margin:0;border:0}
+.d2 th, .d2 td{border:0;background-color:transparent}
+.d2 td{border-left:1px solid rgba(234, 208, 10, 0.25);width:100px}
+.d2 td:first-child{border-left:0}
+.d2 td:last-child{width:auto}
+.d2 td.center{text-align:center !important}
+.deskPage.act{background-color:rgb(32 98 191 / 27%)}
+.deskPage.active{background-color:#2062bf}
+
+@keyframes marquee{
+    10%{transform:translateX(0)}
+    100%{transform:translateX(-100%)}
+}
+
+@media (max-width:1460px){
+    .ProseccScroll{overflow:auto;width:100%}
+    .ProseccScroll::-webkit-scrollbar{width:5px;height:10px;background-color:#131538}
+    .ProseccScroll::-webkit-scrollbar-thumb{background:#2ba6d8;background:linear-gradient(90deg, #34bad7 0%, #4e73dd 100%);border-radius:3px}
+    .ProseccScroll::-webkit-scrollbar-track{border-radius:3px}
+    .ProseccScroll::-webkit-scrollbar-corner{background-color:transparent}
+}
+
+@media (max-width:768px){
+    .sheetArea{margin:1rem 0;padding:1rem;overflow:auto}
+    .inputDate{padding:.2rem .4rem;width:120px;font-size:14px}
+    .select{padding:.2rem .4rem;width:100%;font-size:1rem}
+    .deskTool{gap:8px;flex-wrap:wrap;flex-direction:column;margin:0 0 1rem 0}
+    .mTBlock{gap:8px;min-height:40px}
+    .sheetScroll{overflow-x:auto;width:100%}
+    .sheet{min-width:1000px}
+    .modalContent{padding:1rem;overflow-x:hidden;width:100%;min-height:calc(100vh - 50px)}
+    .pop .left{gap:10px;flex-direction:column;width:100%}
+    .popBottom{gap:10px;flex-direction:column}
+    .sheetWrap{overflow:auto;width:100%}
+    .editHistory th,
+    .editHistory td{padding:4px;font-size:14px}
+    .sheet{min-width:800px}
+    .srchBox{width:100%}
+    .sheetArea{flex-direction:column}
+    .divProcBox{width:100%;min-height:max-content}
+    .divProcBox .fixedSideBar{position:relative;width:100%}
+    .divMonit{padding:1rem;width:100%}
+    
+    .divProc{height:25vh}
+}
+
+@media (max-width:520px){
+    .sheetArea{margin:10px 0 1rem 0;padding:0;overflow-x:hidden}
+    .nomTBlock{display:none}
+    .srchBox{flex-direction:column}
+    .srchBox .mTBlock{gap:0}
+    .srchBox .act{width:120px}
+    .divMonit{padding:1rem 0}
+    .mTBlock.r2{gap:0}
+    .divProcBox .btnArea{gap:8px;margin:10px 0}
+    .datePicker .tui-datetime-input{width:130px}
+    .deskTool{transform:scale(0.9)}
+}

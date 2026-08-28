@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>피크관리 - 피크상태</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/peak.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/peak.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="peakGrid contents disable" id="contentsArea">
+            <div class="topInfo top">
+                <div class="titleArea">
+                    <div class="title">피크상태</div>
+                    <div class="day">
+                        검침일
+                        <span class="blue" id="meterDate">-일</span>
+                    </div>
+                </div>
+                <div class="dayCk">
+                    <label>
+                        <span>검침일 기준 적용</span>
+                        <input type="checkbox" id="isMeterDate" role="switch" checked>
+                    </label>
+                </div>
+            </div>
+            <div class="topInfoRt top">
+                <div>
+                    데이터정확도
+                    <span class="blue" id="dataVerifyRate">-%</span>
+                </div>
+                <div class="dayCk">
+                    <label>
+                        <span>알림</span>
+                        <input role="switch" type="checkbox" id="peakMediaAlarm">
+                    </label>
+                </div>
+            </div>
+            <div class="kfeContent peakBase" id="peakBase">
+                <div class="kfeBody peakArea">
+                    <div class="nodePower">
+                        <div class="nodePowerChart" id="chartPeak"></div>
+                    </div>
+                    <div class="nodeInfo">
+                        <div class="peakStatusArea" id="peakStatusArea">
+                            <div class="statCheap">
+                                <span class="statClip blue" data-alt="안정"></span>
+                            </div>
+                            <div class="statCheap">
+                                <span class="statClip" data-alt="근접"></span>
+                            </div>
+                            <div class="statCheap">
+                                <span class="statClip" data-alt="초과"></span>
+                            </div>
+                        </div>
+                        <div class="peakTimeArea">
+                            <div class="peakWattLimit">
+                                <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000">
+                                    <circle cx="125" cy="125" r="100" fill="transparent" stroke="#585858" stroke-width="25"/>
+                                    <circle class="circleFront" id="circle-front" cx="125" cy="125" r="100" fill="transparent" stroke-linecap="square" stroke-width="25" stroke-dasharray="608" stroke-dashoffset="0" transform="rotate(-90, 125, 125)"/>
+                                    <text x="55%" y="55%" dominant-baseline="middle" text-anchor="middle" class="peakWattCircleText" id="circle-value">00%</text>
+                                </svg>
+                            </div>
+                            <div class="peakTimeLimit">
+                                <div class="peakMeterLine">
+                                    <span class="peakMeter"></span>
+                                    <span class="peakMeterOn" id="peakMeterOn"></span>
+                                </div>
+                            </div>
+                            <div class="peakTimeDigit">
+                                <span id="peakTimeDigit">00:00 /</span>
+                                <span>15:00</span>
+                            </div>
+                            <div class="peakTimeInfo">
+                                <span class="peakTimeInfoLabel">계기시간</span>
+                                <span id="peakAbleTime">00:00:00</span>
+                                <span class="peakTimeDiffArea">
+                                    <span class="peakTimeText">시간차</span>
+                                    <span class="peakTimeText" id="peakTimeDiff">0</span>
+                                    <span>초</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="peakPointArea" id="peakPointArea">
+                            <span class="peakPointLabel peakPointA">예측<br/>전력</span>
+                            <span class="peakPoint peakPointA">0</span>
+                            <span class="peakPointLabel peakPointB">목표<br/>전력</span>
+                            <span class="peakPoint peakPointB">0</span>
+                            <span class="peakPointLineA"></span>
+                            <span class="peakPointLineB"></span>
+                            <span class="peakPointLabel peakPointC">현재<br/>전력</span>
+                            <span class="peakPoint peakPointC">0</span>
+                            <span class="peakPointLabel peakPointD">기준<br/>전력</span>
+                            <span class="peakPoint peakPointD">0</span>
+                            <span class="peakPointLineC"></span>
+                            <span class="peakPointLineD"></span>
+                            <span class="peakPointLabel peakPointE disable">순간<br/>전력</span>
+                            <span class="peakPoint peakPointE disable">0</span>
+                            <span class="peakPointLineE disable"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kfeContent peakControl">
+                <div class="kfeBody peakControlPanel">
+                    <div class="controlStatusArea" id="controlStatusArea">
+                        <div class="statCheap">
+                            <span class="statClip green" data-alt="전체 OFF"></span>
+                        </div>
+                        <div class="statCheap">
+                            <span class="statClip" data-alt="일부제어 0"></span>
+                        </div>
+                        <div class="statCheap">
+                            <span class="statClip" data-alt="전체제어 0"></span>
+                        </div>
+                    </div>
+                    <div class="controlModeArea">
+                        <span class="controlModeLabel">MODE</span>
+                        <span class="controlModeDash"></span>
+                        <span class="controlModeValue" id="controlModeValue">자동/우선순위</span>
+                    </div>
+                    <div class="boardFacList" id="boardFacList">
+                        <div class="boardFacItem">
+                            <div class="boardFacControll disable">
+                                <span class="boardFacWait rotate"></span>
+                                <span class="boardFacWaitText">제어를 요청하였습니다.</span>
+                            </div>
+                            <span class="boardFacSwitch" data-idn="wait">
+                                <span class="switchOff">OFF</span>
+                                <span class="switchOn">제어</span>
+                            </span>
+                            <span class="boardFacName">Wait...</span>
+                            <span class="boardFacRate">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 아래 작은 영역 6개 -->
+            <div class="kfeContent thisMonPrice">
+                <div class="boxT">이번달 요금적용전력</div>
+                <div class="boxW">
+                    <div class="boxN">
+                        <span class="val" id="thisWatt">-</span>
+                        <span class="unit">kW</span>
+                    </div>
+                    <div class="boxD">
+                        <span class="date" id="thisWattYmd">0000-00-00</span>
+                        <span class="box" id="thisWattHi">00:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="kfeContent todayKw">
+                <div class="sLeft">
+                    <div>오늘최대수요</div>
+                    <div class="small">중부하, 최대부하만 적용</div>
+                </div>
+                <div class="sRight">
+                    <div>
+                        <span class="val" id="wattMax">-</span>
+                        <span class="unit">kW</span>
+                    </div>
+                    <div>
+                        <span class="date" id="wattMaxYmd">0000-00-00</span>
+                        <span class="box" id="wattMaxHi">00:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="kfeContent thisMKw">
+                <div class="sLeft">
+                    이번달<br>최대수요
+                </div>
+                <div class="sRight">
+                    <div>
+                        <span class="val" id="monthWattMax">-</span>
+                        <span class="unit">kW</span>
+                    </div>
+                    <div>
+                        <span class="date" id="monthWattMaxYmd">0000-00-00</span>
+                        <span class="box" id="monthWattMaxHi">00:00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="kfeContent thisPeak1">
+                <div>
+                    <div class="sLeft">오늘 피크제어 횟수</div>
+                    <div class="sRight">
+                        <span class="num" id="peakTimes">-</span>
+                        <span class="unit">회</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="sLeft">금년 피크제어 횟수</div>
+                    <div class="sRight">
+                        <span class="num yellow" id="peakTimesYear">-</span>
+                        <span class="unit">회</span>
+                    </div>
+                </div>
+            </div>
+            <div class="kfeContent thisPeak2">
+                <div>
+                    <div class="sLeft">오늘 제어 절감액</div>
+                    <div class="sRight">
+                        <span class="num" id="peakMoney">-</span>
+                        <span class="unit">원</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="sLeft">금년 제어 절감액</div>
+                    <div class="sRight">
+                        <span class="num yellow" id="peakMoneyYear">-</span>
+                        <span class="unit">원</span>
+                    </div>
+                </div>
+            </div>
+            <div class="kfeContent thisBasePrice">
+                <div>
+                    <div class="sLeft">이번달<br>기본요금</div>
+                    <div class="sRight">
+                        <div>
+                            <span class="num yellow" id="baseRate">-</span>
+                            <span class="unit">원</span>
+                        </div>
+                        <div class="baseRateMoM" id="baseRateMoM">- 전월 동일</div>
+                    </div>
+                </div>
+                <div class="grp">
+                    <div class="grpT">기본요금 변동 추이</div>
+                    <div class="baseRateChart" id="baseRateChart"></div>
+                </div>
+            </div>
+            <!-- 아래 작은 영역 6개 / -->
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

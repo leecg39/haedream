@@ -1,0 +1,708 @@
+<!--(주)엔피케이 3공장-->
+    <main class="contents disable" id="contentsArea">
+        <div class="monit" style="padding-bottom:12rem">
+            <div class="monitHead">
+                <div class="mKepco">
+                    <img class="mKepcoText" src="../assets/img/kepco.svg" alt="KEPCO" />
+                </div>
+                <div class="mKepcoLine">
+                    <span class="mLine"></span>
+                </div>
+                <div class="mMof">
+                    <div class="mMofStep">LV1</div>
+                    <div class="mMofBox">
+                        <span class="mMofText">MOF</span>
+                    </div>
+                    <div class="mMofRope">
+                        <span class="mRope"></span>
+                    </div>
+                </div>
+                <div class="mMofLine">
+                    <span class="mLine"></span>
+                </div>
+                <div class="mInfo">
+                    <span class="mInfoTitle">최대수요<br/>전력관리</span>
+                    <span class="mInfoLabel">목표전력</span>
+                    <span class="mInfoText">
+                        <span id="pwBest0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">예측전력</span>
+                    <span class="mInfoText">
+                        <span id="pwPredict0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">기준전력</span>
+                    <span class="mInfoText">
+                        <span id="pwDic0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">현재전력</span>
+                    <span class="mInfoText">
+                        <span id="pwThis0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                </div>
+            </div>
+            <div class="mNubArea">
+                <div class="mNub">
+                    <div class="mPipeIn"></div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 41호기 메인</span>
+                            <span class="mItemText" id="pid6055">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group1" data-group="6055,6057,6091,6056"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 41호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6057">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 41호기 블로어</span>
+                                <span class="mItemText" id="pid6091">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 41호기 히터</span>
+                                <span class="mItemText" id="pid6056">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mNubItem mNubPreN4">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 42호기 메인</span>
+                            <span class="mItemText" id="pid6058">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group2" data-group="6058,6060,6092,6059"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 42호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6060">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 42호기 블로어</span>
+                                <span class="mItemText" id="pid6092">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 42호기 히터</span>
+                                <span class="mItemText" id="pid6059">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <div class="mPipeIn"></div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 43호기 메인</span>
+                            <span class="mItemText" id="pid6061">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group3" data-group="6061,6063,6093,6062"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 43호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6063">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 43호기 블로어</span>
+                                <span class="mItemText" id="pid6093">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 43호기 히터</span>
+                                <span class="mItemText" id="pid6062">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mNubItem mNubPreN4">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 44호기 메인</span>
+                            <span class="mItemText" id="pid6064">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group4" data-group="6064,6066,6094,6065"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 44호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6066">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 44호기 블로어</span>
+                                <span class="mItemText" id="pid6094">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 44호기 히터</span>
+                                <span class="mItemText" id="pid6065">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <div class="mPipeIn"></div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 45호기 메인</span>
+                            <span class="mItemText" id="pid6067">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group5" data-group="6067,6069,6095,6068"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 45호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6069">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 45호기 블로어</span>
+                                <span class="mItemText" id="pid6095">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 45호기 히터</span>
+                                <span class="mItemText" id="pid6068">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mNubItem mNubPreN4">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 46호기 메인</span>
+                            <span class="mItemText" id="pid6070">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group6" data-group="6070,6072,6096,6071"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 46호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6072">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 46호기 블로어</span>
+                                <span class="mItemText" id="pid6096">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 46호기 히터</span>
+                                <span class="mItemText" id="pid6071">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <div class="mPipeIn"></div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 47호기 메인</span>
+                            <span class="mItemText" id="pid6073">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group7" data-group="6073,6075,6097,6074"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 47호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6075">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 47호기 블로어</span>
+                                <span class="mItemText" id="pid6097">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 47호기 히터</span>
+                                <span class="mItemText" id="pid6074">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mNubItem mNubPreN4">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 48호기 메인</span>
+                            <span class="mItemText" id="pid6076">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group8" data-group="6076,6078,6098,6077"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 48호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6078">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 48호기 블로어</span>
+                                <span class="mItemText" id="pid6098">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 48호기 히터</span>
+                                <span class="mItemText" id="pid6077">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <div class="mPipeIn"></div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 49호기 메인</span>
+                            <span class="mItemText" id="pid6079">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group9" data-group="6079,6081,6080"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 49호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6081">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 49호기 블로어</span>
+                                <span class="mItemText" id="pid0">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 49호기 히터</span>
+                                <span class="mItemText" id="pid6080">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mNubItem mNubPreN4">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">압출기 50호기 메인</span>
+                            <span class="mItemText" id="pid6082">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                            <div id="group10" data-group="6082,6084,6083"></div>
+                        </span>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 50호기 펫릿타이저</span>
+                                <span class="mItemText" id="pid6084">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 50호기 블로어</span>
+                                <span class="mItemText" id="pid1">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItemSub mStepN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">압출기 50호기 히터</span>
+                                <span class="mItemText" id="pid6083">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <div class="mPipeIn" id="group11" data-group="6086,6085,6087,6089,6088"></div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">콤프레셔 1</span>
+                            <span class="mItemText" id="pid6086">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">콤프레셔 2</span>
+                            <span class="mItemText" id="pid6085">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">콤프레셔 3</span>
+                            <span class="mItemText" id="pid6087">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">콤프레셔 4</span>
+                            <span class="mItemText" id="pid6089">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV2</span>
+                            <span class="mItemName">콤프레셔 5</span>
+                            <span class="mItemText" id="pid6088">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>피크관리 - 전력사용보고서</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/powerUsage.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/powerUsage.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle" data-lang="report005">전력 사용 보고서</h1>
+            <div class="deskTool">
+                <span class="deskLabel">구분</span>
+                <select class="selectbox" id="dataType">
+                    <option value="hours">일별</option>
+                    <option value="days">월별</option>
+                    <option value="months">연도별</option>
+                </select>
+                <div class="datePickerWrap" id="datePickerWrap">
+                    <span class="deskLabel" data-lang="report014">날짜</span>
+                    <div class="datePicker">
+                        <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                            <input type="text" class="inputDate" id="inputMonth" aria-label="Date-Time" readonly>
+                            <i class="bi bi-calendar"></i>
+                        </div>
+                        <div id="wrapper"></div>
+                    </div>
+                </div>
+                <span class="act actIcon" id="act">
+                    <i class="icon iconSearch"></i>
+                    <span data-lang="report012">조회</span>
+                </span>
+                <span class="act actIcon" id="actExcelSave">
+                    <i class="icon iconExcel"></i>
+                    <span data-lang="report013">엑셀로 저장</span>
+                </span>
+                <span class="boardInfo disable" id="boardInfoPanel">
+                    <span class="boardInfoLabel">최대전력</span>
+                    <span id="boardInfoPower"></span>
+                    <span class="boardInfoUnit">kWh</span>
+                    <span class="boardInfoSlash">/</span>
+                    <span class="boardInfoPowerDate" id="boardInfoPowerDate"></span>
+                    <span class="boardInfoLabel">최대피크</span>
+                    <span id="boardInfoPeak"></span>
+                    <span class="boardInfoUnit">kW</span>
+                    <span class="boardInfoSlash">/</span>
+                    <span id="boardInfoPeakDate"></span>
+                </span>
+            </div>
+            <div class="sheetArea">
+                <table class="sheet" id="hoursTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" data-lang="report014">일자</th>
+                            <th rowspan="2" data-lang="report050">전체<br>전력량<br>(<span class="sheetEm">kWh</span>)</th>
+                            <th rowspan="2" data-lang="report051">평균<br>전력량<br>(<span class="sheetEm">kWh</span>)</th>
+                            <th rowspan="2" data-lang="report052">최대<br>전력량<br>(<span class="sheetEm">kWh</span>)</th>
+                            <th rowspan="2" data-lang="report052">최대<br>사용시간</th>
+                            <th rowspan="2" data-lang="report054">피크<br>전력<br>(<span class="sheetEm">kW</span>)</th>
+                            <th rowspan="2" data-lang="report054">피크<br>시간</th>
+                            <th colspan="24" data-lang="report053">시간별 전력 사용량<br>(<span class="sheetEm">kWh</span>)</th>
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>8</th>
+                            <th>9</th>
+                            <th>10</th>
+                            <th>11</th>
+                            <th>12</th>
+                            <th>13</th>
+                            <th>14</th>
+                            <th>15</th>
+                            <th>16</th>
+                            <th>17</th>
+                            <th>18</th>
+                            <th>19</th>
+                            <th>20</th>
+                            <th>21</th>
+                            <th>22</th>
+                            <th>23</th>
+                            <th>24</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hoursList">
+                        <tr>
+                            <th>-</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet disable" id="daysTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2"></th>
+                            <th colspan="12">전력 사용량 (<span class="sheetEm">kWh</span>)</th>
+                        </tr>
+                        <tr>
+                            <th>1월</th>
+                            <th>2월</th>
+                            <th>3월</th>
+                            <th>4월</th>
+                            <th>5월</th>
+                            <th>6월</th>
+                            <th>7월</th>
+                            <th>8월</th>
+                            <th>9월</th>
+                            <th>10월</th>
+                            <th>11월</th>
+                            <th>12월</th>
+                        </tr>
+                    </thead>
+                    <tbody id="daysList">
+                        <tr>
+                            <th>전체 전력량 (<span class="sheetEm">kWh</span>)</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>평균 전력량 (<span class="sheetEm">kWh</span>)</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>최대 전력량 (<span class="sheetEm">kWh</span>)</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>1일</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet disable" id="monthsTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">연도</th>
+                            <th rowspan="2">전체<br>전력량<br>(<span class="sheetEm">kWh</span>)</th>
+                            <th rowspan="2">평균<br>전력량<br>(<span class="sheetEm">kWh</span>)</th>
+                            <th rowspan="2">최대<br>전력량<br>(<span class="sheetEm">kWh</span>)</th>
+                            <th colspan="31">월별 전력 사용량 (<span class="sheetEm">kWh</span>)</th>
+                        </tr>
+                        <tr>
+                            <th>1월</th>
+                            <th>2월</th>
+                            <th>3월</th>
+                            <th>4월</th>
+                            <th>5월</th>
+                            <th>6월</th>
+                            <th>7월</th>
+                            <th>8월</th>
+                            <th>9월</th>
+                            <th>10월</th>
+                            <th>11월</th>
+                            <th>12월</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthsList">
+                        <tr>
+                            <th>-</th>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

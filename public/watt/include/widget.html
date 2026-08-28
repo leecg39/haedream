@@ -1,0 +1,1900 @@
+<div class="dashWidget wBox1" id="widget1">
+    <span class="firmName"></span>
+    <div class="title">
+        <h2>실시간 피크 전력</h2>
+        <div class="wTime">
+            <span class="run realTimeMinSec">00:00</span>/<span class="total">15:00</span>
+        </div>
+    </div>
+    <div class="timebarArea">
+        <div class="timebar realTimePeakTimeBar">
+            <span class="highlight"></span>
+        </div>
+    </div>
+    <div class="contents">
+        <div class="top">
+            <div class="peakimg">
+                <span class="realTimePeakData green">
+                    <span class="countNumber realTimePeakPower" id="realTimePeakPower">0</span> kw
+                </span>
+                <div class="imgbox">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208.99 104">
+                        <defs>
+                            <linearGradient id="linear-gradient" y1="52" x2="208.99" y2="52" gradientUnits="userSpaceOnUse">
+                                <stop offset="0" stop-color="#65d123"/>
+                                <stop offset="0.49" stop-color="#f7cd23"/>
+                                <stop offset="1" stop-color="#ff1017"/>
+                            </linearGradient>
+                        </defs>
+                        <g id="Layer_2" data-name="Layer 2">
+                            <g id="Layer_1-2" data-name="Layer 1">
+                                <path class="cls-1" d="M23,104a81.49,81.49,0,0,1,163,0h23A104.5,104.5,0,0,0,0,104Z" fill="url(#linear-gradient)"/>
+                            </g>
+                        </g>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="needle realTimePeakGauge" id="realTimePeakGauge" viewBox="0 0 42.01 111.78">
+                        <path id="needle-path" d="M31.08,72.36,21.89,1.24c-.23-1.65-1.55-1.65-1.78,0L10.92,72.36a21,21,0,1,0,20.16,0Z" transform="translate(0 0)"/>
+                    </svg>
+                    <div class="needlePer">
+                        <span class="realTimePeakRatio" id="realTimePeakRatio">0</span><sub>%</sub>
+                    </div>
+                </div>
+                <span class="realTimePeakData red">
+                    <span class="countNumber realTimePeakGoal" id="realTimePeakGoal">0</span> kw
+                </span>
+            </div>
+            <ul class="status">
+                <li class="lev1 peakStatus on">안정</li>
+                <li class="lev2 peakStatus">근접</li>
+                <li class="lev3 peakStatus">초과</li>
+            </ul>
+        </div>
+        <div class="box2">
+            <div class="left">
+                오늘의 피크
+                <span class="subText time">시간대 <span id="peakTime">00:00</span></span>
+                <span class="subText t2">지난주 동시간 대비</span>
+            </div>
+            <div class="right todayPeak" id="todayPeak">
+                <span class="num bigyellow countNumber">0</span><span class="unit">kW</span>
+                <!-- up 일경우-->
+                <div class="upDown">
+                    <i class=""></i>
+                    <span>0</span>
+                    (<span>0</span>kWh)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox2" id="widget2">
+    <div class="title">
+        <h2>실시간 전력 사용량</h2>
+        <div class="wTime">
+            <span class="run" id="peakLoadMinSec">00:00</span>/<span class="total">60:00</span>
+        </div>
+    </div>
+    <div class="timebarArea">
+        <div class="timebar2" id="peakLoadTimeBar">
+            <span class="highlight"></span>
+        </div>
+    </div>
+    <div class="contents">
+        <div class="top">
+            <div class="topimg-area">
+                <ul class="realTimeArea" id="realTimeAreaWidget2">
+                    <li class="realTime" title="00:00~00:59"></li>
+                    <li class="realTime" title="01:00~01:59"></li>
+                    <li class="realTime" title="02:00~02:59"></li>
+                    <li class="realTime" title="03:00~03:59"></li>
+                    <li class="realTime" title="04:00~04:59"></li>
+                    <li class="realTime" title="05:00~05:59"></li>
+                    <li class="realTime" title="06:00~06:59"></li>
+                    <li class="realTime" title="07:00~07:59"></li>
+                    <li class="realTime" title="08:00~08:59"></li>
+                    <li class="realTime" title="09:00~09:59"></li>
+                    <li class="realTime" title="10:00~10:59"></li>
+                    <li class="realTime" title="11:00~11:59"></li>
+                    <li class="realTime" title="12:00~12:59"></li>
+                    <li class="realTime" title="13:00~13:59"></li>
+                    <li class="realTime" title="14:00~14:59"></li>
+                    <li class="realTime" title="15:00~15:59"></li>
+                    <li class="realTime" title="16:00~16:59"></li>
+                    <li class="realTime" title="17:00~17:59"></li>
+                    <li class="realTime" title="18:00~18:59"></li>
+                    <li class="realTime" title="19:00~19:59"></li>
+                    <li class="realTime" title="20:00~20:59"></li>
+                    <li class="realTime" title="21:00~21:59"></li>
+                    <li class="realTime" title="22:00~22:59"></li>
+                    <li class="realTime" title="23:00~23:59"></li>
+                </ul>
+                <ul class="wGraphText">
+                    <li class="lev1">경부하</li>
+                    <li class="lev2">중부하</li>
+                    <li class="lev3">최대부하</li>
+                </ul>
+            </div>
+        </div>
+        <div class="box2">
+            <div class="left">
+                최근 1시간당 사용량
+                <span class="subText time" id="latestTime">~00:00</span>
+                <span class="subText t2">전주 동일 시간 대비</span>
+            </div>
+            <div class="right" id="latestUse">
+                <span class="num bigyellow countNumber">0</span><span class="unit">kWh</span>
+                <div class="upDown">
+                    <i class=""></i>
+                    <span>0</span> (<span>0</span>kWh)
+                </div>
+            </div>
+        </div>
+        <div class="box2">
+            <div class="left">
+                오늘 누적 사용량
+                <span class="subText time" id="todayTime">~00:00</span>
+                <span class="subText t2">전주 동일 시간 대비</span>
+            </div>
+            <div class="right" id="todayUse">
+                <span class="num bigyellow countNumber">0</span><span class="unit">kWh</span>
+                <div class="upDown">
+                    <i class=""></i>
+                    <span>0</span> (<span>0</span>kWh)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox3" id="widget3">
+    <div class="title">
+        <h2>오늘의 전력 사용량</h2>
+        <div class="wTab">
+            <span class="active">
+                <i class="bi bi-bar-chart-line"></i>
+            </span>
+            <span>
+                <i class="bi bi-table"></i>
+            </span>
+        </div>
+    </div>
+    <div class="contents tabc active">
+        <div class="wGraph">
+            <div id="todayWattChart" style="width:100%; height:190px;"></div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">오늘</div>
+                <div class="right">
+                    <span class="num yellow countNumber" id="wattUseToday">0</span><span class="unit">kWh</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">어제</div>
+                <div class="right">
+                    <span class="num countNumber" id="wattUseYesterday">0</span><span class="unit">kWh</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">지난주</div>
+                <div class="right">
+                    <span class="num countNumber" id="wattUseLastWeek">0</span><span class="unit">kWh</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="contents tabc">
+        <div class="wTable">
+            <table>
+                <thead>
+                    <tr>
+                        <td>시간</td>
+                        <td>사용량 kWh</td>
+                        <td>최대수요 kW</td>
+                        <td>tCO<sub>2</sub></td>
+                    </tr>
+                </thead>
+                <tbody id="todayWattTable">
+                    <tr>
+                        <td>00</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>01</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>02</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>03</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>04</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>05</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>06</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>07</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>08</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>09</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox3" id="widget33">
+    <div class="title">
+        <h2>오늘의 가스 사용량</h2>
+        <div class="wTab">
+            <span class="active">
+                <i class="bi bi-bar-chart-line"></i>
+            </span>
+            <span>
+                <i class="bi bi-table"></i>
+            </span>
+        </div>
+    </div>
+    <div class="contents tabc active">
+        <div class="wGraph">
+            <div id="todayGasChart" style="width:100%; height:190px;"></div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">오늘</div>
+                <div class="right">
+                    <span class="num yellow countNumber" id="gasUseToday">0</span><span class="unit">m³h</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">어제</div>
+                <div class="right">
+                    <span class="num countNumber" id="gasUseYesterday">0</span><span class="unit">m³h</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">지난주</div>
+                <div class="right">
+                    <span class="num countNumber" id="gasUseLastWeek">0</span><span class="unit">m³h</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="contents tabc">
+        <div class="wTable">
+            <table>
+                <thead>
+                    <tr>
+                        <td>시간</td>
+                        <td>보정 유량 m³h</td>
+                    </tr>
+                </thead>
+                <tbody id="todayGasTable">
+                    <tr>
+                        <td>00</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>01</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>02</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>03</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>04</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>05</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>06</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>07</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>08</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox16" id="widget4">
+    <div class="title">
+        <h2>생산량 대비 전력 사용량</h2>
+        <a href="/kpi.html" class="wBtnMore">자세히</a>
+    </div>
+    <div class="contents">
+        <div class="wGraph">
+            <div id="ricePartChart" style="width:100%; height:310px;"></div>
+        </div>
+        <p class="noData" id="noData">
+            <a href="/kpi.html">생산량 데이터를<br>업로드해 주세요.</a>
+        </p>
+    </div>
+</div>
+<div class="dashWidget wBox5" id="widget5">
+    <div class="title">
+        <h2>주간 전력 사용량</h2>
+        <div class="wTab">
+            <span class="active">
+                <i class="bi bi-bar-chart-line"></i>
+            </span>
+            <span>
+                <i class="bi bi-table"></i>
+            </span>
+        </div>
+    </div>
+    <div class="contents tabc active">
+        <div class="wGraph">
+            <div id="wattWeekChart" style="width:100%; height:190px;"></div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">이번주</div>
+                <div class="right">
+                    <span class="num yellow countNumber" id="wattWeekSum">0</span><span class="unit">kWh</span>
+                </div>
+            </li>
+
+            <li>
+                <div class="left">지난주</div>
+                <div class="right">
+                    <span class="num countNumber" id="lastWeekSum">0</span><span class="unit">kWh</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="contents tabc">
+        <div class="wTable">
+            <table>
+                <thead>
+                    <tr>
+                        <td>요일</td>
+                        <td>사용량 kWh</td>
+                        <td>최대수요 kW</td>
+                        <td>tCO<sub>2</sub></td>
+                    </tr>
+                </thead>
+                <tbody id="wattWeekTable">
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox6" id="widget6">
+    <div class="title">
+        <h2>오늘의 피크전력<span class="unit">(kW)</span></h2>
+        <a href="/peak.html" class="wBtnMore">자세히</a>
+    </div>
+    <div class="contents">
+        <div class="wGraph">
+            <div id="todayPeakChart" style="width:100%; height:300px;"></div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox7" id="widget7">
+    <div class="title">
+        <h2>에너지 절감효과</h2>
+        <a href="/enpi.html" class="wBtnMore">자세히</a>
+    </div>
+    <div class="contents">
+        <div class="box1">
+            <div class="left">
+                에너지 절감량<span class="subText" id="toeSafeDate">-</span>
+            </div>
+            <div class="right">
+                <span class="num bigyellow countNumber" id="toeSafe" data-decimals="2">-</span><span class="unit">toe</span>
+            </div>
+        </div>
+        <div class="box2">
+            <div class="left">
+                에너지 사용량<span class="subText" id="toeMonthDate">-</span><span class="subText">지난달대비</span>
+            </div>
+            <div class="right">
+                <span class="num bigyellow countNumber" id="toeMonth" data-decimals="2">-</span><span class="unit">toe</span>
+                <div class="upDown" id="energySafeUpDown">
+                    <i class=""></i>
+                    <span id="lastRate">-</span>
+                </div>
+            </div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">누적 개선율</div>
+                <div class="right">
+                    <span class="num countNumber" id="safeRate" data-decimals="2">-</span><span class="unit">%</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">에너지 절감비용</div>
+                <div class="right">
+                    <span class="num countNumber" id="goldSafe" data-decimals="2">-</span><span class="unit">백만원</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">온실가스 절감량</div>
+                <div class="right">
+                    <span class="num countNumber" id="co2Safe" data-decimals="2">-</span><span class="unit">tCo<sub>2</sub></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBox8" id="widget8">
+    <div class="title">
+        <h2>월별 최대수요</h2>
+    </div>
+    <div class="contents">
+        <div class="wGraph">
+            <div id="peakMaxChart" style="width:100%; height:150px;"></div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">요금적용전력</div>
+                <div class="right">
+                    <span class="num lightred countNumber" id="baseWatt">0</span><span class="unit">kW</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">오늘</div>
+                <div class="right">
+                    <span class="num countNumber" id="peakDay">0</span><span class="unit">kW</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">이번달</div>
+                <div class="right">
+                    <span class="num countNumber" id="peakMonth">0</span><span class="unit">kW</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">지난해</div>
+                <div class="right">
+                    <span class="num countNumber" id="peakLastYear">0</span><span class="unit">kW</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBox9" id="widget9">
+    <div class="title">
+        <h2>설비제어</h2>
+        <a href="/techTree.html" class="wBtnMore">자세히</a>
+    </div>
+    <div class="contents">
+        <div class="wTable">
+            <div class="wState">
+                <div class="left">
+                    총설비 <span class="lightblue" id="nodeControlTotal">-</span>대
+                </div>
+                <div class="right">
+                    제어상태 : <span class="lightblue" id="nodeControlStatus">-</span>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <td>제어상태</td>
+                        <td>설비명</td>
+                    </tr>
+                </thead>
+                <!-- 설비제어 on 이 상위에 먼저 노출, on/off -->
+                <tbody id="nodeControlRows"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox10" id="widget10">
+    <div class="title">
+        <h2>현재 상태</h2>
+    </div>
+    <div class="contents">
+        <div class="imgbox">
+            <div class="left">
+                <div class="img">
+                    <svg>
+                        <use xlink:href="assets/img/weather-icons.svg#sun" id="weatherIcon"></use>
+                    </svg>
+                </div>
+                <p><span id="temperature">-</span> °C</p>
+            </div>
+            <div class="right">
+                <div class="img">
+                    <input type="checkbox" id="peakToggle" value="1" hidden>
+                    <label for="peakToggle" class="toggleSwitch">
+                        <span class="toggleButton"></span>
+                    </label>
+                </div>
+                <p>피크알람 <span>On</span></p>
+            </div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">통신 상태</div>
+                <div class="right">
+                    <span class="num yellow countNumber" id="netRatio">0</span><span class="unit">%</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">통신 양호 / 나쁨</div>
+                <div class="right">
+                    <span class="num yellow">
+                        <span class="countNumber" id="netCountGood">0</span>
+                        /
+                        <span class="countNumber" id="netCountBad">0</span>
+                    </span>
+                    <span class="unit">개</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">오늘 최대피크</div>
+                <div class="right">
+                    <span class="num yellow countNumber" id="todayMaxPeak">0</span><span class="unit">kW</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">당월 최대피크</div>
+                <div class="right">
+                    <span class="num yellow countNumber" id="monthMaxPeak">0</span><span class="unit">kW</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">오늘 사용량 요금<span id="todayFeeTime">~00:00</span></div>
+                <div class="right">
+                    <span class="num yellow countNumber" id="todayFee">0</span><span class="unit">원</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBox2 wBox11" id="widget11">
+    <div class="title">
+        <h2>오늘의 누적 전력 사용량</h2>
+    </div>
+    <div class="contents">
+        <div class="box3">
+            <div class="big num yellow countNumber" id="todayUse11">0</div>
+            <div class="small">오늘 00:00 ~ <span id="todayTime11">00:00</span> / kWh</div>
+            <div class="per">
+                <div class="upDown" id="todayUseCompare">
+                    <i class=""></i>
+                    <span>0</span> (<span>0</span>kWh)
+                </div>
+            </div>
+            <div class="small mt-5">전주 동일 시간 대비</div>
+        </div>
+        <div class="top">
+            <div class="topimg-area">
+                <ul class="realTimeArea" id="realTimeAreaWidget11">
+                    <li class="realTime" title="00:00~00:59"></li>
+                    <li class="realTime" title="01:00~01:59"></li>
+                    <li class="realTime" title="02:00~02:59"></li>
+                    <li class="realTime" title="03:00~03:59"></li>
+                    <li class="realTime" title="04:00~04:59"></li>
+                    <li class="realTime" title="05:00~05:59"></li>
+                    <li class="realTime" title="06:00~06:59"></li>
+                    <li class="realTime" title="07:00~07:59"></li>
+                    <li class="realTime" title="08:00~08:59"></li>
+                    <li class="realTime" title="09:00~09:59"></li>
+                    <li class="realTime" title="10:00~10:59"></li>
+                    <li class="realTime" title="11:00~11:59"></li>
+                    <li class="realTime" title="12:00~12:59"></li>
+                    <li class="realTime" title="13:00~13:59"></li>
+                    <li class="realTime" title="14:00~14:59"></li>
+                    <li class="realTime" title="15:00~15:59"></li>
+                    <li class="realTime" title="16:00~16:59"></li>
+                    <li class="realTime" title="17:00~17:59"></li>
+                    <li class="realTime" title="18:00~18:59"></li>
+                    <li class="realTime" title="19:00~19:59"></li>
+                    <li class="realTime" title="20:00~20:59"></li>
+                    <li class="realTime" title="21:00~21:59"></li>
+                    <li class="realTime" title="22:00~22:59"></li>
+                    <li class="realTime" title="23:00~23:59"></li>
+                </ul>
+                <ul class="wGraphText">
+                    <li class="lev1">경부하</li>
+                    <li class="lev2">중부하</li>
+                    <li class="lev3">최대부하</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox12" id="widget12">
+    <div class="title">
+        <h2>오늘의 누적 전력 사용요금</h2>
+    </div>
+    <div class="contents">
+        <div class="box3">
+            <div class="big num yellow countNumber" id="todayPriceValue">0</div>
+            <div class="small">오늘 00:00 ~ <span id="usePriceTime">00:00</span> / 원</div>
+            <div class="per">
+                <div class="upDown" id="todayPriceCompare">
+                    <i class=""></i>
+                    <span>0</span>
+                    (<span>0</span>원)
+                </div>
+            </div>
+            <div class="small mt-5">전년 동일 시간 대비</div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">경부하</div>
+                <div class="right">
+                    <span class="num countNumber" id="useLow">0</span><span class="unit">원</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">중부하</div>
+                <div class="right">
+                    <span class="num countNumber" id="useMiddle">0</span><span class="unit">원</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">최대부하</div>
+                <div class="right">
+                    <span class="num countNumber" id="useHigh">0</span><span class="unit">원</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBox13" id="widget13">
+    <div class="title">
+        <h2>누적 전력 사용량</h2>
+    </div>
+    <div class="contents">
+        <div class="box4Group">
+            <div class="box4 noline">
+                <div class="left">
+                    최근 1시간 사용량
+                    <span class="subText time" id="wattZipTime">00:00 ~ 00:00</span>
+                    <span class="subText t2">전주 동일 시간 대비</span>
+                </div>
+                <div class="right" id="wattZipLatest">
+                    <span class="num bigyellow countNumber">0</span><span class="unit">kWh</span>
+                    <div class="upDown">
+                        <i class=""></i>
+                        <span>0</span>
+                        (<span>0</span>kW)
+                    </div>
+                </div>
+            </div>
+            <div class="box4">
+                <div class="left">
+                    이번달<br>누적 사용량
+                    <span class="subText t2">전년 대비</span>
+                </div>
+                <div class="right" id="wattZipThisMonth">
+                    <span class="num bigyellow countNumber">0</span><span class="unit">kWh</span>
+                    <div class="upDown">
+                        <i class=""></i>
+                        <span>0</span>
+                        (<span>0</span>kW)
+                    </div>
+                </div>
+            </div>
+            <div class="box4">
+                <div class="left">
+                    올해<br>누적 사용량<span class="subText t2">전년 대비</span>
+                </div>
+                <div class="right" id="wattZipThisYear">
+                    <span class="num bigyellow countNumber">0</span><span class="unit">kWh</span>
+                    <div class="upDown">
+                        <i class=""></i>
+                        <span>0</span>
+                        (<span>0</span>kW)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBox14" id="widget14">
+    <div class="title">
+        <h2>설비별 사용량 TOP</h2>
+    </div>
+    <div class="contents">
+        <ul class="facPerBtn" id="facPerBtn">
+            <li class="todayBtn active" id="todayBtn">오늘</li>
+            <li class="lastWeekBtn" id="lastWeekBtn">지난주</li>
+            <li class="thisMonthBtn" id="thisMonthBtn">이번달</li>
+        </ul>
+        <ul class="wList facPer" id="facPer">
+            <li>
+                <div class="left"></div>
+                <div class="right">
+                    <span class="num countNumber" data-decimals="2"></span><span class="unit">%</span>
+                </div>
+                <div class="bar">
+                    <span class="barPer"></span>
+                </div>
+            </li>
+            <li>
+                <div class="left"></div>
+                <div class="right">
+                    <span class="num countNumber" data-decimals="2"></span><span class="unit">%</span>
+                </div>
+                <div class="bar">
+                    <span class="barPer"></span>
+                </div>
+            </li>
+            <li>
+                <div class="left"></div>
+                <div class="right">
+                    <span class="num countNumber" data-decimals="2"></span><span class="unit">%</span>
+                </div>
+                <div class="bar">
+                    <span class="barPer"></span>
+                </div>
+            </li>
+            <li>
+                <div class="left"></div>
+                <div class="right">
+                    <span class="num countNumber" data-decimals="2"></span><span class="unit">%</span>
+                </div>
+                <div class="bar">
+                    <span class="barPer"></span>
+                </div>
+            </li>
+            <li>
+                <div class="left"></div>
+                <div class="right">
+                    <span class="num countNumber" data-decimals="2"></span><span class="unit">%</span>
+                </div>
+                <div class="bar">
+                    <span class="barPer"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBox15" id="widget15">
+    <div class="title">
+        <h2>요금제정보 및 통신상태</h2>
+    </div>
+    <div class="contents">
+        <ul class="wList">
+            <li>
+                <div class="left">계약종별</div>
+                <div class="right">
+                    <span class="listtext" id="wattCostName">-</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">계약전력</div>
+                <div class="right">
+                    <span class="num countNumber" id="wattCostPower"></span><span class="unit">kW</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">검침일</div>
+                <div class="right">
+                    <span class="num countNumber" id="wattCostDay"></span><span class="unit">일</span>
+                </div>
+            </li>
+        </ul>
+        <div class="dashTele">
+            <div class="left">
+                <div class="perImg">
+                    <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="130" cy="120" r="100" fill="transparent" stroke="#333" stroke-width="25" transform="rotate(-90, 125, 125)"></circle>
+                        <circle id="netStatusCircle" cx="130" cy="120" r="100" fill="transparent" stroke="url('#netStatusLinear')" stroke-linecap="round" stroke-width="25" stroke-dasharray="608" stroke-dashoffset="0" transform="rotate(-90, 125, 125)"></circle>
+                        <defs>
+                            <linearGradient id="netStatusLinear" gradientTransform="rotate(90)" gradientUnits="userSpaceOnUse">
+                                <stop offset="0" stop-color="#304ffe"></stop>
+                                <stop offset="1" stop-color="#18ffff"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="perText" id="netPercentage">0</span>
+            </div>
+            <div class="right">
+                <div class="t1">통신상태(%)</div>
+                <ul class="t2">
+                    <li>
+                        <span class="num countNumber" id="wattCostNetGood">-</span>
+                        <span class="smallT">양호 / 개</span>
+                    </li>
+                    <li>
+                        <span class="num countNumber" id="wattCostNetBad">-</span>
+                        <span class="smallT">나쁨 / 개</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBoxP1" id="widget16">
+    <div class="title">
+        <h2>이달의 생산현황</h2>
+        <select class="selectBox disable" id="amountMonth"></select>
+    </div>
+    <div class="contents">
+        <div class="imgbox">
+            <div class="chart" id="outputPie"></div>
+            <div class="chart" id="outputBar"></div>
+        </div>
+        <ul class="wList" id="outputList">
+            <li>
+                <div class="left">이달의 생산량</div>
+                <div class="right">
+                    <span class="num yellow">-</span><span class="unit">ton</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">월평균 생산량</div>
+                <div class="right">
+                    <span class="num yellow">-</span><span class="unit">ton</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">작년 동일월 생산량</div>
+                <div class="right">
+                    <span class="num yellow">-</span><span class="unit">ton</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxP2" id="widget17">
+    <div class="title">
+        <h2>이달의 생산목표 달성률</h2>
+    </div>
+    <div class="contents">
+        <div class="wGraph">
+            <div class="imgWrap" id="productionAttainmentChart"></div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">이번달 목표</div>
+                <div class="right">
+                    <span class="thisGoal num">-</span>
+                    <span class="amountUnit unit">ton</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">어제까지 생산량</div>
+                <div class="right">
+                    <span class="amount num">-</span>
+                    <span class="amountUnit unit">ton</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">어제까지 달성률</div>
+                <div class="right">
+                    <span class="rate num">-</span>
+                    <span class="unit">%</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxP3" id="widget18">
+    <div class="title">
+        <h2>월별 생산량대비 전력 사용량</h2>
+    </div>
+    <div class="contents">
+        <div class="wGraph" id="powerAmountRelativeChart"></div>
+    </div>
+</div>
+<div class="dashWidget wBoxP4" id="widget19">
+    <div class="title">
+        <h2>누적 에너지 절감률<span class="lastYear">(최근1년)</span></h2>
+    </div>
+    <div class="contents">
+        <div class="wGraph">
+            <div class="imgWrap">
+                <div class="img"><img src="/assets/img/sample_gp4.png"></div>
+                <ul class="wGraphText">
+                    <li class="prod">생산량</li>
+                    <li class="energySave">누적에너지절감률</li>
+                </ul>
+            </div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">누적절감량</div>
+                <div class="right">
+                    <span class="num">-</span><span class="unit">toe</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">누적에너지 절감률</div>
+                <div class="right">
+                    <span class="num">-</span><span class="unit">%</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">누적절감비용</div>
+                <div class="right">
+                    <span class="num">-</span><span class="unit">원</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxP4" id="widget20">
+    <div class="title">
+        <h2>공정별 에너지 원단위</h2>
+    </div>
+    <div class="contents">
+        <ul class="facPerBtn" id="dateType">
+            <li class="lastWeekBtn active" data-datetype="week">지난주</li>
+            <li class="thisMonthBtn" data-datetype="month">이번달</li>
+        </ul>
+        <ul class="wList facPer" id="processUnit">
+            <li>데이터가 없습니다.</li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxP6" id="widget32">
+    <div class="title">
+        <h2>
+            분야별 에너지 사용량
+            <i class="bi bi-chevron-right"></i>
+        </h2>
+    </div>
+    <div class="contents">
+        <div class="selWGroup menus">
+            <select id="processPartEnergy" aria-label="에너지원">
+                <option value="1">전력</option>
+                <option value="2">도시가스</option>
+            </select>
+            <select id="processPartMenu" aria-label="분야">
+                <option value="">분류 없음</option>
+            </select>
+        </div>
+        <div class="graphCircle">
+            <div class="cir1">
+                <div class="graphbox" id="processPartMainChart" style="width:111px;height:111px;"></div>
+                <div class="label">
+                    <span class="th">전체 사용량</span>
+                    <div class="num">
+                        <span class="yellow processPartMainTotal">0</span>
+                        <span class="unit processPartUnit">kWh</span>
+                    </div>
+                </div>
+                <ul class="colorChip processPartMainList">
+                    <li>데이터가 없습니다.</li>
+                </ul>
+            </div>
+            <div class="cir2">
+                <div class="graphbox" id="processPartSubChart" style="width:111px;height:111px;"></div>
+                <div class="label">
+                    <span class="th processPartSubTitle">세부 사용량</span>
+                    <div class="num">
+                        <span class="yellow processPartSubTotal">0</span>
+                        <span class="unit processPartUnit">kWh</span>
+                    </div>
+                </div>
+                <ul class="colorChip processPartSubList">
+                    <li>데이터가 없습니다.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBoxP7" id="widget31">
+    <div class="title">
+        <h2>
+            공정별 에너지 사용량
+            <i class="bi bi-chevron-right"></i>
+        </h2>
+    </div>
+    <div class="contents">
+        <div class="selWGroup menus">
+            <select id="processUsageMenu1">
+                <option value="">대분류</option>
+            </select>
+            <select id="processUsageMenu2">
+                <option value="">중분류</option>
+            </select>
+        </div>
+        <div class="contentScroll">
+            <div class="tatalMount">
+                <div class="left">
+                    전체 전력량
+                </div>
+                <div class="right">
+                    <span class="num yellow wattTotal">-</span>
+                    <span class="unit">kWh</span>
+                </div>
+            </div>
+            <ul class="wList facPer">
+                <li>
+                    <div class="left">원료투입</div>
+                    <div class="right">
+                        <span class="num">405</span>
+                        <span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:22.2%"></span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">용해</div>
+                    <div class="right">
+                        <span class="num">405</span><span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:10.1%"></span>
+                    </div>
+                </li>
+                <li class="max"><!-- 가장 사용량이 많은 항목의 class는 max -->
+                    <div class="left">주조</div>
+                    <div class="right">
+                        <span class="num">1,025</span><span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:57.5%"></span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">압출</div>
+                    <div class="right">
+                        <span class="num">405</span><span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:4.2%"></span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">압연</div>
+                    <div class="right">
+                        <span class="num">405</span><span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:4.1%"></span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">인발</div>
+                    <div class="right">
+                        <span class="num">405</span><span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:4.1%"></span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">열처리</div>
+                    <div class="right">
+                        <span class="num">405</span><span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:4.1%"></span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">검사/포장</div>
+                    <div class="right">
+                        <span class="num">405</span><span class="unit">kWh</span>
+                    </div>
+                    <div class="bar">
+                        <span class="barPer" style="width:4.1%"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBoxRe1" id="widget21">
+    <div class="title">
+        <h2>RE100 이행 현황</h2>
+    </div>
+    <div class="contents">
+        <ul class="wList">
+            <li>
+                <h4>
+                    <i class="bi bi-circle-fill"></i>태양광 발전량<span class="unit">(kWh)</span>
+                </h4>
+                <div class="sunInfo first">
+                    <dt>오늘</dt>
+                    <dd>-</dd>
+                </div>
+                <div class="sunInfo">
+                    <dt>이번달누적</dt>
+                    <dd class="blue">-</dd>
+                </div>
+            </li>
+            <li>
+                <h4>
+                    <i class="bi bi-circle-fill"></i>SMP 가격<span class="unit">(원/kWh)</span>
+                </h4>
+                <div class="sunInfo col2">
+                    <div>
+                        <dt>육지</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>제주</dt>
+                        <dd class="blue">-</dd>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <h4>
+                    <i class="bi bi-circle-fill"></i>REC 현물시장 가격<span class="unit">(원/REC)</span>
+                </h4>
+                <div class="sunInfo col2">
+                    <div>
+                        <dt>육지</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>제주</dt>
+                        <dd class="blue">-</dd>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxRe2" id="widget22">
+    <div class="title">
+        <h2>태양광 발전량</h2>
+    </div>
+    <div class="contents">
+        <div class="wGraph" id="solarChart">
+            <div class="imgWrap">
+                <div class="img"><img src="/assets/img/sample_re2.png"></div>
+                <ul class="wGraphText">
+                    <li class="sunToday">오늘</li>
+                    <li class="sunYest">어제</li>
+                </ul>
+            </div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">오늘 발전량</div>
+                <div class="right">
+                    <span class="num" id="solarToday">-</span><span class="unit">kWh</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">어제 발전량</div>
+                <div class="right">
+                    <span class="num" id="solarYesterday">-</span><span class="unit">kWh</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">이번달 발전량</div>
+                <div class="right">
+                    <span class="num" id="solarMonth">-</span><span class="unit">kWh</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxRe3" id="widget23">
+    <div class="title">
+        <h2>
+            SMP<i class="bi bi-dot"></i>REC
+            <span class="unit">(원/kWh, 원/REC)</span>
+            <i class="bi bi-question-circle"></i>
+        </h2>
+    </div>
+    <div class="contents">
+        <div class="wGraph">
+            <div class="imgWrap">
+                <div class="img"><img src="/assets/img/sample_re3_2.png"></div>
+                <div class="img"><img src="/assets/img/sample_re3_1.png"></div>
+                <ul class="wGraphText">
+                    <li class="smpGround">SMP 육지</li>
+                    <li class="smpJeju">SMP 제주</li>
+                    <li class="rec">REC</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBoxRe4" id="widget24">
+    <div class="title">
+        <h2>RE100 이행 가격 동향</h2>
+    </div>
+    <div class="contents">
+        <div style="width:100%; height:100%;">
+            <ul class="wList">
+                <li>
+                    <div class="tit">REC 계약시장 상한가 평균</div>
+                    <div class="wListBox">
+                        <div class="upDown down">
+                            <i class="bi-caret-down-fill"></i>-%
+                        </div>
+                        <div class="right">
+                            <span class="num">-</span>
+                            <span class="unit">SMP+1REC</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="tit">RE100 시장 REC</div>
+                    <div class="wListBox">
+                        <div class="upDown down">
+                            <i class="bi-caret-down-fill"></i>-%
+                        </div>
+                        <div class="right">
+                            <span class="num">-</span>
+                            <span class="unit">원/MWh</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="tit">온실가스배출권(국내)</div>
+                    <div class="wListBox">
+                        <div class="upDown down">
+                            <i class="bi-caret-down-fill"></i>-%
+                        </div>
+                        <div class="right">
+                            <span class="num">-</span>
+                            <span class="unit">원/ton</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="tit">REC 계약시장 상한가 평균</div>
+                    <div class="wListBox">
+                        <div class="upDown up">
+                            <i class="bi-caret-up-fill"></i>-%
+                        </div>
+                        <div class="right">
+                            <span class="num">-</span>
+                            <span class="unit">원/kWh</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBoxRe5" id="widget25">
+    <div class="title">
+        <h2>신재생에너지 사용비율</h2>
+    </div>
+    <div class="contents">
+        <div class="wTable">
+            <div class="wGraph">
+                <div class="imgWrap">
+                    <div class="img"><img src="/assets/img/sample_re5.png"></div>
+                </div>
+            </div>
+            <ul class="wList">
+                <li>
+                    <div class="left">태양광</div>
+                    <div class="right">
+                        <span class="num">-</span><span class="unit">%</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">바이오</div>
+                    <div class="right">
+                        <span class="num">-</span><span class="unit">%</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">ESS</div>
+                    <div class="right">
+                        <span class="num">-</span><span class="unit">%</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="left">풍력</div>
+                    <div class="right">
+                        <span class="num">-</span><span class="unit">%</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="dashWidget wBoxESG1" id="widget26">
+    <div class="title">
+        <h2>
+            <div class="left">ESG - 환경<span>Enviroment</span></div>
+            <div class="right">최근 1년</div>
+        </h2>
+    </div>
+    <div class="contents">
+        <ul class="wList">
+            <li>
+                <h4>
+                    <i class="bi bi-circle-fill"></i>직접발생 온실가스 배출량 (Scope 1)
+                </h4>
+                <div class="numInfo">
+                    <div class="left">
+                        <span class="num">-</span>
+                        <div class="unit">tCO2eq.</div>
+                    </div>
+                    <div class="right">
+                        <span class="num">-<span class="per">%</span></span>
+                        <div class="unit">감축률</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <h4>
+                    <i class="bi bi-circle-fill"></i>간접발생 온실가스 배출량 (Scope 2)
+                </h4>
+                <div class="numInfo">
+                    <div class="left">
+                        <span class="num">-</span>
+                        <div class="unit">tCO2eq.</div>
+                    </div>
+                    <div class="right">
+                        <span class="num">-<span class="per">%</span></span>
+                        <div class="unit">감축률</div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <h4>
+                    <i class="bi bi-circle-fill"></i>기업 가치사슬 직간접 배출량 (Scope 3)
+                </h4>
+                <div class="numInfo">
+                    <div class="left">
+                        <span class="num">-</span>
+                        <div class="unit">tCO2eq.</div>
+                    </div>
+                    <div class="right">
+                        <span class="num">-<span class="per">%</span></span>
+                        <div class="unit">감축률</div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxESG2" id="widget27">
+    <div class="title">
+        <h2>ESG - 환경<span>Enviroment</span></h2>
+    </div>
+    <div class="contents">
+        <div class="wGraph">
+            <div class="imgWrap">
+                <div class="img"><img src="/assets/img/sample_esg2.png"></div>
+                <ul class="wGraphText">
+                    <li class="greengas">직접발생(Scope 1) 배출량</li>
+                    <li class="greengasG">목표</li>
+                </ul>
+            </div>
+        </div>
+        <ul class="wList">
+            <li>
+                <div class="left">온실가스 배출량(1년)</div>
+                <div class="right">
+                    <span class="num">-</span><span class="unit">tCO2eq.</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">온실가스 감축률(1년)</div>
+                <div class="right">
+                    <span class="num">-</span><span class="unit">%</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">온실가스 감축 목표율</div>
+                <div class="right">
+                    <span class="num">-</span><span class="unit">%</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxESG3" id="widget28">
+    <div class="title">
+        <h2>ESG - 사회<span>Social</span></h2>
+    </div>
+    <div class="contents">
+        <div class="subt"><i class="bi bi-person-fill"></i>인권존중 및 불평등 완화</div>
+        <ul class="wList">
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>인권침해행위 징계 건수</div>
+                <div class="right">
+                    <!-- 0 일때 -->
+                    <span class="zero">Zero</span>
+                    <!-- 0 아닐때 
+                    <span class="num">1건</span> -->
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>가족친화 인증 기업</div>
+                <div class="right">
+                    <!-- 완료시
+                    <span class="ok"><i class="bi bi-check-lg"></i>완료</span>
+                     -->
+                    <!-- 완료 아닐때 -->
+                    <span class="notOk">수립안됨</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>육아휴직 사용 인원</div>
+                <div class="right">
+                    <span class="num">-명</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>탄력근무제 사용 임직원</div>
+                <div class="right">
+                    <span class="num">-명</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>여성 채용 인원</div>
+                <div class="right">
+                    <span class="num">-명</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>장애인 채용 인원</div>
+                <div class="right">
+                    <span class="num">-명</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>경력단절여성 정규직 채용</div>
+                <div class="right">
+                    <span class="num">-명</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxESG4" id="widget29">
+    <div class="title">
+        <h2>ESG - 사회<span>Social</span></h2>
+    </div>
+    <div class="contents">
+        <div class="subt"><i class="bi bi-lightbulb-fill"></i>지역사회 상생과 안전관리</div>
+        <ul class="wList">
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>지역사회 지원 활동 내역 수립</div>
+                <div class="right">
+                    <!-- 완료시 
+                    <span class="ok"><i class="bi bi-check-lg"></i>완료</span> -->
+                    <!-- 완료 아닐때 -->
+                    <span class="notOk">수립안됨</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>정보보호 교육 참여율</div>
+                <div class="right">
+                    <span class="num">-%</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>개인정보보호 체제 수립</div>
+                <div class="right">
+                    <!-- 완료시
+                    <span class="ok"><i class="bi bi-check-lg"></i>완료</span>
+                     -->
+                    <!-- 완료 아닐때 -->
+                    <span class="notOk">수립안됨</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>사이버 침해 및 정보보안 사고</div>
+                <div class="right">
+                    <!-- 0 일때 -->
+                    <span class="zero">Zero</span>
+                    <!-- 0 아닐때 
+                    <span class="num">1건</span> -->
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>재난관리 종합 매뉴얼 수립</div>
+                <div class="right">
+                    <!-- 완료시
+                    <span class="ok"><i class="bi bi-check-lg"></i>완료</span>
+                     -->
+                    <!-- 완료 아닐때 -->
+                    <span class="notOk">수립안됨</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>중대재해 및 사망사고 발생</div>
+                <div class="right">
+                    <!-- 0 일때 -->
+                    <span class="zero">Zero</span>
+                    <!-- 0 아닐때 
+                    <span class="num">1건</span> -->
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>현장 근로자 차량사고 발생</div>
+                <div class="right">
+                    <!-- 0 일때 -->
+                    <span class="zero">Zero</span>
+                    <!-- 0 아닐때
+                    <span class="num">1건</span> -->
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxESG5" id="widget30">
+    <div class="title">
+        <h2>ESG - 지배구조<span>Governance</span></h2>
+    </div>
+    <div class="contents">
+        <div class="subt"><i class="bi bi-eye-fill"></i>윤리경영 및 이사회 다양성</div>
+        <ul class="wList">
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>반부패 행위 및 갑질 관련 위반</div>
+                <div class="right">
+                    <!-- 0 일때 -->
+                    <span class="zero">Zero</span>
+                    <!-- 0 아닐때 
+                    <span class="num">1건</span> -->
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>임직원 의무 윤리교육 이수율</div>
+                <div class="right">
+                    <span class="num">-%</span>
+                </div>
+            </li>
+            <li>
+                <div class="left"><i class="bi bi-dot"></i>ESG위원회 운영</div>
+                <div class="right">
+                    <!-- 완료시
+                    <span class="ok"><i class="bi bi-check-lg"></i>완료</span>
+                     -->
+                    <!-- 완료 아닐때 -->
+                    <span class="notOk">수립안됨</span>
+                </div>
+            </li>
+            <li class="line2">
+                <div class="left"><i class="bi bi-dot"></i>이사회 다양성, 전문성, 독립성을<span class="br">위한 활동 내역 수립</span></div>
+                <div class="right">
+                    <!-- 완료시
+                    <span class="ok"><i class="bi bi-check-lg"></i>완료</span>
+                     -->
+                    <!-- 완료 아닐때 -->
+                    <span class="notOk">수립안됨</span>
+                </div>
+            </li>
+            <li class="line2">
+                <div class="left"><i class="bi bi-dot"></i>반부패 윤리 이슈 제로화를 위한<span class="br">윤리경영체계 및 강령 수립</span></div>
+                <div class="right">
+                    <!-- 완료시
+                    <span class="ok"><i class="bi bi-check-lg"></i>완료</span>
+                     -->
+                    <!-- 완료 아닐때 -->
+                    <span class="notOk">수립안됨</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="dashWidget wBoxP7" id="widget34">
+    <div class="title">
+        <h2>공정별 에너지</h2>
+        <div class="selWGroup">
+            <select id="processDateType">
+                <option value="day">일별</option>
+                <option value="week">주별</option>
+                <option value="year">올해</option>
+            </select>
+        </div>
+    </div>
+    <div class="contents">
+        <div class="selWGroup menus">
+            <select id="menu1">
+                <option value="">대분류</option>
+            </select>
+            <select id="menu2">
+                <option value="">중분류</option>
+            </select>
+            <select id="menu3">
+                <option value="">소분류</option>
+            </select>
+        </div>
+        <div class="wGraph" id="processChart"></div>
+        <ul class="wList">
+            <li>
+                <div class="left">일별 - 이번달 평균</div>
+                <div class="right">
+                    <span class="num monthAVG">-</span>
+                    <span class="unit">원/-</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">주별 - 분기 평균</div>
+                <div class="right">
+                    <span class="num quarterAVG">-</span>
+                    <span class="unit">원/-</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">월별 - 올해 평균</div>
+                <div class="right">
+                    <span class="num yearAVG">-</span>
+                    <span class="unit">원/-</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="dashWidget wBoxP7 wBoxRatePlan" id="widget35">
+    <div class="title">
+        <h2>현재 요금제</h2>
+    </div>
+    <div class="contents">
+        <div class="ratePlanSummary">
+            <strong class="costName">-</strong>
+            <span class="season">-</span>
+        </div>
+        <ul class="ratePlanTable" aria-label="부하 시간대별 전력 요금">
+            <li class="ratePlanHead" aria-hidden="true">
+                <span>구분</span>
+                <span>시간대</span>
+                <span>전력량 요금</span>
+            </li>
+            <li class="ratePlanRow rateLow">
+                <span class="rateType">
+                    <i aria-hidden="true"></i>경부하
+                </span>
+                <span class="rateTimes lowTimes">-</span>
+                <span class="ratePrice">
+                    <strong class="lowCost">-</strong><em>원</em>
+                </span>
+            </li>
+            <li class="ratePlanRow rateMid">
+                <span class="rateType">
+                    <i aria-hidden="true"></i>중간부하
+                </span>
+                <span class="rateTimes midTimes">-</span>
+                <span class="ratePrice">
+                    <strong class="midCost">-</strong><em>원</em>
+                </span>
+            </li>
+            <li class="ratePlanRow rateHigh">
+                <span class="rateType">
+                    <i aria-hidden="true"></i>최대부하
+                </span>
+                <span class="rateTimes highTimes">-</span>
+                <span class="ratePrice">
+                    <strong class="highCost">-</strong><em>원</em>
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+.serviceType{width:auto;height:40px}
+
+.editMapGeo{margin-left:1rem;color:#808080}
+.editMapGeo:hover{color:#8bc34a;cursor:pointer}
+.editMapSearchArea{margin:.6rem 0}
+.editMapSearchArea .eInput{width:100%}
+.editMapArea{height:39rem;border-radius:.4rem}
+
+.modalContent{width:52rem;min-height:35rem}

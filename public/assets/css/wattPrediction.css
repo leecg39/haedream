@@ -1,0 +1,41 @@
+.deskTool{margin:0 0 1.5rem 0;text-align:center;display:flex;align-items:center;justify-content:center}
+.deskLabel{margin:0 .5rem 0 2rem;color:#72bce3}
+.deskDash{margin:0 .4rem}
+.chartbox{padding:2rem;background-color:rgba(0,0,29,0.4);border:1px solid rgba(255,255,255,0.15)}
+.chart1{height:30rem}
+.sheetArea{overflow:auto;margin:2rem 0;background-color:rgba(0,0,29,0.4);padding:0;border:0}
+.sheet{clear:both;width:100%;margin:0;border-collapse:collapse;border-spacing:0;text-align:center}
+.sheet th{padding:.6rem .2rem;border:1px solid #202020;background-color:rgba(11,11,20,.9);color:#72bce3;font-size:0.98rem;font-weight:400}
+.sheet td{padding:.6rem .2rem;border:1px solid #202020;background-color:rgba(18,18,30,.8);color:#c8c8c8;font-size:0.98rem}
+.sheet tr:hover td{background-color:rgba(63,81,181,.6);color:#fff}
+.sheet tr:hover .tLabel{background-color:rgba(63,81,181,.4)}
+.sheetEm{margin-right:4px;color:inherit;font-style:italic}
+.tLabel{position:sticky;left:0}
+
+.inputDate{padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.select{height:40px;padding:.4rem .4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+
+.act{display:inline-block;height:40px;padding:.52rem 1.5rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+.mTBlock{display:flex;align-items:center}
+
+@media (max-width:768px){
+    .deskToolWrap{padding:1rem 0 0 0}
+    .deskTool{flex-direction:column;gap:8px;margin:1rem 0 1.5rem 0}
+    .mTBlock{min-height:40px;gap:4px}
+    .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+    .sheetArea{width:100%;margin:1rem 0;overflow:auto}
+    .sheetArea .sheet{min-width:1100px}
+}
+@media (max-width:480px){
+    .chart1{height:300px;padding:0}
+    .chartbox{margin:10px 0 1rem 0;padding:0}
+    .deskTool{transform:scale(0.9)}
+}

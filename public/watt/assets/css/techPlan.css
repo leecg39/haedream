@@ -1,0 +1,83 @@
+.deskLabel{color:#ffffff;vertical-align:middle}
+.desk .nameList{width:26vw}
+.desk th{min-width:6rem}
+.sheetArea{min-height:calc(100vh - 220px);background-color:rgba(0,0,29,0.4);padding:2rem;border:1px solid rgba(255,255,255,0.15)}
+.sheetScroll{overflow:auto}
+.sheetScroll::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetScroll::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetScroll::-webkit-scrollbar-track{border-radius:2px}
+.modalContent{width:64rem;min-height:32rem;max-height:86vh;padding:1rem 2rem 0 2rem;overflow-y:auto}
+.modalContent::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.modalContent::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.modalContent::-webkit-scrollbar-track{border-radius:2px}
+.modalTool{padding:1.6rem 0;text-align:center}
+
+.editTitle{position:relative;display:flex;align-items:center;margin:1rem 0;color:#fff;font-size:1.6rem;font-weight:500}
+.colorBar {display:inline-block;width:8px;height:1.6rem;margin-right:12px;border-radius: 4px;background-color: #307eeb}
+.editForm{display:grid;grid-template-columns:1fr 2.4fr 1fr 2.4fr;gap:1rem 1rem;align-items:center;padding:1rem 2rem;border-top:1px solid rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.3)}
+
+.editForm i.bi-plus-lg {display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-left:10px;border-radius:4px;background-color:#038246;color:#fff;cursor:pointer;transform: translateY(3px)}
+.editForm i.bi-plus-lg:hover{background-color:#06a75c}
+.editForm i.bi-arrow-clockwise{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:5px;border-radius:4px;background-color:#2062bf;color:#fff;cursor:pointer;transform: translateY(3px)}
+.editForm label{cursor:pointer}
+.editForm input[type="checkbox"]{display:none}
+.editForm input[type="checkbox"] + label{display:inline-flex;min-width:50px;align-items:center;justify-content:center;width:max-content;height:40px;padding:0.3rem 1rem;border:1px solid #5190a5;border-left:0;background-color:#0d1b47;cursor:pointer}
+.editForm input[type="checkbox"] + label:hover{background-color:#13458c}
+.editForm input[type="checkbox"]:checked + label{background-color:#2062bf;color:#fff}
+.editFormExtend.inline{display:inline-flex}
+.editFormExtend input[type="checkbox"]:first-child + label{border-left:1px solid #5190a5;border-top-left-radius:4px;border-bottom-left-radius:4px}
+.editFormExtend label:last-child{border-top-right-radius:4px;border-bottom-right-radius:4px}
+
+.editFormExtend{grid-column:2 / span 3}
+.mark{color:#8bc34a}
+.eSelect{padding:.2rem .4rem;width:14rem;height:40px;border:1px solid #5190a5;border-radius:.4rem;background-color:#0d1b47;font-size:1rem}
+.eSelect option{background-color:#000}
+.eInput{padding:.2rem 1rem;width:14rem;height:40px;border:1px solid #5190a5;border-radius:.4rem;background-color:#0d1b47;font-size:1rem}
+.eInputTiny{width:9rem}
+.eInputMini{width:6.8rem}
+.eInputDate{padding:.2rem 1rem;width:18rem;height:40px;border:1px solid #5190a5;border-radius:.4rem;background-color:#0d1b47;font-size:1rem}
+.eInputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.eInputTiny::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.eInputMini::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.eInputBlock{width:100%}
+.iconAdd{background-position:-96px 0}
+.iconReset{background-position:-120px 0}
+
+.iconEdit{left:-24px;background-position:-72px 0}
+.iconDrop{right:-24px;background-position:-120px 0}
+.editAct{position:relative}
+.editAct .icon{display:none;position:absolute;top:.5rem}
+.editAct:hover .icon{display:block}
+
+.itemList{display:grid;grid-template-columns: repeat(auto-fill, minmax(10rem, auto));gap:.4rem .4rem}
+.item{padding:.4rem 1rem;border:1px solid rgba(81, 144, 165, 0.75);border-radius:.4rem;background-color:rgba(1,87,155,.2);cursor:pointer}
+.item:hover{background-color:#13458c}
+.item.active{background-color:#2062bf}
+
+.marginLeft{margin-left:1rem}
+.block{display:block;margin:.4rem 0}
+
+@media (max-width:768px){
+    .sheetArea{padding:1rem}
+    .modalContent{max-width:100%;padding:1rem 10px}
+    .editTitle{margin:0 0 1rem}
+    .editForm{grid-template-columns:1fr;padding:0;gap:8px}
+    .editFormExtend{grid-column:auto}
+    .eInput{width:100%;font-size:1rem}
+    .eInputTiny{width:8rem}
+    .eSelect{width:100%;font-size:1rem}
+    .eInputFull{width:100%}
+    .iconAdd{background-position:-48px 0}
+    .iconReset{background-position:-60px 0}
+    .deskInput{width:150px}
+    .deskStat{display:grid;grid-template-columns:30% 70%;row-gap:10px}
+    .deskLimit{order:2;text-align:left}
+    .deskTool{order:1;grid-column:1/span2}
+    .deskPages{order:3;display:flex;justify-content:end}
+}
+@media (max-width:480px){
+    .deskStat{display:flex;flex-direction:column;row-gap:10px}
+    .sheetArea{padding:1rem 0;border:0}
+    .deskTool{display:flex;justify-content:center;flex-wrap:wrap;transform:scale(0.9)}
+    .deskSearch{width:90%;margin-bottom:10px}
+}

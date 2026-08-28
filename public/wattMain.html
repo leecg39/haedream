@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>전력 대시보드</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <script src="./assets/js/lib/echarts.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/wattMain.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/wattMain.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <article class="realPeakContent">
+                <div class="realPeakFlex">
+                    <section class="realPeakChart">
+                        <div id="realPeakChart"></div>
+                        <div class="realTimeStat" id="realTimeStat">
+                            <span class="realStat low" data-lang="home010">안정</span>
+                            <span class="realStat middle active" data-lang="home011">근접</span>
+                            <span class="realStat high" data-lang="home012">초과</span>
+                        </div>
+                    </section>
+                    <section class="realPeakBoard">
+                        <h2 class="realPeakHead">
+                            <span class="realHeadText" data-lang="home000">실시간</span>
+                            <span class="realHeadMark">PEAK</span>
+                            <span class="realHeadText" data-lang="home002">전력</span>
+                        </h2>
+                        <div class="realPeakBody">
+                            <section class="realNeon" id="realPeakBoard">
+                                <div class="realNeonHead">
+                                    <p class="realNeonTop" data-id="watt">00,000</p>
+                                    <p>
+                                        <span>kW</span>
+                                        <span class="realNeonDash">/</span>
+                                        <span class="realNeonLabel" data-lang="home005">시간대</span>
+                                        <span class="realNeonDate" data-id="time">00:00</span>
+                                    </p>
+                                </div>
+                                <div class="realNeonInfo">
+                                    <p class="realNeonMark" data-lang="home003">오늘의 PEAK</p>
+                                    <p class="realNeonRatio" data-id="ratio">▲ 00.0% (+000)</p>
+                                    <p class="realNeonText" data-lang="home004">전주 동일 시간 대비</p>
+                                </div>
+                            </section>
+                        </div>
+                    </section>
+                </div>
+                <div class="realMeterArea">
+                    <div class="realMeterLine">
+                        <span class="realMeter"></span>
+                        <span class="realMeterOn" id="realMeterOn"></span>
+                    </div>
+                    <div class="realMeterTime">00:00 / 15:00</div>
+                </div>
+            </article>
+            <article class="realWattContent">
+                <section class="realWattUsage">
+                    <h2 class="realWattHead">
+                        <span class="realHeadText" data-lang="home020">실시간</span>
+                        <span class="realHeadMark" data-lang="home021">전력 사용량</span>
+                    </h2>
+                    <div class="realWattBody">
+                        <div class="realWattBoard">
+                            <section class="realNeon" id="realWattBoard">
+                                <div class="realNeonHead">
+                                    <p class="realNeonTop" data-id="watt">00,000</p>
+                                    <p>
+                                        <span>kWh</span>
+                                        <span class="realNeonDash">/</span>
+                                        <span class="realNeonDate" data-id="time">~ 00:00</span>
+                                    </p>
+                                </div>
+                                <div class="realNeonInfo">
+                                    <p class="realNeonMark" data-lang="home022">오늘의 사용량</p>
+                                    <p class="realNeonRatio" data-id="ratio">▲ 00.0% (+000)</p>
+                                    <p class="realNeonText" data-lang="home023">전주 동일 시간 대비</p>
+                                </div>
+                            </section>
+                        </div>
+                        <section class="realWattInfo">
+                            <p data-lang="home024">1시간당 사용량</p>
+                            <div class="realWattByGauge">
+                            <span class="realWattGauge">
+                                <span class="realGaugeText" id="realWattGauge">0</span>
+                                <span class="realGaugeEm">kWh</span>
+                            </span>
+                            </div>
+                            <div>
+                                <span class="realInfoText" data-lang="home025">전주 동일시간 대비</span>
+                                <span class="realInfoRatio" id="realInfoRatio">▲ 00.0% (+000)</span>
+                            </div>
+                            <div class="realTimeBox">
+                                <ul class="realTimeArea" id="realTimeArea">
+                                    <li class="realTime" title="00:00~00:59"></li>
+                                    <li class="realTime" title="01:00~01:59"></li>
+                                    <li class="realTime" title="02:00~02:59"></li>
+                                    <li class="realTime" title="03:00~03:59"></li>
+                                    <li class="realTime" title="04:00~04:59"></li>
+                                    <li class="realTime" title="05:00~05:59"></li>
+                                    <li class="realTime" title="06:00~06:59"></li>
+                                    <li class="realTime" title="07:00~07:59"></li>
+                                    <li class="realTime" title="08:00~08:59"></li>
+                                    <li class="realTime" title="09:00~09:59"></li>
+                                    <li class="realTime" title="10:00~10:59"></li>
+                                    <li class="realTime" title="11:00~11:59"></li>
+                                    <li class="realTime" title="12:00~12:59"></li>
+                                    <li class="realTime" title="13:00~13:59"></li>
+                                    <li class="realTime" title="14:00~14:59"></li>
+                                    <li class="realTime" title="15:00~15:59"></li>
+                                    <li class="realTime" title="16:00~16:59"></li>
+                                    <li class="realTime" title="17:00~17:59"></li>
+                                    <li class="realTime" title="18:00~18:59"></li>
+                                    <li class="realTime" title="19:00~19:59"></li>
+                                    <li class="realTime" title="20:00~20:59"></li>
+                                    <li class="realTime" title="21:00~21:59"></li>
+                                    <li class="realTime" title="22:00~22:59"></li>
+                                    <li class="realTime" title="23:00~23:59"></li>
+                                </ul>
+                                <div class="realTimeStat" id="realTimeHourStat">
+                                    <span class="realStat low" data-lang="home026">경부하</span>
+                                    <span class="realStat middle active" data-lang="home027">중부하</span>
+                                    <span class="realStat high" data-lang="home028">최대부하</span>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="realMeterArea">
+                        <div class="realMeterLine">
+                            <span class="realMeter"></span>
+                            <span class="realMeterOn" id="realHourMeterOn"></span>
+                        </div>
+                        <div class="realMeterTime">00:00 / 00:00</div>
+                    </div>
+                </section>
+                <div class="realConn">
+                    <section class="realConnDate">
+                        <div class="realConnText" id="realConnText">
+                            <span class="realDateText">0000</span>
+                            <em class="realDateEm" data-lang="home032">년</em>
+                            <span class="realDateText">00</span>
+                            <em class="realDateEm" data-lang="home033">월</em>
+                            <span class="realDateText">00</span>
+                            <em class="realDateEm" data-lang="home034">일</em>
+                        </div>
+                        <span class="realDateWeek" data-lang="home035">월요일</span>
+                        <span class="realDateTime" id="realDateTime">00:00</span>
+                    </section>
+                    <section class="realConnChart">
+                        <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000">
+                            <circle cx="125" cy="125" r="100" fill="transparent" stroke="#333" stroke-width="20" />
+                            <circle id="circle-front" cx="125" cy="125" r="100" fill="transparent"
+                                    stroke="url('#status-linearGradient')" stroke-linecap="square" stroke-width="20" stroke-dasharray="608"
+                                    stroke-dashoffset="0" transform="rotate(-90, 125, 125)" />
+                            <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" class="realChartLabel" data-lang="home029">통신상태</text>
+                            <text x="46%" y="64%" dominant-baseline="middle" text-anchor="middle" class="realChartPer" id="circle-value">99</text>
+                            <text x="76%" y="66%" dominant-baseline="middle" text-anchor="middle" class="realChartEm">%</text>
+                            <defs>
+                                <linearGradient id="status-linearGradient" gradientTransform="rotate(90)" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0" stop-color="#304ffe" />
+                                    <stop offset="1" stop-color="#18ffff" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="realChartText" id="realChartText">
+                            <span data-lang="home030">양호</span> <span data-value>99</span><span data-lang="drop">개</span> / <span data-lang="home031">나쁨</span> <span data-value>99</span><span data-lang="drop">개</span>
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <article class="inArea peakWatt">
+                <h2 class="inHead" data-lang="home040">오늘의 PEAK 전력</h2>
+                <div class="inBody" id="peakWattChart"></div>
+            </article>
+            <article class="inArea dayWatt">
+                <h2 class="inHead" data-lang="home050">오늘의 전력 사용량</h2>
+                <div class="inBody">
+                    <section class="dayWattChart" id="dayWattChart"></section>
+                    <section class="dayWattCost">
+                        <div class="dayWattHead">
+                            <span class="dayWattTitle">오늘 사용량 요금</span>
+                            <span class="dayWattTitle" id="dayWattTime">(~ 00:00)</span>
+                        </div>
+                        <div class="dayWattBody" id="dayWattLine">
+                            <span class="dayWattLine dayWattLabel">시간대</span>
+                            <span class="dayWattLine dayWattText">금액 (원)</span>
+                            <span class="dayWattLine dayWattBack dayWattLabel">경부하</span>
+                            <span class="dayWattLine dayWattBack dayWattText">0,000,000</span>
+                            <span class="dayWattLine dayWattBack dayWattLabel">중부하</span>
+                            <span class="dayWattLine dayWattBack dayWattText">0,000,000</span>
+                            <span class="dayWattLine dayWattBack dayWattLabel">최대부하</span>
+                            <span class="dayWattLine dayWattBack dayWattText">0,000,000</span>
+                            <span class="dayWattLine dayWattLabel">합계</span>
+                            <span class="dayWattLine dayWattText">0,000,000</span>
+                        </div>
+                    </section>
+                    <section class="usageBox disable">
+                        <div class="usageHead">
+                            <span class="usageHeadLabel">USAGE</span>
+                            <span class="usageHeadUnit">(kWh)</span>
+                        </div>
+                        <div class="usageBody" id="usagePower">
+                            <span class="usageLabel">TODAY</span>
+                            <span class="usageValue">000</span>
+                            <span class="usageLabel">YESTERDAY</span>
+                            <span class="usageValue">000</span>
+                            <span class="usageLabel">LAST WEEK</span>
+                            <span class="usageValue">000</span>
+                            <span class="usageEx">(EX)</span>
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <article class="inArea dashboard">
+                <!-- <h2 class="inHead" data-lang="home054">PEAK 현황</h2> -->
+                <div class="inBody" id="boardArea">
+                    <section class="boardItem">
+                        <div class="boardHead">최대 피크</div>
+                        <div class="boardBody" id="boardEffortInfo">
+                            <p class="boardLabel">당월 최대피크(㎾)</p>
+                            <div>
+                                <div class="boardEffortInfo">
+                                    <span class="boardEffort" data-id="watt">0,000</span>
+                                    <span class="boardEffortBox">
+                                    <span class="boardEffortText" data-id="ratio">▲ 00.0%</span>
+                                    <span class="boardEffortText">(+000㎾)</span>
+                                </span>
+                                </div>
+                                <p class="boardEffortDate" data-id="time">0000.00.00 00:00</p>
+                            </div>
+                            <div class="boardHis">
+                                <span class="boardHisBox boardMark">요금적용전력</span>
+                                <span class="boardHisBox" id="boardEffortCostWatt">0000㎾</span>
+                                <span class="boardHisBox">0000.00.00</span>
+                            </div>
+                            <p class="bottomT">피크 정확도 <span data-id="exact">00</span>%</p>
+                        </div>
+                    </section>
+                    <section class="boardItem">
+                        <div class="boardHead">절감율</div>
+                        <div class="boardBody" id="boardEffortPeak">
+                            <p class="boardLabel">피크제어 절감액(천원)</p>
+                            <p class="boardEffort" data-id="money">000,000</p>
+                            <div class="boardHis">
+                                <span class="boardHisBox">피크 초과 <span class="boardMark" data-id="over">000</span>회</span>
+                                <span class="boardHisBox">피크 제어 <span class="boardMark" data-id="safe">000</span>회</span>
+                            </div>
+                            <p class="bottomT">당월기준</p>
+                        </div>
+                    </section>
+                    <section class="rankWeek">
+                        <h2 class="inHead" data-lang="home060">주간 사용량</h2>
+                        <div class="inBody" id="rankWeekChart"></div>
+                    </section>
+                    <section class="boardItem disable">
+                        <div class="boardHead maxPeakHead">TODAY’S MAXIMUM PEAK</div>
+                        <div class="boardBody maxPeakList" id="peakTodayTop">
+                            <span class="maxPeakNo">1.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakNo">2.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakNo">3.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakEx">EX</span>
+                        </div>
+                    </section>
+                    <section class="boardItem disable">
+                        <div class="boardHead maxPeakHead">MAXIMUM PEAK OF THE WEEK</div>
+                        <div class="boardBody maxPeakList" id="peakWeekTop">
+                            <span class="maxPeakNo">1.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakNo">2.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakNo">3.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakEx">EX</span>
+                        </div>
+                    </section>
+                    <section class="boardItem disable">
+                        <div class="boardHead maxPeakHead">MAXIMUM PEAK OF THE MONTH</div>
+                        <div class="boardBody maxPeakList" id="peakMonthTop">
+                            <span class="maxPeakNo">1.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakNo">2.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakNo">3.</span>
+                            <span class="maxPeakTime">2th 00:00</span>
+                            <span class="maxPeakWatt">000</span>
+                            <span class="maxPeakUnit">kW</span>
+                            <span class="maxPeakEx">EX</span>
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <article class="rankInfo">
+                <section class="boardItem">
+                    <div class="boardHead">설비제어</div>
+                    <div class="boardBody">
+                        <div class="boardFacHead">
+                            <div class="boardFacMode">
+                                <span class="boardFacLabel">MODE</span>
+                                <span id="boardFacMode">자동</span>
+                            </div>
+                            <div class="boardFacStat" id="boardFacStat">
+                                <span class="boardFacChip statOff">전체OFF</span>
+                                <span class="boardFacChip statSome">일부제어</span>
+                                <span class="boardFacChip statEvery">전체제어</span>
+                            </div>
+                        </div>
+                        <div class="boardFacList" id="boardFacList"></div>
+                        <p class="boardFacFoot">
+                            <a class="boardLink" href="/peak.html">more</a>
+                        </p>
+                    </div>
+                </section>
+                <section class="rankFac">
+                    <h2 class="inHead" data-lang="home070">설비별 사용량 TOP 5</h2>
+                    <div class="inBody" id="top5Area">
+                        <div>
+                            <div class="rankHeadBox">
+                                <span class="rankHeadLabel" data-lang="home071">오늘</span>
+                                <span class="rankHeadDate" data-id="date">(0000.00.00)</span>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="rankHeadBox">
+                                <span class="rankHeadLabel" data-lang="home072">지난주</span>
+                                <span class="rankHeadDate" data-id="date">(00.00 ~ 00)</span>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="rankHeadBox">
+                                <span class="rankHeadLabel" data-lang="home073">이번달</span>
+                                <span class="rankHeadDate" data-id="date">(00.00 ~ 오늘)</span>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="rankHeadBox">
+                                <span class="rankHeadLabel" data-lang="home074">올해</span>
+                                <span class="rankHeadDate" data-lang="home075">(01.01 ~ 오늘)</span>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                            <div class="rankFacItem">
+                                <div class="rankFacHead">
+                                    <span class="name" data-id="name"></span>
+                                    <span data-id="ratio">0%</span>
+                                </div>
+                                <div class="rankGauge">
+                                    <div class="rankGaugeBar" data-id="gauge"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </article>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

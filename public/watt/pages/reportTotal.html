@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>보고서 - 공정별 보고서</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="./assets/css/lib/select2.min.css">
+    <link rel="stylesheet" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" href="./assets/css/reportTotal.css?v=0.0.1">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/jquery-ui.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/reportTotal.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav">
+        <div class="includeFile" data-include="leftNav"></div>
+    </div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar">
+            <div class="includeFile" data-include="top"></div>
+        </div>
+        <main class="contents" id="contentsArea">
+            <h1 class="deskTitle" data-lang="report000">
+                공정별 보고서
+                <span>요금제 : 산업용(을)고압A 선택II</span>
+            </h1>
+            <div class="sectionArea">
+                <div class="deskTool">
+                    <div class="row1">
+                        <ul class="tabUi" id="tabUi">
+                            <li>
+                                <a href="javascript:void(0)" class="active" data-type="days">일별</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" data-type="months">월별</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" data-type="years">연별</a>
+                            </li>
+                        </ul>
+                        <div class="mTBlock">
+                            <span class="deskLabel">기간</span>
+                            <div class="datePicker">
+                                <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                    <input type="text" class="inputDate" id="sDate" aria-label="Date-Time" readonly>
+                                    <i class="bi bi-calendar"></i>
+                                </div>
+                                <div id="sDateWrapper"></div>
+                            </div>
+                            <span class="deskDash">~</span>
+                            <div class="datePicker">
+                                <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                    <input type="text" class="inputDate" id="eDate" aria-label="Date-Time" readonly>
+                                    <i class="bi bi-calendar"></i>
+                                </div>
+                                <div id="eDateWrapper"></div>
+                            </div>
+                        </div>
+                        <div class="mTBlock">
+                            <span class="deskLabel">분류</span>
+                            <select class="select" id="treeType">
+                                <option value="5">공정전체</option>
+                                <option value="4">공정</option>
+                                <option value="3">소분류</option>
+                                <option value="2">중분류</option>
+                                <option value="1">대분류</option>
+                            </select>
+                        </div>
+                        <div class="mTBlock">
+                            <span class="act actIcon" onclick="vio.base()">
+                                <i class="bi bi-search"></i>
+                                <span >조회</span>
+                            </span>
+                            <span class="act actIcon btnFilter" id="btnFilter">
+                                <i class="bi bi-funnel-fill"></i>
+                                <span>상세조건</span>
+                            </span>
+                        </div>
+                        <span class="act actIcon" id="actExcelSave">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>
+                            <span data-lang="report013">엑셀로 다운</span>
+                        </span>
+                    </div>
+                </div>
+                <!-- 상세조건 필터 -->
+                <div class="rowFilter disable" id="rowFilter">
+                    <div class="fillterScroll">
+                        <table class="filterTb">
+                            <tr>
+                                <th>에너지사용</th>
+                                <td class="filterGrp energy">
+                                    <label>
+                                        <input type="checkbox" class="defaultValue" value="전력사용량">
+                                        <span>전력사용량</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" class="defaultValue" value="전력사용비율">
+                                        <span>전력사용비율</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="경부하">
+                                        <span>경부하</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="중부하">
+                                        <span>중부하</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="최대부하">
+                                        <span>최대부하</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="경부하율">
+                                        <span>경부하율</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="중부하율">
+                                        <span>중부하율</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="최대부하율">
+                                        <span>최대부하율</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="역률">
+                                        <span>역률</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="도시가스사용량">
+                                        <span>도시가스사용량</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="용수사용량">
+                                        <span>용수사용량</span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>사용요금</th>
+                                <td class="filterGrp energyRate">
+                                    <label>
+                                        <input type="checkbox" value="전력요금">
+                                        <span>전력요금</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="경부하요금">
+                                        <span>경부하요금</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="중부하요금">
+                                        <span>중부하요금</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="최대부하요금">
+                                        <span>최대부하요금</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="도시가스 사용요금">
+                                        <span>도시가스 사용요금</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="용수 사용요금">
+                                        <span>용수 사용요금</span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>생산량 및 환경</th>
+                                <td class="filterGrp energyUnit">
+                                    <label>
+                                        <input type="checkbox" value="생산량">
+                                        <span>생산량</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="원단위">
+                                        <span>원단위</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="TOE">
+                                        <span>TOE</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="TCO2">
+                                        <span>tCO<sub>2</sub></span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" value="TCO2eq">
+                                        <span>tCO<sub>2</sub>eq</span>
+                                    </label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="btnGrp">
+                        <div class="left">
+                            <a href="javascript:void(0)" class="btn bookmark" id="btnBookmark" onclick="vio.showBookmarkPopup(true)">
+                                <i class="bi bi-star-fill"></i>즐겨찾기 저장
+                            </a>
+                            <a href="javascript:void(0)" class="btn re" id="uncheckAllCheckbox">
+                                <i class="bi bi-arrow-clockwise"></i>전체해제
+                            </a>
+                        </div>
+                        <div class="right">
+                            <a href="javascript:void(0)" class="btn filtSearch" onclick="vio.base()">
+                                <i class="bi bi-search"></i>상세조회
+                            </a>
+                            <a href="javascript:void(0)" class="btn close" id="btnClose">
+                                <i class="bi bi-caret-up-fill"></i>닫기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /상세조건 필터 -->
+
+                <!-- 북마크  -->
+                <div class="bmarkArea">
+                    <ul id="bookmark"></ul>
+                    <div class="ckTrSum">
+                        <input type="checkbox" class="check" id="ckTrSum" checked>
+                        <label for="ckTrSum">행합계 표시</label>
+                    </div>
+                </div>
+            </div>
+            <div class="sectionArea">
+                <!-- 테이블 영역-->
+                <div class="sheetScroll">
+                    <table class="sheet totalTable" id="totalTable">
+                        <thead id="thead"></thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                    <div class="notFoundData disable" id="notFoundData">
+                        <div>등록된 공정이 없습니다.</div>
+                        <a href="/setEnergyMonit.html" target="_blank">공정별 에너지 계통 설정</a> 페이지에서 공정을 등록하실 수 있습니다.
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+<div class="includeFile" data-include="footer"></div>
+
+<!-- 기타 작은 팝업 -->
+<div class="disable" id="modal">
+    <div class="modal">
+        <div class="modalBox draggable" id="modalBox">
+            <i class="modalClose" onclick="vio.hideBookmarkPopup()"></i>
+            <div class="modalContent small">
+                <div class="info">
+                    <i class="bi bi-star-fill"></i> 북마크 이름을 입력하세요.
+                </div>
+                <div class="bookName">
+                    <input type="text" id="bookmarkName" placeholder="저장할 이름">
+                </div>
+                <div class="popBtn">
+                    <a href="javascript:void(0)" class="btn" onclick="vio.hideBookmarkPopup()">취소</a>
+                    <a href="javascript:void(0)" class="btn btnSave" onclick="vio.saveBookmark()">저장</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

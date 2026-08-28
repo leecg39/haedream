@@ -1,0 +1,57 @@
+.deskTool{margin:0 0 1.5rem 0;display:flex;align-items:center;justify-content:center;flex-direction:row;text-align:center}
+.deskLabel{margin:0 .5rem 0 2rem;color:#72bce3}
+.deskDash{margin:0 .4rem}
+
+.inputDate{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.select{padding:.4rem .4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:8px}
+
+
+.chart1Area{display:flex;min-height:calc(100vh - 180px)}
+.chart1{height:54vh}
+.chart1Extend{display:flex;justify-content:start;margin:2rem 0 0 0;flex-wrap:wrap;gap:12px 6px}
+.chartItem{display:flex;flex-direction:column;padding:0.6rem 1rem;margin:0;border-radius:8px;background-color:rgb(34 103 201 / 37%);text-align:center;width:calc(10% - 6px)}
+.chartItemLabel{line-height:1;color:#72bce3;word-break:break-all}
+
+.chartbox{flex-basis:100%;padding:2rem;background-color:rgba(0,0,29,0.4);border:1px solid rgba(255,255,255,0.15)}
+
+.itemLine{position:relative;width:1rem;height:1.8rem;margin-left:1rem;border-left:1px solid #01579b;border-bottom:1px solid #01579b}
+.item{position:absolute;display:block;top:.8rem;left:1rem;overflow: hidden;width:14rem;height:1.5rem;padding:.2rem 0 .2rem 1rem;border:1px solid rgba(3,169,244,.2);border-radius:.6rem 0;background-color:rgba(1,87,155,.1);color:#e3f2fd;font-size:.8rem;cursor:pointer;white-space: nowrap;text-overflow: ellipsis;word-break: break-all}
+.item:hover,.item.active{border-color:#03a9f4 ;background-color:#01579b}
+
+.itemList{position:relative;flex:none;width:20rem;height:calc(100vh - 180px);overflow-y:auto;padding:1rem 1rem 2rem 1.5rem;border:1px solid rgba(255,255,255,0.15);border-right:0;background-color:#00001d}
+.itemList::-webkit-scrollbar{width:5px;height:5px;background-color:rgba(19,21,24,0.5)}
+.itemList::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2}
+.itemList::-webkit-scrollbar-track{border-radius:2px}
+.itemMain{margin-top:1rem}
+
+@media (max-width:768px){
+    .chart1Area{flex-direction:column;gap:10px}
+    .itemList{width:100%;height:20rem}
+    .chartItem{flex-basis:100%;width:auto}
+    .deskTool{display:flex;flex-direction:column;margin-top:1rem;gap:8px}
+    .deskTool > .deskLabel{display:none}
+    .deskDash{margin:0 .1rem}
+    .inputDate{width:100%;padding:.2rem;font-size:15px}
+    .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+    .actIcon .icon{top:.5rem;left:.5rem}
+    .chart1Extend{flex-wrap:wrap;gap:12px 8px;margin:2rem 0 0 0}
+    .item{margin:0}
+}
+@media (max-width:480px){
+    .act{min-width:65px}
+    .act i{display:none}
+    .chartbox{padding: 0;}
+    .chart1{height:80vh}
+    .deskTool{flex-direction:row;transform:scale(0.9)}
+    .datePicker .tui-datetime-input{width:130px}
+    .deskDash{margin:0}
+
+}

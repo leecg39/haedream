@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>설비관리 - 최적화 제어</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/deskLib.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/techPlan.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/techPlan.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">최적화 제어</h1>
+            <div class="sheetArea">
+                <div class="deskStatCenter">
+                    <div class="deskTool" id="deskTool">
+                        <span class="deskSearch">
+                            <input class="deskInput" id="deskInput" maxlength="16" placeholder="검색" />
+                            <i class="icon iconSearch"></i>
+                        </span>
+                        <span class="deskAct act" data-act="add">
+                            <i class="bi bi-file-earmark-plus"></i>스케줄등록
+                        </span>
+                        <span class="deskAct act" data-act="excel">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>엑셀로 다운
+                        </span>
+                        <span class="deskAct act" data-act="print">
+                            <i class="bi bi-printer"></i>프린트
+                        </span>
+                    </div>
+                </div>
+                <div class="deskArea">
+                    <div class="sheetScroll">
+                        <table class="desk" id="deskTable">
+                            <thead>
+                                <tr id="deskSort">
+                                    <th>ID</th>
+                                    <th>제어이름</th>
+                                    <th>활성</th>
+                                    <th>제어기간</th>
+                                    <th>계절제어</th>
+                                    <th>요일제어</th>
+                                    <th>기간제어</th>
+                                    <th>시간제어</th>
+                                    <th>분단위제어</th>
+                                    <th>온도조건[출력]</th>
+                                    <th>적용설비</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deskList">
+                                <tr>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskPages" id="deskPages">
+                        <span class="deskPage act">prev</span>
+                        <span class="deskPage act active">1</span>
+                        <span class="deskPage act">next</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle"><span class="colorBar"></span>설비제어</div>
+                        <div class="editForm">
+                            <span>제어이름</span>
+                            <span>
+                                <input class="eInput" id="edit-ruleName" maxlength="16" />
+                            </span>
+                            <span>제어시작</span>
+                            <span>
+                                <input type="datetime-local" class="eInputDate" id="edit-sTime" placeholder="0000-00-00T00:00" />
+                            </span>
+                            <span>제어복제</span>
+                            <span>
+                                <select class="eSelect" id="edit-copy">
+                                    <option value="0">제어 선택</option>
+                                </select>
+                            </span>
+                            <span>제어종료</span>
+                            <span>
+                                <input type="datetime-local" class="eInputDate" id="edit-eTime" placeholder="0000-00-00T00:00" />
+                            </span>
+                            <span>제어활성</span>
+                            <span>
+                                <input type="radio" name="edit-isEnable" id="edit-isDisable0" checked/>
+                                <label for="edit-isDisable0">활성</label>
+                                <input type="radio" name="edit-isEnable" class="marginLeft" id="edit-isDisable1"/>
+                                <label for="edit-isDisable1">제어중지</label>
+                                <input type="checkbox" id="edit-justMark"/>
+                            </span>
+                            <span></span>
+                            <span></span>
+                            <span>계절선택</span>
+                            <span class="editFormExtend inline">
+                                <input type="checkbox" id="edit-spring"/>
+                                <label for="edit-spring">봄</label>
+                                <input type="checkbox" class="marginLeft" id="edit-summer"/>
+                                <label for="edit-summer">여름</label>
+                                <input type="checkbox" class="marginLeft" id="edit-autumn"/>
+                                <label for="edit-autumn">가을</label>
+                                <input type="checkbox" class="marginLeft" id="edit-winter"/>
+                                <label for="edit-winter">겨울</label>
+                            </span>
+                            <span>요일선택</span>
+                            <span class="editFormExtend inline">
+                                <input type="checkbox" id="edit-mon"/>
+                                <label for="edit-mon">월</label>
+                                <input type="checkbox" class="marginLeft" id="edit-tue"/>
+                                <label for="edit-tue">화</label>
+                                <input type="checkbox" class="marginLeft" id="edit-wed"/>
+                                <label for="edit-wed">수</label>
+                                <input type="checkbox" class="marginLeft" id="edit-thu"/>
+                                <label for="edit-thu">목</label>
+                                <input type="checkbox" class="marginLeft" id="edit-fri"/>
+                                <label for="edit-fri">금</label>
+                                <input type="checkbox" class="marginLeft" id="edit-sat"/>
+                                <label for="edit-sat">토</label>
+                                <input type="checkbox" class="marginLeft" id="edit-sun"/>
+                                <label for="edit-sun">일</label>
+                            </span>
+                            <span>기간제어 <i class="icon iconAdd" id="actAddDate"></i></span>
+                            <span class="editFormExtend" id="edit-dateList">
+                                <span class="block">
+                                    <input type="time" class="eInput eInputMini" placeholder="0" />
+                                    <select class="eSelect eInputMini">
+                                        <option value="0" data-week="start">요일</option>
+                                        <option value="2" data-week="start">월요일</option>
+                                        <option value="3" data-week="start">화요일</option>
+                                        <option value="4" data-week="start">수요일</option>
+                                        <option value="5" data-week="start">목요일</option>
+                                        <option value="6" data-week="start">금요일</option>
+                                        <option value="7" data-week="start">토요일</option>
+                                        <option value="1" data-week="start">일요일</option>
+                                    </select>
+                                    <span>~</span>
+                                    <input type="time" class="eInput eInputMini" placeholder="0" />
+                                    <select class="eSelect eInputMini">
+                                        <option value="0" data-week="end">요일</option>
+                                        <option value="2" data-week="end">월요일</option>
+                                        <option value="3" data-week="end">화요일</option>
+                                        <option value="4" data-week="end">수요일</option>
+                                        <option value="5" data-week="end">목요일</option>
+                                        <option value="6" data-week="end">금요일</option>
+                                        <option value="7" data-week="end">토요일</option>
+                                        <option value="1" data-week="end">일요일</option>
+                                    </select>
+                                    <i class="icon iconReset"></i>
+                                </span>
+                            </span>
+                            <span>시간제어 <i class="bi bi-plus-lg iconAdd" id="actAddTime" title="추가"></i></span>
+                            <span class="editFormExtend" id="edit-timeList">
+                                <span class="block">
+                                    <input type="time" class="eInput eInputMini" placeholder="0" />
+                                    <span>~</span>
+                                    <input type="time" class="eInput eInputMini" placeholder="0" />
+                                    <select class="eSelect eInputMini">
+                                        <option value="0">요일</option>
+                                        <option value="2">월요일</option>
+                                        <option value="3">화요일</option>
+                                        <option value="4">수요일</option>
+                                        <option value="5">목요일</option>
+                                        <option value="6">금요일</option>
+                                        <option value="7">토요일</option>
+                                        <option value="1">일요일</option>
+                                    </select>
+                                    <i class="bi bi-arrow-clockwise iconReset"></i>
+                                </span>
+                            </span>
+                            <span class="tip" data-tip="설정시간 마다 반복 제어 합니다.">분단위제어</span>
+                            <span class="editFormExtend">
+                                <input type="number" class="eInput eInputMini" id="edit-unitTime" step="1" min="0" max="1440" />
+                                <span>분 마다</span>
+                                <input type="number" class="eInput eInputMini" id="edit-potTime" step="1" min="0" max="1440" />
+                                <span>분 제어</span>
+                            </span>
+                            <span>온도조건 <i class="bi bi-plus-lg iconAdd" id="actAddTemp" title="추가"></i></span>
+                            <span class="editFormExtend" id="edit-tempList">
+                                <span class="block">
+                                    <input type="number" class="eInput eInputMini" step="1" min="0" max="65535"/>
+                                    <span>~</span>
+                                    <input type="number" class="eInput eInputMini" step="1" min="0" max="65535"/>
+                                    <span class="marginLeft">출력설정</span>
+                                    <input type="number" class="eInput eInputMini" step="1" min="0" max="100"/>
+                                    <span>%</span>
+                                    <i class="bi bi-arrow-clockwise iconReset"></i>
+                                </span>
+                            </span>
+                            <span class="tip" data-tip="피크확률 이상일때 제어">피크제어</span>
+                            <span class="editFormExtend">
+                                <input type="number" class="eInput eInputMini" id="edit-predictRatio" step="1" min="0" max="200" />
+                                <span>%</span>
+                            </span>
+                            <span>제어중지 <i class="bi bi-plus-lg iconAdd" id="actAddTimeNot" title="추가"></i></span>
+                            <span class="editFormExtend" id="edit-timeNotList">
+                                <span class="block">
+                                    <input type="datetime-local" class="eInputDate" placeholder="0" />
+                                    <span>~</span>
+                                    <input type="datetime-local" class="eInputDate" placeholder="0" />
+                                    <i class="bi bi-arrow-clockwise iconReset"></i>
+                                </span>
+                            </span>
+                            <span>적용설비선택</span>
+                            <span class="editFormExtend">
+                                <span class="itemList" id="facList"></span>
+                            </span>
+                        </div>
+                        <div class="editExtend" id="editExtend"></div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct cancel" id="modalActCancel">취소</span>
+                        <span class="modalAct" id="modalActDone">확인</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>보고서 - 설비별 전력상세정보</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-time-picker.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-time-picker.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/report.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/reportFacilities.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">설비별 전력상세정보</h1>
+            <div class="sheetArea repFac">
+                <div class="deskTool">
+                    <div class="mTBlock">
+                        <span class="deskLabel">데이터방향</span>
+                        <select class="select" id="dataLocation">
+                            <option value="Horizontal">가로</option>
+                            <option value="vertical">세로</option>
+                        </select>
+                    </div>
+                    <div class="mTBlock">
+                        <span class="deskLabel">기간</span>
+                        <div class="datePicker">
+                            <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                <input type="text" class="inputDate" id="sDate" aria-label="Date-Time" readonly>
+                                <i class="bi bi-calendar"></i>
+                            </div>
+                            <div id="sDateWrapper"></div>
+                        </div>
+                    </div>
+                    <div class="mTBlock">
+                        <span class="deskDash">~</span>
+                    </div>
+                    <div class="mTBlock">
+                        <div class="datePicker">
+                            <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                <input type="text" class="inputDate" id="eDate" aria-label="Date-Time" readonly>
+                                <i class="bi bi-calendar"></i>
+                            </div>
+                            <div id="eDateWrapper"></div>
+                        </div>
+                    </div>
+                    <div class="mTBlock">
+                        <select class="select" id="dateType">
+                            <option value="hourly">시간단위</option>
+                            <option value="daily">일일단위</option>
+                            <option value="monthly">월간단위</option>
+                        </select>
+                        <span class="act actIcon" id="act">
+                            <i class="icon iconSearch"></i>조회
+                        </span>
+                        <span class="act actIcon" id="actExcelSave">
+                            <i class="icon iconExcel"></i>저장
+                        </span>
+                    </div>
+                </div>
+                <div class="deskTool ckGroup">
+                    <div class="mTBlock">
+                        <input type="checkbox" class="space" id="reportField-volt" checked />
+                        <label for="reportField-volt">전압(V)</label>
+                        <input type="checkbox" class="space" id="reportField-ampere" checked />
+                        <label for="reportField-ampere">전류(A)</label>
+                        <input type="checkbox" class="space" id="reportField-wattMax" checked />
+                        <label for="reportField-wattMax">전력(kW)</label>
+                    </div>
+                    <div class="mTBlock">
+                        <input type="checkbox" class="space" id="reportField-watt" checked />
+                        <label for="reportField-watt">전력량(kWh)</label>
+                        <input type="checkbox" class="space" id="reportField-reactive" />
+                        <label for="reportField-reactive">무효전력량(kVarh)</label>
+                        <input type="checkbox" class="space" id="reportField-factor" />
+                        <label for="reportField-factor">역률(%)</label>
+                    </div>
+                    <div class="mTBlock">
+                        <input type="checkbox" class="space" id="reportField-gold" />
+                        <label for="reportField-gold">전력요금(원)</label>
+                        <input type="checkbox" class="space" id="reportField-totalGold" />
+                        <label for="reportField-totalGold">누적요금(원)</label>
+                        <input type="checkbox" class="space" id="reportField-powerMax" />
+                        <label for="reportField-powerMax">순간최대전력(kW)</label>
+                    </div>
+                </div>
+                <div class="sheetScroll reportFac">
+                    <table class="sheet" id="itemTable">
+                        <thead class="sticky">
+                            <tr>
+                                <th>구분</th>
+                                <th colspan="9">설비명</th>
+                            </tr>
+                            <tr>
+                                <th>항목</th>
+                                <th>전압(V)</th>
+                                <th>전류(A)</th>
+                                <th>전력(kW)</th>
+                                <th>전력량(kWh)</th>
+                                <th>무효전력량(kVarh)</th>
+                                <th>역률(%)</th>
+                                <th>전력요금(원)</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

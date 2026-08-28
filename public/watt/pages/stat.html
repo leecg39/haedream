@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>통합관제</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d2adb52204965f533f0c70a2c73b5553&libraries=services"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/stat.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/stat.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <div class="koreaMap" id="koreaMap"></div>
+            <div class="controlCenterGrid">
+                <div class="kfeContent peakRealTime">
+                    <div class="peakRealTimeTitle">
+                        피크현황
+                    </div>
+                    <div class="peakRealTimeCountWrap" id="realTimeCountWrap">
+                        <div class="peakRealTimeCountGroup">
+                            <div class="peakRealTimeCountLabel">
+                                피크초과 <span class="countValue co1">0</span>
+                            </div>
+                            <div class="peakRealTimeCountLabel">
+                                피크근접 <span class="countValue co2">0</span>
+                            </div>
+                            <div class="peakRealTimeCountLabel">
+                                피크안정 <span class="countValue co3">0</span>
+                            </div>
+                        </div>
+                        <div class="peakRealTimeCountGroup">
+                            <div class="peakRealTimeCountLabel">
+                                전체제어 <span class="countValue yellow">0</span>
+                            </div>
+                            <div class="peakRealTimeCountLabel">
+                                일부제어 <span class="countValue yellow">0</span>
+                            </div>
+                            <div class="peakRealTimeCountLabel">
+                                제어안함 <span class="countValue yellow">0</span>
+                            </div>
+                        </div>
+                        <div class="peakRealTimeCountGroup">
+                            <div class="peakRealTimeCountLabel">긴급 <span class="countValue co4">0</span></div>
+                            <div class="peakRealTimeCountLabel">검토 <span class="countValue co5">0</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="koreaMap">
+                    <div id="map" class="map"></div>
+                </div>
+                <div class="firmList">
+                    <div class="kfeContent">
+                        <div class="filterWrap">
+                            <div class="filterSearchInput">
+                                <i class="icon filterSearchIcon" onclick="vio.searchClientList()"></i>
+                                <input type="search" id="inputFirmName" value="" placeholder="업체명 검색">
+                            </div>
+                            <div class="filterRt">
+                                <div class="mTBlock">
+                                    <div class="filterButtonGroup">
+                                        <div class="filterButtons">
+                                            <label>
+                                                <input type="checkbox" id="inputPeakExcess" value="1" onclick="vio.searchClientList()">
+                                                <span class="filterButtonLeft">피크초과</span>
+                                            </label>
+                                        </div>
+                                        <div class="filterButtons">
+                                            <label>
+                                                <input type="checkbox" id="inputPeakClose" value="1" onclick="vio.searchClientList()">
+                                                <span class="filterButtonRight">피크근접</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="filterButtonGroup">
+                                        <div class="filterButtons">
+                                            <label>
+                                                <input type="checkbox" id="inputOnControl" value="1" onclick="vio.searchClientList()">
+                                                <span class="filterButton">제어중</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mTBlock">
+                                    <div class="filterButtonGroup">
+                                        <div class="filterButtons">
+                                            <label>
+                                                <input type="checkbox" id="inputEmergency" value="1" onclick="vio.searchClientList()">
+                                                <span class="filterButtonLeft">긴급</span>
+                                            </label>
+                                        </div>
+                                        <div class="filterButtons">
+                                            <label>
+                                                <input type="checkbox" id="inputReviewRequired" value="1" onclick="vio.searchClientList()">
+                                                <span class="filterButtonRight">검토</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="filterButtonGroup">
+                                        <label>
+                                            <button type="button" class="filterButtons reset" onclick="vio.searchButtonReset()">초기화</button>
+                                        </label>
+                                    </div>
+                                    <div class="filterButtonGroup">
+                                        <select class="filterSelectOrderBy" id="selectOrderBy" onchange="vio.searchClientList()">
+                                            <option value="peakRatio-0">피크율 높은순</option>
+                                            <option value="peakRatio-1">피크율 낮은순</option>
+                                            <option value="eoiTime-0">수요시간 마감순</option>
+                                            <option value="eoiTime-1">수요시간 시작순</option>
+                                            <option value="conLen-0">제어기기 많은순</option>
+                                            <option value="conLen-1">제어기기 적은순</option>
+                                            <option value="kepcoRatio-0">정확도 높은순</option>
+                                            <option value="kepcoRatio-1">정확도 낮은순</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="firmListHeader">
+                            <div class="firmListColumn mobile"></div>
+                            <div class="firmListColumn mobile">업체명</div>
+                            <div class="firmListColumn mobile">피크상태</div>
+                            <div class="firmListColumn">제어상태</div>
+                            <div class="firmListColumn">제어모드</div>
+                            <div class="firmListColumn">요금적용전력</div>
+                            <div class="firmListColumn">목표전력비</div>
+                            <div class="firmListColumn mobile">예측/목표전력</div>
+                            <div class="firmListColumn mobile">피크율/소요시간</div>
+                            <div class="firmListColumn mobile">정확도</div>
+                        </div>
+                        <div class="firmListBody">
+                            <div class="firmListData" id="dataList">
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                                <div class="firmListDataRow" onclick="vio.peakDetail(this)">
+                                    <div class="firmListDataValue mobile"></div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListfirmName"></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div></div>
+                                        <div class="firmListSubData">
+                                            <span class="firmListPeakWatt"></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div></div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <span class="firmListSubData"></span>
+                                    </div>
+                                    <div class="firmListDataValue">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                        <div>
+                                            <span></span>
+                                            <span class="unit">kW</span>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakRatio">
+                                                <div class="firmListPeakRatioLine">
+                                                    <div class="firmListPeakRatioOn">
+                                                        <div class="firmListPeakRatioPulse"></div>
+                                                    </div>
+                                                    <div class="firmListPeakRatioPoint"></div>
+                                                </div>
+                                                <div class="firmListPeakRatioEmpty disable">-</div>
+                                            </div>
+                                            <div class="firmListProgressText">
+                                                <div></div>
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="firmListPeakRatioTime">
+                                            <div class="firmListPeakTimeLimit">
+                                                <div class="firmListPeakMeterLine">
+                                                    <span class="firmListPeakMeter"></span>
+                                                    <span class="firmListPeakMeterOn"></span>
+                                                </div>
+                                            </div>
+                                            <div class="firmListProgressText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="firmListDataValue mobile">
+                                        <span></span>
+                                        <span class="unit">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="deskStat">
+                                <div class="deskPages" id="deskPages">
+                                    <div class="deskPage act active">1</div>
+                                    <div class="deskPage act">2</div>
+                                    <div class="deskPage act">3</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="peakDetailWrap disable" id="peakDetailWrap">
+                    <div class="peakDetail">
+                        <div class="kfeContent peakDetailData">
+                            <div class="peakFirmNameHeader">
+                                <div class="peakDetailFirmName" onclick="vio.changeFirm()"></div>
+                                <div class="overlayCloseButton" onclick="vio.closeOverlay()" title="닫기"><i class="bi bi-x-lg"></i></div>
+                            </div>
+                            <div class="peakDetailHead">
+                                <div class="peakDetailColumn"></div>
+                                <div class="peakDetailColumn peakDetailToday">오늘</div>
+                                <div class="peakDetailColumn peakDetailMonth">이번달</div>
+                                <div class="peakDetailColumn peakDetailYear">지난 1년</div>
+                                <div class="peakDetailColumn peakDetailTotal">총 누적</div>
+                            </div>
+                            <div class="peakDetailContent">
+                                <div class="peakDetailRow">
+                                    <div class="peakDetailLabel">
+                                        목표전력<span>초과</span><span class="peakDetailUnit">(회)</span>
+                                    </div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                </div>
+                                <div class="peakDetailRow">
+                                    <div class="peakDetailLabel">
+                                        요금적용전력<span>초과</span> <span class="peakDetailUnit">(회)</span>
+                                    </div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                </div>
+                                <div class="peakDetailRow">
+                                    <div class="peakDetailLabel">
+                                        순간목표전력<span class="">초과</span> <span class="peakDetailUnit">(회)</span>
+                                    </div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                </div>
+                                <div class="peakDetailRow">
+                                    <div class="peakDetailLabel">
+                                        피크제어<span class="">횟수</span> <span class="peakDetailUnit">(회)</span>
+                                    </div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                </div>
+                                <div class="peakDetailRow">
+                                    <div class="peakDetailLabel">
+                                        절감전력 <span class="peakDetailUnit">(kW)</span>
+                                    </div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                </div>
+                                <div class="peakDetailRow">
+                                    <div class="peakDetailLabel">
+                                        절감요금 <span class="peakDetailUnit">(만원)</span>
+                                    </div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                    <div class="peakDetailRowValue"></div>
+                                </div>
+                            </div>
+                            <div class="peakDetailFirmInfo">
+                                <div class="peakDetailInfoItem">
+                                    <div class="peakDetailItemWrap">
+                                        <div class="peakDetailItemLabel">계약종별</div>
+                                        <div class="peakDetailItemValue"></div>
+                                    </div>
+                                    <div class="peakDetailItemWrap">
+                                        <div class="peakDetailItemLabel">계약전력</div>
+                                        <div class="peakDetailItemValue"></div>
+                                    </div>
+                                    <div class="peakDetailItemWrap">
+                                        <div class="peakDetailItemLabel">검침일</div>
+                                        <div class="peakDetailItemValue"></div>
+                                    </div>
+                                </div>
+                                <div class="peakDetailInfoItem">
+                                    <div class="peakDetailItemWrap">
+                                        <div class="peakDetailItemIcon">
+                                            <svg>
+                                                <use href="/assets/img/icons.svg#icon-person"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="peakDetailItemValue"></div>
+                                    </div>
+                                    <div class="peakDetailItemWrap">
+                                        <div class="peakDetailItemIcon">
+                                            <svg>
+                                                <use href="/assets/img/icons.svg#icon-contact"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="peakDetailItemValue"></div>
+                                    </div>
+                                    <div class="peakDetailItemWrap">
+                                        <div class="peakDetailItemIcon">
+                                            <svg>
+                                                <use href="/assets/img/icons.svg#icon-address"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="peakDetailItemValue"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kfeContent peakHistory">
+                    <div class="kfeHead">최근 피크 기록</div>
+                    <div class="kfeBody">
+                        <div class="dataList">
+                            <div class="listBody" id="peakHistory">
+                                <div class="dataRow">
+                                    <div class="typeName"></div>
+                                    <div></div>
+                                    <div class="controlCount"></div>
+                                    <div></div>
+                                </div>
+                                <div class="dataRow">
+                                    <div class="typeName"></div>
+                                    <div></div>
+                                    <div class="controlCount"></div>
+                                    <div></div>
+                                </div>
+                                <div class="dataRow">
+                                    <div class="typeName"></div>
+                                    <div></div>
+                                    <div class="controlCount"></div>
+                                    <div></div>
+                                </div>
+                                <div class="dataRow">
+                                    <div class="typeName"></div>
+                                    <div></div>
+                                    <div class="controlCount"></div>
+                                    <div></div>
+                                </div>
+                                <div class="dataRow">
+                                    <div class="typeName"></div>
+                                    <div></div>
+                                    <div class="controlCount"></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                            <div class="deskStat">
+                                <div class="deskPages" id="historyPages">
+                                    <div class="deskPage act active">1</div>
+                                    <div class="deskPage act">2</div>
+                                    <div class="deskPage act">3</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kfeContent chargeReduction">
+                    <div class="kfeHead">
+                        <span>요금절감성과</span>
+                        <span class="chargeReductionHeadUnit">단위: 만원 / 전체업체</span>
+                    </div>
+                    <div class="kfeBody chargeReductionInfo">
+                        <div class="chargeReductionAmount" id="reductionAmount">
+                            <div class="chargeReductionAmountRow">
+                                <div class="chargeReductionRowColumn">오늘</div>
+                                <div class="rowValue">0</div>
+                            </div>
+                            <div class="chargeReductionAmountRow">
+                                <div class="chargeReductionRowColumn">이번달</div>
+                                <div class="rowValue">0</div>
+                            </div>
+                            <div class="chargeReductionAmountRow">
+                                <div class="chargeReductionRowColumn">올해</div>
+                                <div class="rowValue">0</div>
+                            </div>
+                        </div>
+                        <div class="chargeReductionRrankTitle">
+                            요금절감 업체 순위
+                            <span class="chargeReductionThisMonthText">(이번달)</span>
+                        </div>
+                        <div class="chargeReductionPeakRank" id="peakRank">
+                            <div class="chargeReductionDataRow">
+                                <div class="chargeReductionRankNumber"></div>
+                                <div class="chargeReductionFirmName">-</div>
+                                <div class="chargeReductionPrice">-</div>
+                            </div>
+                            <div class="chargeReductionDataRow">
+                                <div class="chargeReductionRankNumber"></div>
+                                <div class="chargeReductionFirmName">-</div>
+                                <div class="chargeReductionPrice">-</div>
+                            </div>
+                            <div class="chargeReductionDataRow">
+                                <div class="chargeReductionRankNumber"></div>
+                                <div class="chargeReductionFirmName">-</div>
+                                <div class="chargeReductionPrice">-</div>
+                            </div>
+                            <div class="chargeReductionDataRow">
+                                <div class="chargeReductionRankNumber"></div>
+                                <div class="chargeReductionFirmName">-</div>
+                                <div class="chargeReductionPrice">-</div>
+                            </div>
+                            <div class="chargeReductionDataRow">
+                                <div class="chargeReductionRankNumber"></div>
+                                <div class="chargeReductionFirmName">-</div>
+                                <div class="chargeReductionPrice">-</div>
+                            </div>
+                        </div>
+                        <div class="deskStat">
+                            <div class="deskPages" id="RankingPages">
+                                <span class="deskPage act active">1</span>
+                                <span class="deskPage act">2</span>
+                                <span class="deskPage act">3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kfeContent firmStatus">
+                    <div class="firmStatusWrap">
+                        <div class="firmCount">
+                            <div class="kfeHead">관리업체현황</div>
+                            <div class="kfeBody">
+                                <div class="circle">
+                                    <svg viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M61.7935 41.8302C67.1078 25.4906 58.1699 7.93659 41.8302 2.62233C25.4906 -2.69193 7.93658 6.24593 2.62232 22.5856C-2.69194 38.9253 6.24592 56.4793 22.5856 61.7935C38.9253 67.1078 56.4792 58.1699 61.7935 41.8302Z" stroke="url(#paint0_linear_201_84)" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <text x="50%" y="42%" dominant-baseline="middle" text-anchor="middle" class="firmCircleValue" id="clientsCountThisMonth">0</text>
+                                        <text x="50%" y="70%" dominant-baseline="middle" text-anchor="middle" class="firmCircleLabel">당월 신규</text>
+                                        <defs>
+                                            <linearGradient id="paint0_linear_201_84" x1="21.853" y1="64.0299" x2="42.5505" y2="0.391546" gradientUnits="userSpaceOnUse">
+                                                <stop stop-color="#5fc5ff"></stop>
+                                                <stop offset="0.1254" stop-color="#2A7EFF"></stop>
+                                                <stop offset="1" stop-color="#5fc5ff"></stop>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="circle">
+                                    <svg viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M61.7935 41.8302C67.1078 25.4906 58.1699 7.93659 41.8302 2.62233C25.4906 -2.69193 7.93658 6.24593 2.62232 22.5856C-2.69194 38.9253 6.24592 56.4793 22.5856 61.7935C38.9253 67.1078 56.4792 58.1699 61.7935 41.8302Z" stroke="url(#paint0_linear_201_84)" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <text x="50%" y="42%" dominant-baseline="middle" text-anchor="middle" class="firmCircleValue" id="clientsCountTotal">0</text>
+                                        <text x="50%" y="70%" dominant-baseline="middle" text-anchor="middle" class="firmCircleLabel">전체</text>
+                                        <defs>
+                                            <linearGradient id="paint0_linear_201_84" x1="21.853" y1="64.0299" x2="42.5505" y2="0.391546" gradientUnits="userSpaceOnUse">
+                                                <stop stop-color="#5fc5ff"></stop>
+                                                <stop offset="0.1254" stop-color="#2A7EFF"></stop>
+                                                <stop offset="1" stop-color="#5fc5ff"></stop>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="networkStatus">
+                            <div class="kfeHead">통신상태</div>
+                            <div class="kfeBody">
+                                <div class="circle">
+                                    <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="125" cy="125" r="100" fill="transparent" stroke="#585858" stroke-width="25" />
+                                        <circle id="circle-front" cx="125" cy="125" r="100" fill="transparent" stroke="url('#status-linearGradient')" stroke-linecap="square" stroke-width="25" stroke-dasharray="608" stroke-dashoffset="0" transform="rotate(-90, 125, 125)" />
+                                        <text x="55%" y="55%" dominant-baseline="middle" text-anchor="middle" class="networkStatusCircleText" id="networkStatusCircleText">00%</text>
+                                        <defs>
+                                            <linearGradient id="status-linearGradient" gradientTransform="rotate(0)" gradientUnits="userSpaceOnUse">
+                                                <stop stop-color="#1FAEFF" />
+                                                <stop offset="0.01" stop-color="#2A7EFF" />
+                                                <stop offset="1" stop-color="#1FAEFF" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="networkStatusText" id="statusText">
+                                    <a href="bad.html">
+                                        <div class="networkStatusLabel">나쁨</div>
+                                        <div class="networkStatusValue">0</div>
+                                    </a>
+                                    <div class="networkStatusLabel">전체</div>
+                                    <div class="networkStatusValue">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

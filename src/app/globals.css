@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Pretendard Variable";
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/PretendardVariable.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/OpenSans-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/OpenSans-Semibold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/OpenSans-Bold.woff2") format("woff2");
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0e0d2c;
+  --foreground: rgba(255, 255, 255, 0.85);
+  --watt-blue: #5082cd;
+  --watt-navy: #0e0d2c;
+  --watt-accent: #1d50e5;
+  --watt-login-grad-from: #2f58c2;
+  --watt-login-grad-to: #4874ea;
+  --watt-btn-from: #2a8eda;
+  --watt-btn-to: #2a48cb;
+  --color-line: rgba(255, 255, 255, 0.25);
+  --color-navline: rgba(255, 255, 255, 0.2);
+  --color-leftNav: rgba(255, 255, 255, 0.6);
+  --color-leftNava: rgba(255, 255, 255, 0.8);
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Neo Gothic",
+    sans-serif;
+  --font-display: "Open Sans", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }

@@ -1,0 +1,241 @@
+* {color: #f8f8f8}
+
+.red{color:#FF6D6D !important}
+.yellow{color:#fff100}
+.orange{color:#ffa858 !important}
+.green{color:#6EE038 !important}
+.aqua{color:#00ffff}
+.violet{color:#d38bff}
+.unit{font-size:12px;color:rgba(255,255,255,0.65)}
+
+.check::before{content:'\2714';display:inline-block;width:10px;height:10px;line-height:10px;background-color:#ffb025;border-radius:50%;font-size:0}
+.exclamation::before{content:'\0021';display:inline-block;width:10px;height:10px;line-height:10px;background-color:#FFBA7B;border-radius:50%;font-size:0}
+.exclamationCheck::before{content:'\0021';display:inline-block;width:10px;height:10px;line-height:10px;background-color:#FF6D6D;border-radius:50%;font-size:0}
+.exclamationCheck::after{content:'\2714';display:inline-block;margin-left:3px;width:10px;height:10px;line-height:10px;background-color:#FFBA7B;border-radius:50%;font-size:0}
+
+.kfeContent{display:flex;flex-direction:column;padding:0.2rem 0.3rem;height:100%;background-color:rgba(13,12,43,0.8)}
+.kfeHead{display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0.5rem;border-radius:.8rem .8rem 0 0}
+.kfeBody{padding:.3rem .5rem;flex:1}
+.contents{position:relative}
+main.contents{padding:0}
+.controlCenterGrid{display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(16,1fr);gap:0;height:calc(100vh - 96px);margin:0.5rem}
+.deskStat{height:10%}
+.deskPages{display:flex;gap:0.6rem;justify-content:center;align-items:center;height:100%}
+.deskPage{width:26px;height:26px;line-height:26px;font-size:0.7rem;text-align:center;cursor:pointer}
+.deskPage.active{color:#399bf7;text-decoration:underline}
+
+/* 지도 */
+.koreaMap{grid-column:1/5;grid-row:1/10}
+.koreaMap .map{position:absolute;top:0;left:0;z-index:1;width:100%;height:100%}
+
+/* 업체상세정보 */
+.peakDetailWrap{grid-column: 8/10;grid-row: 2/7;z-index: 2}
+.peakDetailWrap .overlayCloseButton{display:none}
+.peakDetail{z-index:2;padding:0.2rem 0.3rem;width:450px;height:250px;background:rgba(13,12,43,0.8);border-radius:10px}
+.peakDetailData{position:relative;padding:0;font-size:11px}
+.peakFirmNameHeader{display:flex;justify-content:space-between;align-items:center;padding:0.4rem 1rem 0 1rem}
+.peakDetailFirmName{color:white;text-align:left;font-size:1.5rem;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.peakDetailHead{display:grid;grid-template-columns:38% 14% 14% 14% 14%;gap:1.5%;align-items:center;padding:0 1.5rem;height:10%}
+.peakDetailColumn{border-radius:2px;text-align:center;font-size:0.8rem;color:#8fd0e9}
+/* .peakDetailToday{background-image:linear-gradient(to right,#3182ce,#4299e1)}
+.peakDetailMonth{background-image:linear-gradient(to right,#5a67d8,#667eea)}
+.peakDetailYear{background-image:linear-gradient(to right,#805ad5,#9f7aea)}
+.peakDetailTotal{background-image:linear-gradient(to right,#d53f8c,#ed64a6)} */
+.peakDetailContent{margin:0 1rem;padding-bottom:0.3rem;height:75%;border-top:1px solid #dcdcdcb2}
+.peakDetailRow{display:grid;grid-template-columns:38% 14% 14% 14% 14%;gap:1.5%;align-items:center;height:16.6666%}
+.peakDetailRow:nth-child(odd){padding-top:3px}
+.peakDetailRow:nth-child(even){border-bottom:1px solid #656565a6}
+.peakDetailRow:last-child{border-bottom:1px solid #dcdcdcb2}
+.peakDetailLabel{color:#97ddf5}
+.peakDetailUnit{color:#9fa0a0;font-size:0.7rem}
+.peakDetailRowValue{text-align:center}
+.peakDetailFirmInfo{display:flex;flex-direction:column;gap:0.2rem;justify-content:center;padding:0.5rem 1rem;height:20%;background-color:#003de026;border-radius:0 0 10px 10px}
+.peakDetailInfoItem{display:flex;flex-direction:row;align-items:center;gap:0.6rem}
+.peakDetailItemWrap{display:flex;flex-direction:row;align-items:center;gap:0.2rem;font-size:0.8rem;overflow:hidden}
+.peakDetailItemLabel{overflow:hidden;padding:0.1rem 0.2rem;background-color:#2845a5;border-radius:4px;color:#fff;text-align:center;text-overflow:ellipsis;white-space:nowrap}
+.peakDetailItemValue{color:#dcdcdc;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.peakDetailItemIcon svg{display:block;width:1rem;height:1rem}
+.overlayCloseButton{cursor:pointer;font-size:1.1rem}
+
+/* 실시간 PEAK 현황 */
+.peakRealTime{grid-column:1/9;grid-row:1/2;display:flex;flex-direction:row;justify-content:center;align-items:center;z-index:2;min-height:60px;padding:10px 20px;background:rgba(38,75,207,0.8)}
+.peakRealTimeTitle{display:none;font-size:16px;font-weight:500;color:#afeaff}
+.peakRealTimeCountWrap{display:flex;gap:36px}
+.peakRealTimeCountGroup{position:relative;display:flex;gap:12px;max-width:25rem;line-height:1}
+.peakRealTimeCountGroup::before{position:absolute;left:-20px;top:-5px;content:'';display:block;width:1px;height:26px;background-color:rgba(255,255,255,0.3)}
+.peakRealTimeCountGroup:first-child::before{display:none}
+.peakRealTimeCountLabel{display:flex;gap:8px;align-items:center;font-size:15px;color:rgba(255,255,255,0.9)}
+.peakRealTime .countValue{display:inline-block;min-width:24px;font-weight:500}
+.countValue.co1{color:#FF6D6D}
+.countValue.co2{color:#FFBA7B}
+.countValue.co3{color:#6EE038}
+.countValue.co4{color:#FF6D6D}
+.countValue.co5{color:#FD6DB2}
+
+/* 업체 리스트 필터 */
+.filterWrap{display:flex;gap:5px;align-items:center;justify-content:space-between;z-index:2;padding:12px .5rem}
+.filterSearchInput{position:relative}
+.filterSearchInput input[type="search"]{width:160px;height:34px;padding:0.3rem 2.5rem 0.2rem 0.5rem;background:transparent;border:1px solid rgba(255,255,255,0.4);border-radius:4px;outline:none;color:white;font-size:14px}
+.filterSearchInput input[type="search"]::placeholder{color:#eee}
+.filterSearchIcon{position:absolute;top:4px;right:6px;background-position:48px 0;opacity:0.85}
+.filterButtonGroup{display:flex;justify-content:space-between;align-items:center;font-size:11px}
+.filterButtonGroup span{display:inline-block;padding:0.3rem 5px;margin:0 5px;font-size:15px;color:rgba(255,255,255,0.8);font-weight:400;white-space: nowrap;cursor:pointer;border-bottom:1px solid transparent}
+.filterButtonGroup span:hover{color:#8AE3FF}
+.filterButtonGroup input[type="checkbox"]{display:none}
+.filterButtonGroup input[type="checkbox"]:checked + span{border-bottom:1px solid #8AE3FF;color:#8AE3FF}
+.filterButtonGroup button{background:none;border:none;outline:none;padding:0.3rem 10px;font-size:14px;color:rgba(255,255,255,0.8);font-weight:400;white-space: nowrap;cursor:pointer}
+.filterButtonGroup button:hover{color:#8AE3FF}
+.filterSelectOrderBy{height:34px;padding:0.2rem 0.8rem 0.2rem 0.5rem;margin-left:8px;color:#fff;font-size:14px;background-color:#1f2137;border-radius:4px;border:1px solid rgba(255,255,255,0.4)}
+.filterSelectOrderBy option{color:#fff}
+.filterWrap .filterRt{display:flex;align-items:center}
+.filterButtonGroup > label{margin-bottom:0}
+
+/* 업체 리스트 */
+.firmList{grid-column:1/9;grid-row:2/-1;z-index:2}
+.firmListHeader{display:grid;grid-template-columns:3% 14% 8% 8% 8% 11% 7% 11% 18% 7%;justify-content:space-between;align-items:center;padding:10px 5px;background:#172d7a;font-size:14px;letter-spacing:-0.75px;text-align:center}
+.firmListBody{display:flex;flex-direction:column;height:100%;border-radius:0 0 10px 10px;font-size:0.9rem}
+.firmListData{height:100%}
+.firmListColumn{color:rgba(255,255,255,0.8)}
+.firmListDataRow{display:none;grid-template-columns:3% 14% 8% 8% 8% 11% 7% 11% 18% 7%;justify-content:space-between;align-items:center;padding:0.2rem 0.3rem;height:10%;border:transparent solid 1px;border-bottom:1px solid rgba(255,255,255,0.2);text-align:center;cursor:pointer}
+.firmListDataRow.active{display:grid}
+.firmListDataRow.selected{border:#3cc7ff solid 1px;border-radius:4px}
+.firmListDataRow:hover{background-color:rgb(32,65,176,0.3);border-radius:0.4rem}
+.firmListfirmName{overflow:hidden;color:#9DE7FF;text-overflow:ellipsis;white-space:nowrap}
+.firmListSubData{padding:0 0.2rem;max-width:12rem;color:rgba(255,255,255,0.6);font-size:0.7rem;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.firmListPeakWatt{color:#a0aec0}
+.firmListPeakRatioTime{display:flex;align-items:center}
+.firmListPeakRatio{flex:1;position:relative}
+.firmListPeakRatioLine{padding:1px;height:14px;border:1px solid #22b0ffd1}
+.firmListPeakRatioOn{position:relative;width:100%;max-width:100%;height:100%;background:linear-gradient(to right,#2089ff 0.1%,#42ccFF 50%,#ffffff 90%);z-index:2}
+.firmListPeakRatioPoint{position:absolute;left:0;top:0;width:0;height:100%;z-index:1}
+.firmListPeakRatioPulse{position:absolute;top:calc(50% - 7px);left:calc(100% - 4px);width:10px;height:14px;border-radius:50%;background:rgba(255,255,255,0);background:radial-gradient(rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);animation:pulse 2s infinite;transform:scaleX(0.4)}
+@keyframes pulse{0%{opacity:0}50%{opacity:0.8}100%{opacity:0}}
+
+.firmListPeakTimeLimit{flex:1;position:relative}
+.firmListPeakMeterLine{flex-grow:1;position:relative;height:0.7rem}
+.firmListPeakMeter{position:absolute;left:1px;top:0;width:100%;height:100%;background-image:url('data:image/svg+xml;utf8,<svg width="4" height="6" fill="%233f3f3f" xmlns="http://www.w3.org/2000/svg"><rect width="2" height="6" x="0" y="0" /></svg>');z-index:2}
+.firmListPeakMeterOn{position:absolute;left:0;top:0;width:0;height:100%;background:linear-gradient(to right,#1e27ff,#2194FF,#5BE2FF);z-index:1}
+.firmListProgressText{display:flex;justify-content:flex-end;align-items:center;width:50px;font-size:13px}
+.firmList .pagination{padding:1rem 0;text-align:center}
+
+/* 최근 피크 기록 */
+.peakHistory{grid-column:14/-1;grid-row:1/6;padding-top:1rem;z-index:2}
+.peakHistory .dataList{height:90%}
+.peakHistory .listBody{display:flex;flex-direction:column;padding-bottom:1rem;height:100%;font-size:0.9rem}
+.peakHistory .dataRow{display:grid;grid-template-columns:25% 40% 15% 20%;justify-content:space-between;align-items:center;height:20%;background-color:rgba(48, 69, 154, 0.35);border-radius:4px;font-size:14px;text-align:left}
+.peakHistory .dataRow div{text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;color:rgba(255,255,255,0.85)}
+.peakHistory div.controlCount{color:#4ac0f0;text-align:right;margin-right:10px}
+.peakHistory .aqua{padding:0 5px 0 3px}
+.peakHistory .green{padding:0 5px 0 3px}
+.peakHistory .orange{padding:0 5px 0 3px}
+.peakHistory .violet{padding:0 5px 0 3px}
+.peakHistory .aqua .typeName{color:#60e9ff}
+.peakHistory .green .typeName{color:#64ef68}
+.peakHistory .orange .typeName{color:#ffa900}
+.peakHistory .violet .typeName{color:#d38bff}
+
+/* 요금절감성과 */
+.chargeReduction{grid-column:14/-1;grid-row:6/14;z-index:2;border-top:1px solid rgba(255,255,255,0.2);border-bottom:1px solid rgba(255,255,255,0.2)}
+.chargeReduction .kfeHead{align-items:end}
+.chargeReductionHeadUnit{font-size:12px;color:rgba(255,255,255,0.7)}
+.chargeReductionInfo{display:flex;flex-direction:column;gap:0.5rem}
+.chargeReductionAmount{display:flex;flex-direction:column;gap:0.3rem}
+.chargeReductionAmountRow{display:flex;justify-content:space-between}
+.chargeReductionRowColumn{padding:0.2rem 0;width:4rem;background-color:rgba(255, 255, 255, 0.1);border-radius:4px;font-size:14px;color:rgba(255, 255, 255, 0.85);text-align:center}
+.chargeReductionAmountRow .rowValue{color:#5bddf4;font-size:15px;padding-right:14px}
+.chargeReductionRrankTitle{padding-top:0.5rem;border-top:1px solid #6f6f6f80}
+.chargeReductionThisMonthText{font-size:12px;color:rgba(255,255,255,0.7)}
+.chargeReductionPeakRank{display:flex;flex-direction:column;gap:0.2rem;height:100%;font-size:14px}
+.chargeReductionDataRow{display:flex;justify-content:space-between;align-items:center;height:20%;background-color:rgba(48, 69, 154, 0.35);border-radius:4px;font-size:14px}
+/* .chargeReductionRankNumber{display:flex;width:35px;height:100%;justify-content:center;align-items:center;background-color:#0095ff4d;border-radius:4px 0 0 4px}
+.chargeReductionRankNumber.gold{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 20.263 28.96'%3E%3Cdefs%3E%3ClinearGradient id='gold-linear-gradient' x1='2.063' y1='-2.78' x2='0.027' y2='0.954' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.355' stop-color='%23ff153c'/%3E%3Cstop offset='0.511' stop-color='%23ff2a59'/%3E%3Cstop offset='0.823' stop-color='%23940010'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold-linear-gradient-2' y1='0.501' x2='1' y2='0.501' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23b58032'/%3E%3Cstop offset='0.115' stop-color='%23c08d3c'/%3E%3Cstop offset='0.327' stop-color='%23ddb057'/%3E%3Cstop offset='0.536' stop-color='%23ffd876'/%3E%3Cstop offset='0.902' stop-color='%239b6622'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold-linear-gradient-3' x1='0.108' y1='0.192' x2='0.992' y2='0.887' xlink:href='%23gold-linear-gradient-2'/%3E%3ClinearGradient id='gold-linear-gradient-4' x1='0.66' y1='0.929' x2='-2.614' y2='-7.823' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.047' stop-color='%23ff0015'/%3E%3Cstop offset='0.355' stop-color='%23ff3f55'/%3E%3Cstop offset='0.624' stop-color='%23ff94b5'/%3E%3Cstop offset='1' stop-color='%23e9004e'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold-linear-gradient-5' x1='0.137' y1='0.195' x2='1.014' y2='0.932' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23d9b257'/%3E%3Cstop offset='0.079' stop-color='%23c59743'/%3E%3Cstop offset='0.141' stop-color='%23b98636'/%3E%3Cstop offset='0.153' stop-color='%23b88435'/%3E%3Cstop offset='0.218' stop-color='%23b58032'/%3E%3Cstop offset='0.305' stop-color='%23be8d3e'/%3E%3Cstop offset='0.392' stop-color='%23cb9f4d'/%3E%3Cstop offset='0.661' stop-color='%239b6622'/%3E%3Cstop offset='0.882' stop-color='%239b6622'/%3E%3Cstop offset='1' stop-color='%234a1900'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold-linear-gradient-6' x1='-0.282' y1='0.004' x2='1.803' y2='1.031' xlink:href='%23gold-linear-gradient-5'/%3E%3ClinearGradient id='gold-linear-gradient-7' x1='0.091' y1='0.185' x2='0.634' y2='0.485' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='0'/%3E%3Cstop offset='0.117' stop-color='%23fff'/%3E%3Cstop offset='1' stop-color='%23f0d57c' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold-linear-gradient-8' x1='0.824' y1='0.713' x2='0' y2='0.335' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='0.293' stop-color='%23f5dc82'/%3E%3Cstop offset='0.557' stop-color='%23f0d57c' stop-opacity='0.02'/%3E%3Cstop offset='0.635' stop-color='%23fff' stop-opacity='0'/%3E%3Cstop offset='0.659' stop-color='%23a69356'/%3E%3Cstop offset='0.875'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold-linear-gradient-9' x1='0.028' y1='0.19' x2='0.906' y2='0.803' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.0' stop-color='%23fff' stop-opacity='0'%3E%3Canimate id='silver-shine-1' attributeName='offset' from='0' to='.8' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='0.05' stop-color='%23fff' stop-opacity='0.6'%3E%3Canimate attributeName='offset' from='0.1' to='.9' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='.1' stop-color='%23fff' stop-opacity='0.5'%3E%3Canimate attributeName='offset' from='.2' to='1' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='.2' stop-color='%23fff' stop-opacity='0'%3E%3Canimate attributeName='offset' from='.3' to='1.1' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Cg id='medal_1' data-name='medal 1' transform='translate(-945 -546)'%3E%3Cpath id='패스_1' data-name='패스 1' d='M9.82,1.8,13.4,8.42h.02l4.33-8H10.56Z' transform='translate(945 545.58)' fill='url(%23gold-linear-gradient)'/%3E%3Cpath id='패스_2' data-name='패스 2' d='M13.33,7.56H6.54a2.432,2.432,0,0,0-.64.08.433.433,0,0,0-.05.01,1.193,1.193,0,0,0-.42.22.3.3,0,0,0-.07.05.031.031,0,0,0-.02.01l.01.01A1.287,1.287,0,0,0,5,8.92v2.01h.8V8.92a.669.669,0,0,1,.06-.37.339.339,0,0,0,.06-.06c.01-.01.02-.02.03-.02a.594.594,0,0,1,.08-.04c.02-.01.03-.01.05-.02.05-.01.09-.01.13-.02.02,0,.04-.01.07-.01a2.012,2.012,0,0,1,.26-.01h6.78c.73,0,.73.2.73.55v2.01h.81V8.92C14.86,7.99,14.38,7.56,13.33,7.56Z' transform='translate(945 545.58)' fill='url(%23gold-linear-gradient-2)'/%3E%3Cpath id='패스_3' data-name='패스 3' d='M.79,15.34A10.128,10.128,0,1,0,14.04,9.91,10.128,10.128,0,0,0,.79,15.34Z' transform='translate(945 545.58)' fill='url(%23gold-linear-gradient-3)'/%3E%3Cpath id='패스_4' data-name='패스 4' d='M9.07.42H1.88l4.33,8H13.4Z' transform='translate(945 545.58)' fill='url(%23gold-linear-gradient-4)'/%3E%3Cpath id='패스_5' data-name='패스 5' d='M1.99,15.85a8.823,8.823,0,1,0,11.55-4.73A8.819,8.819,0,0,0,1.99,15.85Zm16.13,6.74a8.66,8.66,0,1,1-4.64-11.33A8.67,8.67,0,0,1,18.12,22.59Z' transform='translate(945 545.58)' fill='url(%23gold-linear-gradient-5)'/%3E%3Cg id='그룹_1' data-name='그룹 1' transform='translate(945 545.58)' style='mix-blend-mode:multiply;isolation:isolate'%3E%3Cpath id='패스_6' data-name='패스 6' d='M9.17,26.34V16.22a8.657,8.657,0,0,1-2.73.65V14.39a6.65,6.65,0,0,0,3.57-2.06h2.5V26.34Z' fill='url(%23gold-linear-gradient-6)'/%3E%3C/g%3E%3Cpath id='패스_7' data-name='패스 7' d='M4.18,25.99A8.976,8.976,0,0,1,12.1,10.56a8.667,8.667,0,0,1,1.54.5c.1-.26.2-.51.29-.77.04-.1.07-.19.11-.29a10.552,10.552,0,0,0-1.7-.55A10.11,10.11,0,0,0,3.3,26.71C3.6,26.49,3.89,26.24,4.18,25.99Z' transform='translate(945 545.58)' fill='url(%23gold-linear-gradient-7)' style='mix-blend-mode:screen;isolation:isolate'/%3E%3Cpath id='패스_8' data-name='패스 8' d='M15.93,12.42A8.9,8.9,0,0,1,8.58,27.95a8.563,8.563,0,0,1-1.54-.45c-.09.26-.18.51-.27.77-.03.1-.06.19-.1.29a9.649,9.649,0,0,0,1.69.49,10.029,10.029,0,0,0,8.42-17.38C16.49,11.91,16.21,12.16,15.93,12.42Z' transform='translate(945 545.58)' opacity='0.9' fill='url(%23gold-linear-gradient-8)' style='mix-blend-mode:screen;isolation:isolate'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:contain}
+.chargeReductionRankNumber.silver{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 20.325 28.956'%3E%3Cdefs%3E%3ClinearGradient id='silver-linear-gradient' x1='2.061' y1='-2.784' x2='0.027' y2='0.955' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.355' stop-color='%23ff153c' /%3E%3Cstop offset='0.511' stop-color='%23ff2a59' /%3E%3Cstop offset='0.823' stop-color='%23940010' /%3E%3C/linearGradient%3E%3ClinearGradient id='silver-linear-gradient-2' x1='1.076' y1='0.52' x2='-0.272' y2='0.477' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%236d6564' /%3E%3Cstop offset='0.089' stop-color='%23797271' /%3E%3Cstop offset='0.255' stop-color='%239a9594' /%3E%3Cstop offset='0.479' stop-color='%23cecccc' /%3E%3Cstop offset='0.536' stop-color='%23dcdcdc' /%3E%3Cstop offset='0.902' stop-color='%234b4b4b' /%3E%3C/linearGradient%3E%3ClinearGradient id='silver-linear-gradient-3' x1='0.091' y1='0.214' x2='1.013' y2='0.859' xlink:href='%23silver-linear-gradient-2' /%3E%3ClinearGradient id='silver-linear-gradient-4' x1='0.66' y1='0.929' x2='-2.611' y2='-7.834' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.047' stop-color='%23ff0015' /%3E%3Cstop offset='0.355' stop-color='%23ff3f55' /%3E%3Cstop offset='0.624' stop-color='%23ff94b5' /%3E%3Cstop offset='1' stop-color='%23e9004e' /%3E%3C/linearGradient%3E%3ClinearGradient id='silver-linear-gradient-5' x1='0.137' y1='0.195' x2='1.014' y2='0.931' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23898989' /%3E%3Cstop offset='0.141' stop-color='%237b7a7b' /%3E%3Cstop offset='0.178' stop-color='%23717070' /%3E%3Cstop offset='0.218' stop-color='%236d6c6c' /%3E%3Cstop offset='0.282' stop-color='%237a7979' /%3E%3Cstop offset='0.392' stop-color='%23999' /%3E%3Cstop offset='0.661' stop-color='%23636262' /%3E%3Cstop offset='0.776' stop-color='%235c5a5a' /%3E%3Cstop offset='0.882' stop-color='%23514f4e' /%3E%3Cstop offset='1' stop-color='%23413d3c' /%3E%3C/linearGradient%3E%3ClinearGradient id='silver-linear-gradient-6' x1='0.168' y1='0.252' x2='0.691' y2='0.476' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23fff' /%3E%3Cstop offset='1' stop-color='%237d7b76' stop-opacity='0.02' /%3E%3C/linearGradient%3E%3ClinearGradient id='silver-linear-gradient-7' x1='0.884' y1='0.726' x2='0.386' y2='0.552' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23fff' /%3E%3Cstop offset='0.552' stop-color='%23f5f5f5' stop-opacity='0.922' /%3E%3Cstop offset='1' stop-color='gray' stop-opacity='0.02' /%3E%3C/linearGradient%3E%3ClinearGradient id='silver-linear-gradient-8' x1='-0.132' y1='0.093' x2='1.537' y2='1.462' xlink:href='%23silver-linear-gradient-5' /%3E%3ClinearGradient id='silver-linear-gradient-9' x1='0.0' y1='0.2' x2='0.9' y2='0.8' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.0' stop-color='%23fff' stop-opacity='0'%3E%3Canimate id='silver-shine-1' attributeName='offset' from='0' to='.8' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='0.05' stop-color='%23fff' stop-opacity='0.6'%3E%3Canimate attributeName='offset' from='0.1' to='.9' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='.1' stop-color='%23fff' stop-opacity='0.5'%3E%3Canimate attributeName='offset' from='.2' to='1' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='.2' stop-color='%23fff' stop-opacity='0'%3E%3Canimate attributeName='offset' from='.3' to='1.1' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Cg id='medal_2' data-name='medal 2' transform='translate(-968.811 -546)'%3E%3Cpath id='패스_10' data-name='패스 10' d='M33.69,1.37l3.59,6.62h.01L41.63,0h-7.2Z' transform='translate(945 546)' fill='url(%23silver-linear-gradient)' /%3E%3Cpath id='패스_11' data-name='패스 11' d='M37.2,7.14H30.42a2.432,2.432,0,0,0-.64.08.433.433,0,0,0-.05.01,1.287,1.287,0,0,0-.42.22c-.02.02-.04.03-.06.05l-.02.02.01.01a1.217,1.217,0,0,0-.36.97v2.01h.8V8.5a.669.669,0,0,1,.06-.37.265.265,0,0,1,.05-.06c.01-.01.02-.02.03-.02a.594.594,0,0,1,.08-.04c.02-.01.03-.01.05-.02a.5.5,0,0,1,.12-.02c.02,0,.04-.01.07-.01a2.012,2.012,0,0,1,.26-.01h6.78c.73,0,.73.2.73.55v2.01h.81V8.5C38.74,7.57,38.25,7.14,37.2,7.14Z' transform='translate(945 546)' fill='url(%23silver-linear-gradient-2)' /%3E%3Cpath id='패스_12' data-name='패스 12' d='M36.12,8.92a10.128,10.128,0,1,0,7.79,12.02A10.128,10.128,0,0,0,36.12,8.92Z' transform='translate(945 546)' fill='url(%23silver-linear-gradient-3)' /%3E%3Cpath id='패스_13' data-name='패스 13' d='M32.95,0h-7.2l4.33,7.99h7.2Z' transform='translate(945 546)' fill='url(%23silver-linear-gradient-4)' /%3E%3Cpath id='패스_14' data-name='패스 14' d='M35.84,10.2a8.824,8.824,0,1,0,6.79,10.47A8.823,8.823,0,0,0,35.84,10.2ZM32.2,27.3a8.665,8.665,0,1,1,10.28-6.67A8.685,8.685,0,0,1,32.2,27.3Z' transform='translate(945 546)' fill='url(%23silver-linear-gradient-5)' /%3E%3Cpath id='패스_15' data-name='패스 15' d='M28.55,25.89a8.927,8.927,0,0,1,8.51-15.44c.08-.26.16-.52.24-.79.03-.1.06-.2.09-.29a11.08,11.08,0,0,0-1.74-.44,10.069,10.069,0,0,0-7.94,17.75C28,26.42,28.28,26.16,28.55,25.89Z' transform='translate(945 546)' opacity='0.9' fill='url(%23silver-linear-gradient-6)' style='mix-blend-mode:screen; isolation:isolate' /%3E%3Cpath id='패스_16' data-name='패스 16' d='M39.88,12.08a8.9,8.9,0,0,1-7.46,15.48,8.582,8.582,0,0,1-1.54-.46c-.09.26-.18.51-.27.77-.03.1-.07.19-.1.29a10.322,10.322,0,0,0,1.69.5,10.027,10.027,0,0,0,8.54-17.32A8.61,8.61,0,0,0,39.88,12.08Z' transform='translate(945 546)' opacity='0.9' fill='url(%23silver-linear-gradient-7)' style='mix-blend-mode:screen; isolation:isolate' /%3E%3Cg id='그룹_3' data-name='그룹 3' transform='translate(945 546)' style='mix-blend-mode:multiply; isolation:isolate'%3E%3Cpath id='패스_17' data-name='패스 17' d='M28.88,24.67v-.13c0-2.44,1.07-4.24,4.38-6.31,2.11-1.32,2.67-1.67,2.67-2.69,0-.87-.46-1.6-1.9-1.6-1.39,0-1.9.84-2.08,1.99H28.93c.19-2.59,2.11-4.39,5.2-4.39,3.01,0,4.9,1.67,4.9,3.99,0,1.92-.8,2.85-3.45,4.39a7.886,7.886,0,0,0-2.91,2.31h6.89l-.38,2.46H28.88Z' opacity='0.79' fill='url(%23silver-linear-gradient-8)' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:contain}
+.chargeReductionRankNumber.bronze{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 20.266 28.95'%3E%3Cdefs%3E%3ClinearGradient id='bronze-linear-gradient' x1='2.061' y1='-2.784' x2='0.027' y2='0.955' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.355' stop-color='%23ff153c'/%3E%3Cstop offset='0.511' stop-color='%23ff2a59'/%3E%3Cstop offset='0.823' stop-color='%23940010'/%3E%3C/linearGradient%3E%3ClinearGradient id='bronze-linear-gradient-2' x1='-0.001' y1='0.498' x2='1' y2='0.498' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23af6131'/%3E%3Cstop offset='0.124' stop-color='%23ba6e3b'/%3E%3Cstop offset='0.354' stop-color='%23d79154'/%3E%3Cstop offset='0.536' stop-color='%23f2b16c'/%3E%3Cstop offset='0.902' stop-color='%23964b26'/%3E%3C/linearGradient%3E%3ClinearGradient id='bronze-linear-gradient-3' x1='0.108' y1='0.192' x2='0.992' y2='0.887' xlink:href='%23bronze-linear-gradient-2'/%3E%3ClinearGradient id='bronze-linear-gradient-4' x1='0.66' y1='0.929' x2='-2.614' y2='-7.834' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.047' stop-color='%23ff0015'/%3E%3Cstop offset='0.355' stop-color='%23ff3f55'/%3E%3Cstop offset='0.624' stop-color='%23ff94b5'/%3E%3Cstop offset='1' stop-color='%23e9004e'/%3E%3C/linearGradient%3E%3ClinearGradient id='bronze-linear-gradient-5' x1='0.037' y1='0.099' x2='1.228' y2='1.139' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23d9b257'/%3E%3Cstop offset='0' stop-color='%23c38f4d'/%3E%3Cstop offset='0' stop-color='%23a76342'/%3E%3Cstop offset='0' stop-color='%239c523d'/%3E%3Cstop offset='0.018' stop-color='%23a0593b'/%3E%3Cstop offset='0.088' stop-color='%23ab6e36'/%3E%3Cstop offset='0.156' stop-color='%23b37c33'/%3E%3Cstop offset='0.218' stop-color='%23b58032'/%3E%3Cstop offset='0.315' stop-color='%23a8772c'/%3E%3Cstop offset='0.392' stop-color='%239a6e25'/%3E%3Cstop offset='0.882' stop-color='%239b6622'/%3E%3Cstop offset='1' stop-color='%23411a18'/%3E%3C/linearGradient%3E%3ClinearGradient id='bronze-linear-gradient-6' x1='0.137' y1='0.195' x2='1.014' y2='0.931' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23cd7e4d'/%3E%3Cstop offset='0.043' stop-color='%23c47b45'/%3E%3Cstop offset='0.141' stop-color='%23b37636'/%3E%3Cstop offset='0.169' stop-color='%23b17033'/%3E%3Cstop offset='0.218' stop-color='%23af6c31'/%3E%3Cstop offset='0.29' stop-color='%23b4743e'/%3E%3Cstop offset='0.392' stop-color='%23be8458'/%3E%3Cstop offset='0.661' stop-color='%23965525'/%3E%3Cstop offset='0.881' stop-color='%23964d26'/%3E%3Cstop offset='0.882' stop-color='%23964d26'/%3E%3Cstop offset='1' stop-color='%23631901'/%3E%3C/linearGradient%3E%3ClinearGradient id='bronze-linear-gradient-7' x1='0.158' y1='0.266' x2='0.685' y2='0.5' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='1' stop-color='%23c87f47' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='bronze-linear-gradient-8' x1='0.902' y1='0.72' x2='0.381' y2='0.447' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='1' stop-color='%23cc844b' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='bronze-linear-gradient-9' x1='0.028' y1='0.19' x2='0.906' y2='0.803' gradientUnits='objectBoundingBox'%3E%3Cstop offset='0.0' stop-color='%23fff' stop-opacity='0'%3E%3Canimate id='silver-shine-1' attributeName='offset' from='0' to='.8' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='0.05' stop-color='%23fff' stop-opacity='0.6'%3E%3Canimate attributeName='offset' from='0.1' to='.9' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='.1' stop-color='%23fff' stop-opacity='0.5'%3E%3Canimate attributeName='offset' from='.2' to='1' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3Cstop offset='.2' stop-color='%23fff' stop-opacity='0'%3E%3Canimate attributeName='offset' from='.3' to='1.1' dur='.2s' begin='.2s;silver-shine-1.end+3s'%3E%3C/animate%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Cg id='medal_3' data-name='medal 3' transform='translate(-996.231 -546)'%3E%3Cpath id='패스_19' data-name='패스 19' d='M61.04,1.37l3.59,6.62h.02L68.98,0H61.79Z' transform='translate(945 546)' fill='url(%23bronze-linear-gradient)'/%3E%3Cpath id='패스_20' data-name='패스 20' d='M64.55,7.14H57.77a2.432,2.432,0,0,0-.64.08.433.433,0,0,0-.05.01,1.287,1.287,0,0,0-.42.22c-.02.02-.04.03-.06.05l-.02.02.01.01a1.287,1.287,0,0,0-.35.98v2.01h.8V8.5a.669.669,0,0,1,.06-.37.265.265,0,0,1,.05-.06c.01-.01.02-.02.03-.02a.594.594,0,0,1,.08-.04.142.142,0,0,1,.06-.02.5.5,0,0,1,.12-.02c.02,0,.04-.01.07-.01a2.012,2.012,0,0,1,.26-.01h6.78c.73,0,.73.2.73.55v2.01h.81V8.5C66.09,7.57,65.6,7.14,64.55,7.14Z' transform='translate(945 546)' fill='url(%23bronze-linear-gradient-2)'/%3E%3Cpath id='패스_21' data-name='패스 21' d='M63.71,8.97a10.126,10.126,0,1,0,7.5,12.2A10.126,10.126,0,0,0,63.71,8.97Z' transform='translate(945 546)' fill='url(%23bronze-linear-gradient-3)'/%3E%3Cpath id='패스_22' data-name='패스 22' d='M60.3,0H53.11l4.33,7.99h7.19Z' transform='translate(945 546)' fill='url(%23bronze-linear-gradient-4)'/%3E%3Cg id='그룹_5' data-name='그룹 5' transform='translate(945 546)' opacity='0.9' style='mix-blend-mode:multiply;isolation:isolate'%3E%3Cpath id='패스_23' data-name='패스 23' d='M55.83,15.68c.25-1.74,1.64-4.1,5.61-4.1,3.59,0,5.35,1.76,5.35,3.96a2.777,2.777,0,0,1-1.93,2.75v.04a3.382,3.382,0,0,1,2.48,3.39c0,2.5-1.98,4.39-5.95,4.39-3.84,0-5.55-2.03-5.89-4.37h3.39c.25,1.03,1.03,1.75,2.68,1.75,1.4,0,2.31-.63,2.31-1.89,0-1.24-.81-1.84-2.46-1.84H60.25V17.15h.86c1.65,0,2.22-.43,2.22-1.41,0-.89-.56-1.59-2.01-1.59a1.918,1.918,0,0,0-2.15,1.53H55.83Z' fill='url(%23bronze-linear-gradient-5)'/%3E%3C/g%3E%3Cpath id='패스_24' data-name='패스 24' d='M63.4,10.25a8.825,8.825,0,1,0,6.54,10.64A8.816,8.816,0,0,0,63.4,10.25ZM59.35,27.26a8.666,8.666,0,1,1,10.44-6.42A8.674,8.674,0,0,1,59.35,27.26Z' transform='translate(945 546)' fill='url(%23bronze-linear-gradient-6)'/%3E%3Cpath id='패스_25' data-name='패스 25' d='M55.74,25.72A8.889,8.889,0,0,1,64.47,10.5c.09-.26.17-.52.26-.78.03-.1.06-.19.09-.29a10.735,10.735,0,0,0-1.73-.47,10.006,10.006,0,0,0-8.2,17.52A8.709,8.709,0,0,0,55.74,25.72Z' transform='translate(945 546)' opacity='0.86' fill='url(%23bronze-linear-gradient-7)' style='mix-blend-mode:screen;isolation:isolate'/%3E%3Cpath id='패스_26' data-name='패스 26' d='M67.13,11.95a8.921,8.921,0,0,1,3.03,8.47,8.77,8.77,0,0,1-11.8,6.68c-.09.26-.18.52-.26.78-.03.1-.06.19-.09.29a9.491,9.491,0,0,0,1.7.48,10.036,10.036,0,0,0,8.28-17.46A8.975,8.975,0,0,0,67.13,11.95Z' transform='translate(945 546)' opacity='0.88' fill='url(%23bronze-linear-gradient-8)' style='mix-blend-mode:screen;isolation:isolate'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:contain} */
+.chargeReductionRankNumber{display:flex;width:35px;height:100%;min-height:24px;justify-content:center;align-items:center;background-color:#0095ff4d;border-radius:4px 0 0 4px}
+.chargeReductionRankNumber.gold{background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='27' fill='none'%3E%3Cpath fill='%23DA1028' fill-rule='evenodd' d='M14.689 5.12 19 0h-8.5l4.189 5.12Z' clip-rule='evenodd'/%3E%3Cpath fill='%23FF051A' fill-rule='evenodd' d='M10.5 0H2l9 9.5 3.689-4.38L10.5 0Z' clip-rule='evenodd'/%3E%3Ccircle cx='11' cy='16' r='11' fill='%23FFEE59'/%3E%3Ccircle cx='11' cy='16' r='9' fill='%23FFE350'/%3E%3Cellipse cx='5.76' cy='10.611' fill='%23fff' fill-opacity='.9' rx='3.892' ry='2.764' transform='rotate(-39.646 5.76 10.611)'/%3E%3Cpath fill='%239E5A05' d='M12.629 12.516V21h-2.004v-6.61h-.047l-1.91 1.172v-1.734l2.098-1.312h1.863Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:auto 22px}
+.chargeReductionRankNumber.silver{background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='27' fill='none'%3E%3Cpath fill='%23DA1028' fill-rule='evenodd' d='M14.689 5.12 19 0h-8.5l4.189 5.12Z' clip-rule='evenodd'/%3E%3Cpath fill='%23FF051A' fill-rule='evenodd' d='M10.5 0H2l9 9.5 3.689-4.38L10.5 0Z' clip-rule='evenodd'/%3E%3Ccircle cx='11' cy='16' r='11' fill='%23FFEE59'/%3E%3Ccircle cx='11' cy='16' r='9' fill='%23FFECCF'/%3E%3Cellipse cx='5.76' cy='10.611' fill='%23fff' fill-opacity='.8' rx='3.892' ry='2.764' transform='rotate(-39.646 5.76 10.611)'/%3E%3Cpath fill='%239E5A05' d='M7.912 21v-1.441l3.094-2.72c.72-.655 1.13-1.089 1.137-1.733-.006-.71-.528-1.143-1.243-1.149-.726.006-1.212.463-1.207 1.23H7.795c-.006-1.71 1.248-2.789 3.117-2.789 1.91 0 3.158 1.037 3.164 2.555-.006.973-.486 1.787-2.32 3.387l-1.066.984v.059h3.492V21h-6.27Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:auto 22px}
+.chargeReductionRankNumber.bronze{background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='27' fill='none'%3E%3Cpath fill='%23DA1028' fill-rule='evenodd' d='M14.689 5.12 19 0h-8.5l4.189 5.12Z' clip-rule='evenodd'/%3E%3Cpath fill='%23FF051A' fill-rule='evenodd' d='M10.5 0H2l9 9.5 3.689-4.38L10.5 0Z' clip-rule='evenodd'/%3E%3Ccircle cx='11' cy='16' r='11' fill='%23FFEE59'/%3E%3Ccircle cx='11' cy='16' r='9' fill='%23FFC061'/%3E%3Cellipse cx='5.76' cy='10.611' fill='%23fff' fill-opacity='.7' rx='3.892' ry='2.764' transform='rotate(-39.646 5.76 10.611)'/%3E%3Cpath fill='%239E5A05' d='M10.965 21.117c-1.934 0-3.31-1.066-3.328-2.59h2.015c.018.569.569.955 1.325.961.75-.006 1.289-.427 1.277-1.043.012-.615-.563-1.049-1.453-1.054h-.82v-1.43h.82c.773.006 1.312-.41 1.312-1.02 0-.574-.457-.978-1.136-.984-.698.006-1.243.404-1.254.996H7.8c.023-1.506 1.36-2.555 3.187-2.555 1.81 0 3.053 1.043 3.047 2.426.006.95-.685 1.612-1.664 1.758v.059c1.3.158 1.986.902 1.98 1.957.006 1.47-1.406 2.52-3.386 2.52Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:auto 22px}
+.chargeReductionFirmName{flex:1;padding-left:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255, 255, 255, 0.85);}
+.chargeReductionPrice{padding-right:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:400;color:#5bddf4}
+.chargeReduction .deskStat{height:20%}
+.chargeReduction .deskPages{align-items:end}
+
+/* 관리업체현황 및 통신상태 */
+.firmStatus{grid-column:14/-1;grid-row:14/-1;z-index:2}
+.firmStatusWrap{display:flex;justify-content:space-between;gap:0.5rem;height:100%}
+.firmStatusWrap .firmCount{display:flex;flex-direction:column;flex:1;width:50%}
+.firmStatusWrap .kfeBody{display:flex;gap:5px;align-items:center}
+.firmStatusWrap .circle{flex:1;width:50%}
+.firmCircleValue{fill:#60e9ff;font-size:1rem}
+.firmCircleLabel{fill:#fff;font-size:0.7rem}
+.networkStatus{display:flex;flex-direction:column;width:50%}
+.networkStatus .kfeBody{padding:0.5rem 0.3rem}
+.networkStatusCircleText{font-size:3rem;fill:#fff}
+.networkStatusText{width:50%;text-align:center;line-height:1.3}
+.networkStatusText a{text-decoration:none}
+.networkStatusLabel{margin:0 auto;width:80%;background-color:#00000059;border-radius:4px;font-size:0.7rem;text-align:center}
+.networkStatusValue{padding:0.1rem 0;font-size:0.8rem;color:#60e9ff}
+
+.mTBlock{display:flex;align-items:center}
+@media (max-width:1700px){
+    .peakRealTimeCountGroup::before{display:none}
+    .peakRealTimeCountWrap{gap:24px}
+    .peakRealTimeCountGroup{gap:0}
+}
+@media (max-width:1280px){
+    .peakRealTimeTitle{display:none}
+}
+@media (max-width:1280px){
+    .icon{width:24px;height:24px;background-size:auto}
+    .koreaMap .map{position:relative;height:500px}
+    .peakDetail{max-width:400px}
+    .peakDetaiColumn{font-size:9px}
+    .controlCenterGrid{display:flex;flex-direction:column}
+    .kfeContent{flex-direction:column}
+    .firmListDataRow,
+    .peakHistory .dataList,
+    .chargeReductionDataRow,
+    .deskStat{height:auto}
+    .peakRealTimeCountLabel,
+    .chargeReductionPeakRank,
+    .peakHistory .dataRow div,
+    .networkStatusLabel,
+    .networkStatusValue{font-size:1rem}
+}
+
+@media (max-width:1024px){
+    .filterWrap{flex-direction:column}
+}
+
+@media (max-width:768px){
+    .controlCenterGrid{height:inherit}
+    .peakRealTimeCountWrap{gap:15px}
+    .filterWrap{flex-direction:column;justify-content:start;align-items:start;width:max-content}
+    .peakRealTimeCountWrap{flex-direction:column}
+    .firmListHeader,
+    .firmListDataRow{grid-template-columns:10% 25% 15% 20% 20% 10%}
+    .firmListColumn{display:none}
+    .firmListColumn.mobile{display:block}
+    .firmListDataValue{display:none}
+    .firmListDataValue.mobile{display:block}
+    .firmListPeakRatio,
+    .firmListPeakTimeLimit{display:none}
+    .firmListProgressText{justify-content:center;width:100%}
+    
+    .peakRealTime{min-height:inherit;padding:20px 10px}
+    .peakRealTimeCountGroup{padding-left:0;gap:15px}
+    .peakRealTimeCountGroup::before{display:none}
+    .koreaMap .map{height:400px}
+    .peakHistory .listBody{height:200px;gap:3px}
+    .kfeHead,
+    .chargeReductionRrankTitle{font-size:1.1rem}
+    .chargeReductionDataRow{padding:5px 0}
+    .chargeReductionRowColumn,
+    .chargeReductionDataRow,
+    .chargeReductionPrice,
+    .filterButtonGroup span,
+    .filterButtonGroup button.reset{font-size:1rem}
+    .firmListHeader,
+    .firmListBody{min-width:600px}
+    .kfeContent{width:100%;height:max-content;overflow-x:auto}
+}

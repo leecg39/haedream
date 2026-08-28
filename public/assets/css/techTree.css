@@ -1,0 +1,163 @@
+.contents{height:calc(100vh - 6rem)}
+.kfeContent{display:flex;flex-direction:column;height:100%}
+.kfeHead{display:flex;justify-content:space-between}
+.kfeBody{padding:0 10px 10px 0;flex:1;overflow-y:auto}
+.kfeBody::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.kfeBody::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.kfeBody::-webkit-scrollbar-track{border-radius:2px}
+.kfeBody::-webkit-scrollbar-corner{background-color:transparent}
+.kfeHeadLabel{font-size:22px;font-weight:500;color:#fff;padding-bottom:15px;}
+
+.icons{width:24px;height:24px;vertical-align:middle}
+.icons16{width:16px;height:16px;line-height:1}
+
+.statClip{display:inline-block;position:relative;width:100%;height:2.5rem;background-image:linear-gradient(to bottom, #323232, #0e0e0e);border-radius:1rem;color:#606060;text-align:center}
+.statClip:after{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;background-clip:padding-box;border:2px solid transparent;background-image:linear-gradient(to top, #323232, #0e0e0e);line-height:240%;content:attr(data-alt)}
+.statClip.green{background-image:linear-gradient(to bottom, #196e11, #81c257);color:#fff}
+.statClip.green:after{background-image:linear-gradient(to top, #196e11, #81c257)}
+.statClip.orange{background-image:linear-gradient(to bottom, #ff7e00, #ffd400);color:#fff}
+.statClip.orange:after{background-image:linear-gradient(to top, #ff7e00, #ffd400)}
+.statClip.red{background-image:linear-gradient(to bottom, #a70281, #ff0478);color:#fff}
+.statClip.red:after{background-image:linear-gradient(to top, #a70281, #ff0478)}
+.statClip.blue{background-image:linear-gradient(to bottom, #0064ff, #00ffff);color:#fff}
+.statClip.blue:after{background-image:linear-gradient(to top, #0064ff, #00ffff)}
+.statCheap{width:30%;text-align:center}
+
+.techTree{display:grid;grid-template-columns:repeat(5, 1fr);gap:1.5rem 1.2rem}
+.techArea{padding:1rem 1.2rem;border:1px solid rgba(130, 174, 236, 0.4);border-radius:1rem;box-shadow:0 0 3px 3px rgba(0,0,0,.2);background-color:rgba(44, 76, 155, 0.4)}
+.tech+.tech{margin-top:1rem;padding-top:.5rem;border-top:1px solid #284080}
+.techHead{position:relative;padding:0.6rem 0 1rem 0;display:flex;align-items:center;justify-content:space-between}
+.techTools{position:absolute;right:0;display:flex;align-items:center;gap:10px}
+.techTools .icons{fill:#b1b6c8;color:rgba(255,255,255,0.7)}
+.techTools .icons:hover{fill:#95e3fd;color:#95e3fd;cursor:pointer}
+.techName{color:#fff;font-weight:500;font-size:1.1rem;letter-spacing:-0.3px}
+.techBody{display:flex;flex-direction:column;gap:1rem}
+.techForge{width:100%;padding:20px 0;background-color:#001447;display:flex;flex:1;align-items:center;justify-content:center;border-radius:8px}
+.techForge > svg{height:150px;}
+
+.techStatus{display:flex;justify-content:center;gap:15px;margin:0.5rem 0}
+.techChip{position:relative;padding:2px 0 5px 18px;color:rgba(255,255,255,0.7);font-size:16px;}
+.techChip::before {position:absolute;content:'';width:12px;height:12px;background-color:rgba(255,255,255,0.5);display:block;border-radius:50%;left:0;top:8px}
+.statusBlue .techBlue{color:#fff}
+.statusRed .techRed{color:#fff;}
+.statusGreen .techGreen{color:#fff;}
+.statusBlue .techBlue{color:#fff}
+.statusBlue .techBlue::before{background-color:#49b7ff;}
+.statusGreen .techGreen::before{background-color:#4cd99d;}
+.statusRed .techRed::before{background-color:#f18dc2;}
+
+.techOut{display:flex;align-items:center;gap:.4rem;padding:0 10px 10px 10px}
+.techOutGauge{flex:1;line-height:1;}
+.techOutText{font-size:.86rem;color:#7cdfff;line-height:1}
+
+.techSafe{display:flex;justify-content:space-evenly;gap:1rem}
+.techSafeItem{display:flex;justify-content:center;align-items:center;gap:5px;margin-bottom:.4rem}
+.techSafeText{vertical-align:middle;color:#c0c0c0;font-size:.92rem}
+.techSafeMark{color:#7cdfff}
+.fSmT{align-items:center;display:flex;gap:5px}
+.fSmT > i{font-size:14px;line-height:1}
+
+/* 가열/용해 */
+.designHeat .techBody{}
+.designHeat .techForge{}
+.designHeat .techInfo{width:auto}
+.designHeat .techStatus{justify-content:center;gap:18px}
+
+/* 연속로 */
+.designRelay{grid-column: 1 / -1;width:auto;padding:1rem}
+.designRelay .tech{display:flex;flex-direction:column;}
+.designRelay .techHead{display:flex;flex-direction:row;align-items:center;justify-content:start;gap:2rem;line-height:1;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.3)}
+.designRelay .techBody{display:grid;grid-template-columns:repeat(5, 1fr);gap:2rem}
+.designRelay .techName+.techRelayEnergy,
+.designRelay .techRelayEnergy{margin-top:0;padding-top:0;font-size:17px}
+.designRelay .techName{margin:0 25px 0 10px;font-size:1.2rem}
+.techRelayEnergy{padding-top:.4rem}
+.techRelayEnergy .techSafeMark{display:inline-block}
+.techRelayEnergy .techSafeText{font-size:17px;margin-right:5px}
+.techRelay{position:relative;padding:.4rem;border-radius:.6rem;background-color:#062858}
+.techRelayName{color:#ffffff;font-size:1.1rem;margin:10px 0;letter-spacing:-0.3px;font-weight:500}
+.techRelay .techTools{position:absolute;top:22px;right:10px}
+.techRelay .techChip{font-size:16px}
+.techRelay .techStatus{justify-content:center;gap:18px;margin:1rem 0}
+.techRelay .techOutText{color:#c8c8c8}
+.techRelay .techOut{padding:0 10px;margin:0}
+.techPipe{position:absolute;top:130px;right:-37px;width:0;height:0;display:block;border-bottom:15px solid transparent;border-top:15px solid transparent;border-left:20px solid #3978d1;border-right:10px solid transparent}
+.techRelay:last-child .techPipe, 
+.techRelay:nth-child(5n) .techPipe{display:none}
+
+/* 설정팝업 */
+.editTitle{margin:1rem 0 2rem;color:#fff;font-size:1.6rem;font-weight:600;text-align:center}
+.editForm{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 1rem;align-items:center;padding:0 2rem 1rem}
+.eInput{padding:.2rem .8rem;width:15rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+
+/* 팝업차트 */
+.modalChartTech{max-width:100%;width:72rem;}
+.chartHead{display:flex;justify-content:center;align-items:center;gap:1rem;padding:1rem}
+.eInputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.eInputDate{width:10rem}
+.eInputTime::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.eInputTime{width:9rem}
+.chartTitle{font-size:1.6rem;font-weight:600;color:#fff}
+.chartLabel{vertical-align:middle}
+.chartTech{min-height:24rem}
+
+.actIcon{position:relative}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+
+
+/* 차트범례 */
+.chartLegend{display:grid;grid-template-columns:4fr 3fr 1fr;gap:.2rem .4rem;padding:.4rem;margin:.8rem;border-top:1px solid #c0c0c0;border-bottom:1px solid #c0c0c0}
+.chartLegendNub{display:grid;grid-template-columns:5fr 1fr 2fr 1fr;gap:.2rem .4rem;padding:.4rem;margin:0 .8rem}
+.chartLegendDate{text-align:center;color:#606060;font-weight:600;font-size:.86rem}
+.chartLegend1{background-color:#ffa000;color:#fff;font-size:.9rem}
+.chartLegend2{background-color:#fdd835;color:#000;font-size:.9rem}
+.chartLegendLabel{text-align:center;color:#181818;font-size:.9rem}
+.chartLegendText{text-align:right;color:#181818;font-weight:600;font-size:.9rem}
+.chartLegendEm{color:#808080;font-size:.86rem}
+.chartLegendNub .chartLegendText{color:#ef5350;font-weight:500;font-size:.86rem}
+
+.mTBlock{display:flex;align-items:center}
+.chartHead .mTBlock{gap:8px}
+
+@media (max-width:1920px){
+    .techTree{grid-template-columns:repeat(5, 1fr)}
+}
+
+@media (max-width:1600px) {
+    .techTree{grid-template-columns:repeat(4, 1fr)}
+    .designRelay .techBody{grid-template-columns: repeat(4, 1fr)}
+    .techRelay:last-child .techPipe, 
+    .techRelay:nth-child(4n) .techPipe {display:none}
+    .techRelay:nth-child(5n) .techPipe {display:block}
+}
+
+@media (max-width:1100px) {
+    .techTree{grid-template-columns:repeat(3, 1fr)}
+    .designRelay .techBody{grid-template-columns: repeat(3, 1fr)}
+    .techRelay:last-child .techPipe, 
+    .techRelay:nth-child(3n) .techPipe {display:none}
+    .techRelay:nth-child(4n) .techPipe {display:block}
+}
+
+@media (max-width:768px) {
+    .techArea{width:auto;padding:0.3rem 0.6rem}
+    .modalBox{height: calc(100vh - 40px);width:calc(100% - 40px);max-width:calc(100% - 40px)}
+    .modalChartTech{max-height:calc(100vh - 50px);width:100%}
+    .modalContent{max-height:calc(100vh - 150px)}
+    .chartHead{flex-direction:column;gap:8px}
+    .mTBlock{min-height:40px;gap:8px;justify-content:center}
+    .actIcon{padding:inherit}
+    .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+    .chartTech{min-height:19rem}
+    .editForm{padding:0;grid-template-columns:1fr}
+}
+@media (max-width:480px) {
+    .techTree{grid-template-columns:1fr}
+    .designRelay .techHead{flex-direction:column;gap:1rem;padding:1rem 0}
+    .designRelay .techBody{grid-template-columns:1fr}
+    .techRelay .techPipe{display:none}
+    .techHead{padding:10px}
+    .techBody{gap:0.5rem;padding-bottom:0.5rem}
+    .kfeBody {padding:0;flex:1;overflow-y:inherit;width:100%}
+    
+}

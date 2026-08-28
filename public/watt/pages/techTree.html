@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>설비관리 - 설비 제어</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/deskLib.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/techTree.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/techTree.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <div class="kfeContent">
+                <div class="kfeHead">
+                    <span class="kfeHeadLabel">설비 제어</span>
+                </div>
+                <div class="kfeBody">
+                    <div class="techTree" id="techTree"></div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modalChart">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalChartActClose"></i>
+                    <div class="modalContent modalChartTech">
+                        <div class="chartHead">
+                            <div class="mTBlock">
+                                <span class="chartTitle" id="chartTechName">설비관리</span>
+                            </div>
+                            <div class="mTBlock">
+                                <span class="chartLabel">날짜 및 시간</span>
+                                <input class="eInput eInputDate" id="eInputDate" type="date" />
+                            </div>
+                            <div class="mTBlock">
+                                <input class="eInput eInputTime" id="eInputTime" type="time" />
+                                <span class="act actIcon" id="chartAct">
+                                    <i class="bi bi-search"></i>
+                                    <span data-lang="report012">조회</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="chartTech" id="chartTemp"></div>
+                        <div class="chartTech" id="chartTech"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">개별 설비설정</div>
+                        <div class="editForm">
+                            <span>그룹이름</span>
+                            <span>
+                                <input class="eInput" id="edit-tabName" maxlength="8" />
+                            </span>
+                            <span>설비이름</span>
+                            <span>
+                                <input class="eInput" id="edit-controlName" maxlength="32" />
+                            </span>
+                            <span>우선순위</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-controlNo" step="1" min="0" max="254"/>
+                            </span>
+                            <span>기본설정온도(°C)</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-setTemp" step="1" min="0" max="999"/>
+                            </span>
+                            <span>피크제어수치(%)</span>
+                            <span>
+                                <input class="eInput" id="edit-peakGain" readonly/>
+                            </span>
+                            <span>게이트웨이</span>
+                            <span>
+                                <input class="eInput" id="edit-gid" readonly/>
+                            </span>
+                            <span>노드번호</span>
+                            <span>
+                                <input class="eInput" id="edit-nodeIndex" readonly/>
+                            </span>
+                            <span>채널번호</span>
+                            <span>
+                                <input class="eInput" id="edit-chNo" readonly/>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalActDone">확인</span>
+                        <span class="modalAct" id="modalActCancel">취소</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

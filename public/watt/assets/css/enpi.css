@@ -1,0 +1,107 @@
+.deskTool{margin-bottom:1.5rem;text-align:center;display:flex;align-items:center;justify-content:center}
+.deskLabel{margin:0 .5rem 0 2rem;color:#72bce3}
+.deskDash{margin:0 .4rem}
+
+.inputDate{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+
+.deskBooks{display:flex}
+.deskIndex{position:relative;width:20%;padding:1rem;border:1px solid rgba(255,255,255,0.15);border-right:0;background-color:#00001d}
+.deskContent{width:80%;background-color: rgba(0,0,29,0.4);padding: 2rem 2rem;border: 1px solid rgba(255,255,255,0.15);border-left:0}
+
+.sheetArea{margin:1rem 0;background-color: transparent;padding:0;border:0}
+.sheet{clear:both;width:100%;margin:2rem 0;border-collapse:separate;border-spacing:0;text-align:center}
+.sheet thead.sticky{position:sticky;top:0}
+.sheet th{padding:.6rem .2rem;border:1px solid #202020;background-color:#0b0b16;color:#72bce3;font-size:0.98rem;font-weight:400}
+.sheet td{padding:.6rem .2rem;border:1px solid #202020;background-color:rgba(18,18,30,.8);color:#c8c8c8;font-size:0.98rem}
+.sheet tr:hover td{background-color:rgba(63,81,181,.6);color:#fff}
+.sheet tr:hover .tLabel{background-color:rgba(63,81,181,.4)}
+.sheetEm{margin-right:4px;color:inherit;font-style:italic}
+.sheetTwin{display:flex;justify-content:space-between;flex-direction:column}
+.sheetTwin .sheet{width:49%;margin:0}
+.sheetScroll{overflow-y:auto;width:100%;height:24rem;margin-bottom:2rem}
+.sheetScroll::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetScroll::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetScroll::-webkit-scrollbar-track{border-radius:2px}
+.sheetScroll::-webkit-scrollbar-corner{background-color:transparent}
+
+.sheetScroll .sheet{width:100%}
+.sheetSticky{position:sticky;top:0}
+.sheetHead{height:5.2rem}
+.active td{background-color:rgba(63,81,181,.6);color:#fff}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+
+.enpiResult{display:flex;text-align:center}
+.enpiReport{width:100%}
+.enpiText{margin: 0.6rem 0;color: rgba(255,255,255,0.8)}
+.enpiThis, 
+.enpiToe{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 20px;margin:1rem 0;height:80px;font-size:18px;line-height:1;border-radius:8px 8px 0 0;background:#1d2054}
+.enpiToe .enpiText, 
+.enpiThis .enpiText{color:#fff;font-size:1.1rem;margin:0;line-height:1}
+.enpiThis > .num, 
+.enpiToe > .num{display:flex;align-items:baseline;gap:7px;line-height:1} 
+.enpiThis .enpiTrue, 
+.enpiToe .enpiTrue{color:#f0f30f;font-size:26px;font-family:"Open Sans", sans-serif;font-weight:600}
+.enpiOut{display:flex;flex-direction:column}
+.enpiOut > div{display:inline-flex;align-items:center;justify-content:space-between;border-top: 1px solid rgba(255,255,255,0.2)}
+.enpiOut > div:first-child{border-top:0}
+.enpiOut .enpiText{display:block;font-size:16px;margin-left:5px;margin-right:5px}
+.enpiOut .enpiTrue{display:flex;align-items:center;height:50px;color:#98d4fb;font-size:22px;font-family:"Open Sans", sans-serif;font-weight:500}
+.enpiLast{display:flex;flex-direction:column}
+.enpiLast > div {display:flex;align-items:center;justify-content:space-between;padding:0 10px;border-bottom:1px solid rgba(255,255,255,0.2)}
+.enpiLast > div:last-child{border-bottom: 0}
+.enpiLast .enpiText{display:block;font-size:16px;color:rgba(255,255,255,0.8)}
+.enpiOut .enpiText:last-child{font-size: 15px;color:rgba(255,255,255,0.7)}
+.enpiLast .enpiTrue{font-size:22px;color:#03a9f4;font-family:"Open Sans", sans-serif;font-weight:500}
+.enpiLast .enpiUp{color:#fd5b5b}
+.chart1{width:100%;height:400px;margin-bottom:2rem}
+
+.mTBlock{display:flex;align-items:center}
+
+@media screen and (max-width:1300px){
+    .deskBooks{display:block}
+    .deskIndex{width:100%}
+    .deskContent{width:100%;padding:0}
+    .deskTool{margin-top:1rem}
+    
+    .sheetArea{overflow:auto;margin:1rem 0}
+    .sheetTwin{flex-direction:column;gap:2rem}
+    .sheetTwin .sheet{width:100%}
+    .sheetScroll{width:auto;height:auto;max-height: 100vh}
+    
+    .enpiResult{display:block}
+    .enpiReport{width:auto}
+    .chart1{width:auto;height:28rem}
+    
+    .inputDate{padding:.2rem .4rem;font-size:1rem}
+    .select{padding:.2rem .4rem;font-size:1rem}
+    .act{padding:.4rem 1rem .4rem 1rem}
+    .actIcon .icon{top:.5rem;left:.5rem}
+}
+
+@media screen and (max-width:768px){
+
+    .deskLabel{margin:0}
+    .deskToolWrap{padding:1rem 0 0 0}
+    .deskTool{flex-direction:column;gap:8px;margin:1rem 0}
+    .mTBlock{min-height:40px;gap:8px}
+    .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center}
+}
+
+@media screen and (max-width:480px){
+    .sheetScroll{width:100%;overflow:auto;height:400px}
+    .sheetScroll:last-child{height:max-content}
+    .sheetScroll .sheet{min-width:1000px;}
+    .enpiToe, .enpiThis{height:100px;margin:1rem 0 0 0}
+    .deskIndex{padding:0;border:0}
+    .chart1{height:300px;padding:0}
+    .enpiToe, .enpiThis{height:70px;margin:1rem 0;flex-direction:row;justify-content:space-between}
+    .deskTool{transform:scale(0.9)}
+}

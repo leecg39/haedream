@@ -1,0 +1,24 @@
+.actArea{text-align:center}
+.act{display:inline-block;padding:.52rem 2rem;border-radius:.4rem;background-color:#2062bf;font-size:1rem;text-align:center;cursor:pointer}
+.act:hover{background-color:#307eeb;color:#fff}
+.input{width:8rem;padding:.2rem .4rem;border:1px solid #5190a5;background-color:transparent;font-size:1rem}
+.select{display:inline-block;width:8rem;padding:.3rem .4rem;border:1px solid #5190a5;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+.sheetArea{margin:0 0 2rem 0}
+.sheet{clear:both;width:100%;margin:1rem 0 2rem 0;text-align:center;border-collapse:collapse;border-spacing:0}
+.sheet tr:first-child th{padding:.6rem .2rem;background-color:rgba(1,31,104,1);color:rgba(255,255,255,0.8);font-size:1rem;font-weight:400;border-bottom:1px solid rgba(255,255,255,0.2)}
+.sheet td{padding:.6rem .2rem;background-color:rgba(18,18,30,.0);font-size:1rem;border-bottom:1px solid rgba(255,255,255,0.2)}
+.sheet th{background-color:#00123f;font-size:1rem;font-weight:400;border-bottom:1px solid rgba(255,255,255,0.2)}
+.sheetEm{color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+
+@media (max-width:768px){
+    .deskArea{overflow:auto;margin:1rem 0}
+    .input{font-size:1rem}
+    .select{font-size:1rem}
+}
+@media (max-width:480px){
+    .sheetArea{margin:10px 0 1rem 0}
+    .sheetArea{width:100%;overflow:auto}
+    .sheet{min-width:500px}
+}

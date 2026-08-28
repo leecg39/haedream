@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>비교분석 - 목표대비 비교분석</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/kpi.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/kpi.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">목표대비 비교분석</h1>
+            <div class="deskToolTop">
+                <span class="label">파일업로드</span>
+                <div class="mTBlock">
+                    <span class="actAir" id="actAir1" data-type="amount"><i class="bi bi-file-earmark-arrow-up"></i>생산량</span>
+                    <span class="actAir" id="actAir6" data-type="defective"><i class="bi bi-file-earmark-arrow-up"></i>전체생산량</span>
+                    <span class="actAir" id="actAir2" data-type="wTime"><i class="bi bi-file-earmark-arrow-up"></i>조업시간</span>
+                    <span class="actAir disable" id="actAir3" data-type="cost"><i class="bi bi-file-earmark-arrow-up"></i>생산원가</span>
+                    <span class="actAir" id="actAir4" data-type="take"><i class="bi bi-file-earmark-arrow-up"></i>매출액</span>
+                    <span class="actAir" id="actAir5" data-type="goal"><i class="bi bi-file-earmark-arrow-up"></i>목표량</span>
+                </div>
+            </div>
+            <div class="kpiArea">
+                <div class="itemList" id="itemList">
+                    <div class="itemMain">MAIN</div>
+                </div>
+                <div class="itemInfo">
+                    <div class="sheetArea">
+                        <div class="deskTool bGroup">
+                            <div class="mTBlock">
+                                <span class="deskLabel">기간</span>
+                                <div class="datePicker">
+                                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                        <input type="text" class="inputDate" id="sDate" aria-label="Date-Time" readonly>
+                                        <i class="bi bi-calendar"></i>
+                                    </div>
+                                    <div id="sDateWrapper"></div>
+                                </div>
+                                <span class="deskDash">~</span>
+                                <div class="datePicker">
+                                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                        <input type="text" class="inputDate" id="eDate" aria-label="Date-Time" readonly>
+                                        <i class="bi bi-calendar"></i>
+                                    </div>
+                                    <div id="eDateWrapper"></div>
+                                </div>
+                            </div>
+                            <div class="mTBlock">
+                                <select class="select" id="sTimeType">
+                                    <option value="0">시간별</option>
+                                    <option value="1">일별</option>
+                                    <option value="2">월별</option>
+                                    <option value="3">연별</option>
+                                </select>
+                                <select class="select" id="sDataType">
+                                    <option value="1">전력량 kWh</option>
+                                    <option value="0">최대수요 kW</option>
+                                    <option value="2">전류</option>
+                                    <option value="3">온실가스배출량 kgCO₂</option>
+                                    <option value="4">생산량대비(설비효율분석)</option>
+                                    <option value="5">조업시간대비(시간당설비효율분석)</option>
+                                    <!-- <option value="6">생산원가대비(원가분석)</option> -->
+                                    <option value="7">매출액대비(원단위설비효율)</option>
+                                    <option value="8">목표량대비(전력소비효율)</option>
+                                </select>
+                            </div>
+                            <div class="mTBlock">
+                                <select class="select" id="sChartType">
+                                    <option value="0">막대</option>
+                                    <option value="1">라인</option>
+                                </select>
+                                <span class="act actIcon" id="act">
+                                    <i class="bi bi-search"></i>조회
+                                </span>
+                                <span class="act actIcon" id="actExcelSave">
+                                    <i class="bi bi-file-earmark-excel-fill excel"></i>엑셀로 다운
+                                </span>
+                            </div>
+                        </div>
+                        <div class="chart1" id="chart1"></div>
+                        <div class="sheetExportArea">
+                            <table class="sheet" id="sheetData">
+                                <thead>
+                                <tr>
+                                    <th>시간</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th>-</th>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="deskTool pop">
+                            <div class="left">
+                                <div class="deskTitle" id="modalTitle">생산량 정보입력</div>
+                                <div class="mTBlock">
+                                    <span class="deskLabel">기간</span>
+                                    <input type="month" class="inputDate" id="etcDate" min="2021-12" />
+                                    <span class="act" id="etcAct">조회</span>
+                                </div>
+                            </div>
+                            <div class="right">
+                                <span class="act actIcon" id="actExcelSaveEtc" title="현재 엑셀데이터 파일 다운로드">
+                                    <i class="bi bi-1-circle"></i>엑셀 다운
+                                </span>
+                                <span class="act actIcon" id="actExcelImportEtc" title="정보입력 엑셀데이터 파일등록">
+                                    <i class="bi bi-2-circle"></i>파일 등록
+                                </span>
+                                <input class="disable" id="etcFile" type="file" accept=".xlsx" />
+                                <span class="act" id="etcActSave">
+                                    <i class="bi bi-3-circle"></i>파일 저장
+                                </span>
+                            </div>
+                        </div>
+                        <div class="sheetWrap">
+                            <table class="sheet" id="etcData">
+                                <tbody>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

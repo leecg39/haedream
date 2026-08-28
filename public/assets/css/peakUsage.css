@@ -1,0 +1,55 @@
+.deskTool{display:flex;align-items:center;justify-content:center;flex-direction:row;margin-bottom:1.5rem;text-align:center}
+.deskLabel{margin:0 .5rem 0 2rem;color:#72bce3}
+
+.sheetArea{overflow:auto;height:35rem;margin-bottom:2rem;padding:0 !important;border:0 !important}
+.sheetArea::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetArea::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetArea::-webkit-scrollbar-track{border-radius:2px}
+.sheetArea::-webkit-scrollbar-corner{background-color:transparent}
+.sheet{clear:both;width:100%;border-collapse:separate;border-spacing:0;text-align:center}
+.sheet thead.sticky{position:sticky;top:0}
+.sheet th{padding:.6rem .2rem;border:1px solid #202020;background-color:#0b0b16;color:#72bce3;font-size:0.98rem;font-weight:400}
+.sheet td{padding:.6rem .2rem;border:1px solid #202020;background-color:rgba(18,18,30,.8);color:#c8c8c8;font-size:0.98rem}
+.sheet tr:hover td{background-color:rgba(63,81,181,.6);color:#fff}
+.sheet tr:hover .tLabel{background-color:rgba(63,81,181,.6)}
+.sheet thead th{border:none}
+.sheetEm{color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+.sheetSticky{position:sticky;top:0}
+
+.inputMonth{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.inputMonth::-webkit-calendar-picker-indicator{filter:invert(.8)}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:4px}
+.act i.excel{color:#41e350}
+.sheet .sheetAct{color:#e91e63}
+.sheet .sheetAct:hover{background-color:#e91e63;color:#fff;cursor:pointer}
+.chart1{height:30rem;margin-bottom:1.5rem;border:1px solid rgba(255,255,255,0.15);background-color:rgba(0,0,29,0.4)}
+
+.sheet tr:hover .wattMax{background-color:#e91e63;color:#fff}
+.sheet .wattMax{color:#e91e63}
+
+.underline{text-decoration:underline;text-decoration-color:green}
+
+@media (max-width:768px){
+    .deskTool .deskLabel{display:none}
+    .deskTool{display:flex;flex-direction:row;gap:.4rem;margin-top:1rem}
+    .sheetArea{overflow:auto;width:100%;height:auto;margin:1rem 0}
+    .sheet{margin:0}
+    .inputMonth{padding:.2rem .4rem;font-size:1rem}
+    .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+    .chart1{height:28rem}
+}
+@media (max-width:480px){
+    .sheetArea .sheet{min-width:1100px}
+    .chart1{margin-top:10px;height:300px;padding:10px}
+    .deskTool{transform:scale(0.9)}
+    .act{min-width:inherit;padding:0 12px}
+    .datePicker .tui-datetime-input{width:135px}
+
+}

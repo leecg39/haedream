@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>전력사용량분석보고서 - 일광금속</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/metered.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/reportIK.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">전력 사용량 분석 보고서</h1>
+            <div class="deskTool">
+                <span class="deskLabel" data-lang="power015">날짜</span>
+                <input type="month" class="inputDate" id="inputDate" min="2021-01" />
+                <span class="act actIcon" id="act">
+                    <i class="icon iconSearch"></i>
+                    <span data-lang="power013">조회</span>
+                </span>
+            </div>
+            <h2 class="contentLabel">1. 전력 사용 현황 및 대비</h2>
+            <div class="sheetArea">
+                <table class="sheet tinyfont">
+                    <caption class="sheetCaption">
+                        <span class="sheetLabel">1-1)전월대비 전력사용 증감량</span>
+                        <span>
+                            <span>※전월 대비</span>
+                            <span class="red">증가</span>
+                            <span class="blue">감소</span>
+                        </span>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th rowspan="3">구분</th>
+                            <th rowspan="3">단위</th>
+                            <th colspan="2" rowspan="3">기간</th>
+                            <th colspan="12">일광금속</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2">합계</th>
+                            <th colspan="7">유한회사</th>
+                            <th colspan="3">제2공장</th>
+                            <th>일광정공</th>
+                        </tr>
+                        <tr>
+                            <th>소계</th>
+                            <th>단조A<br/>(950kW)</th>
+                            <th>단조C<br/>(890kW)</th>
+                            <th>가공D<br/>(950kW)</th>
+                            <th>가공E<br/>(950kW)</th>
+                            <th>천안<br/>(950kW)</th>
+                            <th>천안2<br/>(950kW)</th>
+                            <th>소계</th>
+                            <th>제2공장A<br/>(900kW)</th>
+                            <th>사봉<br/>(950kW)</th>
+                            <th>일광정공<br/>(500kW)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meterWithMonth">
+                        <tr>
+                            <th rowspan="3">사용량</th>
+                            <td rowspan="3">1,000kW</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">사용<br/>요금</th>
+                            <td rowspan="3">1,000원</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">공급가<br/>+<br/>전력<br/>기금</th>
+                            <td rowspan="3">1,000원</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">kW당<br/>요금</th>
+                            <td rowspan="3">1원</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">평균<br/>근무<br/>일수</th>
+                            <td rowspan="3">1일</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet tinyfont">
+                    <caption class="sheetCaption">
+                        <span class="sheetLabel">1-2)전년 동월대비 전력사용 증감량</span>
+                        <span>
+                            <span>※전년동월 대비</span>
+                            <span class="red">증가</span>
+                            <span class="blue">감소</span>
+                        </span>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th rowspan="3">구분</th>
+                            <th rowspan="3">단위</th>
+                            <th colspan="2" rowspan="3">기간</th>
+                            <th colspan="12">일광금속</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2">합계</th>
+                            <th colspan="7">유한회사</th>
+                            <th colspan="3">제2공장</th>
+                            <th>일광정공</th>
+                        </tr>
+                        <tr>
+                            <th>소계</th>
+                            <th>단조A<br/>(950kW)</th>
+                            <th>단조C<br/>(890kW)</th>
+                            <th>가공D<br/>(950kW)</th>
+                            <th>가공E<br/>(950kW)</th>
+                            <th>천안<br/>(950kW)</th>
+                            <th>천안2<br/>(950kW)</th>
+                            <th>소계</th>
+                            <th>제2공장A<br/>(900kW)</th>
+                            <th>사봉<br/>(950kW)</th>
+                            <th>일광정공<br/>(500kW)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meterWithYear">
+                        <tr>
+                            <th rowspan="3">사용량</th>
+                            <td rowspan="3">1,000kW</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">사용<br/>요금</th>
+                            <td rowspan="3">1,000원</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">공급가<br/>+<br/>전력<br/>기금</th>
+                            <td rowspan="3">1,000원</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">kW당<br/>요금</th>
+                            <td rowspan="3">1원</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">평균<br/>근무<br/>일수</th>
+                            <td rowspan="3">1일</td>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">12월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td data-tag="year">0000</td>
+                            <td data-tag="month">11월</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">증감량</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h2 class="contentLabel">2. 분석</h2>
+            <div class="sheetArea">
+                <table class="sheet">
+                    <thead>
+                        <tr>
+                            <th colspan="2">구분</th>
+                            <th>단위</th>
+                            <th>증감량</th>
+                            <th>증감률</th>
+                            <th colspan="8">증감사유</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analysisTable">
+                        <tr>
+                            <th rowspan="8">전월대비</th>
+                            <th>사용량</th>
+                            <td>1,000kW</td>
+                            <td data-tag="power">0</td>
+                            <td data-tag="power">0</td>
+                            <td colspan="8"></td>
+                        </tr>
+                        <tr>
+                            <th>사용요금</th>
+                            <td>1,000원</td>
+                            <td data-tag="bill">0</td>
+                            <td data-tag="bill">0</td>
+                            <td colspan="8"></td>
+                        </tr>
+                        <tr>
+                            <th>근무일수</th>
+                            <td>1일</td>
+                            <td data-tag="works">0</td>
+                            <td data-tag="works">0</td>
+                            <td colspan="8"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet sheetHalf">
+                    <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>부서</th>
+                            <th colspan="4">의견</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th rowspan="3">절감방안</th>
+                            <th>공무팀</th>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            <th>단조 사업부</th>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            <th>가공 사업부</th>
+                            <td colspan="4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h2 class="contentLabel">3. 근무일수 대비 전력사용량</h2>
+            <div class="meterChart">
+                <div id="chart-container0"></div>
+                <div id="chart-container1"></div>
+                <div id="chart-container2"></div>
+                <div id="chart-container3"></div>
+                <div id="chart-container4"></div>
+                <div id="chart-container5"></div>
+            </div>
+            <h2 class="contentLabel">월별 전기현황 보고서</h2>
+            <div class="sheetArea">
+                <table class="sheet layoutAuto tinyfont">
+                    <caption class="left">1. 당월 전력사용 현황</caption>
+                    <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>수전명</th>
+                            <th>요금전력</th>
+                            <th>최대수요</th>
+                            <th>사용전력</th>
+                            <th>기본요금</th>
+                            <th>근무일수</th>
+                            <th>전력요금</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportForMonth">
+                        <tr>
+                            <td rowspan="6">01.유한회사</td>
+                            <td>가공D</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>가공E</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조A</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조C</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안2</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="7" class="left">01.유한회사 소계</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">02.제2공장</td>
+                            <td>A,B,C동</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>사봉</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="7" class="left">02.제2공장 소계</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td>03.일광정공</td>
+                            <td>정공</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="7" class="left">03.일광정공 소계</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <th colspan="7" class="left">총합계</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet layoutAuto tinyfont">
+                    <caption class="left">2. 지출일 기준 지출액</caption>
+                    <thead>
+                        <tr>
+                            <th>순번</th>
+                            <th>지출일</th>
+                            <th>지출선</th>
+                            <th>수전명</th>
+                            <th>지출금액</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportForBill">
+                        <tr>
+                            <td class="red">①</td>
+                            <td data-tag="date">00.00.00 (월)</td>
+                            <td>일광정공</td>
+                            <td>정공</td>
+                            <td class="red" data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td class="red">②</td>
+                            <td data-tag="date">00.00.00 (월)</td>
+                            <td>유한회사</td>
+                            <td>소계</td>
+                            <td class="red" data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">세부내역</td>
+                            <td rowspan="2" data-tag="date">00.00.00 (월)</td>
+                            <td rowspan="2">유한회사</td>
+                            <td>천안</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안2</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td class="red">③</td>
+                            <td data-tag="date">00.00.00 (월)</td>
+                            <td>유한회사</td>
+                            <td>소계</td>
+                            <td class="red" data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="4">세부내역</td>
+                            <td rowspan="4" data-tag="date">00.00.00 (월)</td>
+                            <td rowspan="4">유한회사</td>
+                            <td>가공D</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>가공E</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조A</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조C</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td class="red">④</td>
+                            <td data-tag="date">00.00.00 (월)</td>
+                            <td>제2공장</td>
+                            <td>소계</td>
+                            <td class="red" data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">세부내역</td>
+                            <td rowspan="2" data-tag="date">00.00.00 (월)</td>
+                            <td rowspan="2">제2공장</td>
+                            <td>A,B,C동</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>사봉</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="3" class="red left">①+②+③+④</th>
+                            <th>총 합계</th>
+                            <th class="red right" data-tag="no">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet layoutAuto tinyfont">
+                    <caption class="left">
+                        <span>3. 전월 대비</span>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>수전명</th>
+                            <th>전월</th>
+                            <th>당월</th>
+                            <th>증감량</th>
+                            <th>증감률</th>
+                            <th>전월</th>
+                            <th>당월</th>
+                            <th>증감량</th>
+                            <th>증감률</th>
+                            <th>전월</th>
+                            <th>당월</th>
+                            <th>증감량</th>
+                            <th>증감률</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meterContrast">
+                        <tr>
+                            <td rowspan="6">01.유한회사</td>
+                            <td>가공D</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>가공E</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조A</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조C</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안2</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">01.유한회사 소계</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">02.제2공장</td>
+                            <td>A,B,C동</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <td>사봉</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">02.제2공장 소계</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2">03.일광정공</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">03.일광정공 소계</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">요금 합계</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="sheetArea">
+                <table class="sheet">
+                    <caption class="caption sheetCaption">
+                        <span class="sheetLabel">4. 세부내역</span>
+                        <span>
+                            <span class="red">피크치 =</span>
+                            <span>※단위 : kW</span>
+                        </span>
+                    </caption>
+                    <thead id="detailPeakHead">
+                        <tr>
+                            <th colspan="2">1) 피크치</th>
+                            <th colspan="11" data-tag="year">0000년</th>
+                            <th colspan="1" data-tag="year">0000년</th>
+                            <th rowspan="2">피크 최대치</th>
+                        </tr>
+                        <tr>
+                            <th>구분</th>
+                            <th>수전명</th>
+                            <th data-tag="month">01</th>
+                            <th data-tag="month">02</th>
+                            <th data-tag="month">03</th>
+                            <th data-tag="month">04</th>
+                            <th data-tag="month">05</th>
+                            <th data-tag="month">06</th>
+                            <th data-tag="month">07</th>
+                            <th data-tag="month">08</th>
+                            <th data-tag="month">09</th>
+                            <th data-tag="month">10</th>
+                            <th data-tag="month">11</th>
+                            <th data-tag="month">12</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailPeak">
+                        <tr>
+                            <td rowspan="6">01.유한회사</td>
+                            <td>가공D</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>가공E</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조A</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조C</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안2</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">02.제2공장</td>
+                            <td>A,B,C동</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>사봉</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>03.일광정공</td>
+                            <td>정공</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">피크 최대치</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet">
+                    <caption class="caption sheetCaption">
+                        <span class="actSave" id="actSave">저장</span>
+                        <span class="red">25일 &gt;</span>
+                        <span>※단위 : 일</span>
+                    </caption>
+                    <thead id="detailWorkHead">
+                        <tr>
+                            <th colspan="2">3) 근무일수</th>
+                            <th colspan="11" data-tag="year">0000년</th>
+                            <th colspan="1" data-tag="year">0000년</th>
+                            <th rowspan="2">평균 근무일수</th>
+                        </tr>
+                        <tr>
+                            <th>구분</th>
+                            <th>수전명</th>
+                            <th data-tag="month">01</th>
+                            <th data-tag="month">02</th>
+                            <th data-tag="month">03</th>
+                            <th data-tag="month">04</th>
+                            <th data-tag="month">05</th>
+                            <th data-tag="month">06</th>
+                            <th data-tag="month">07</th>
+                            <th data-tag="month">08</th>
+                            <th data-tag="month">09</th>
+                            <th data-tag="month">10</th>
+                            <th data-tag="month">11</th>
+                            <th data-tag="month">12</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailWork">
+                        <tr>
+                            <td rowspan="6">01.유한회사</td>
+                            <td>가공D</td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="88" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>가공E</td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="87" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조A</td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="85" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조C</td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="84" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안</td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="83" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안2</td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="82" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">02.제2공장</td>
+                            <td>A,B,C동</td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="89" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>사봉</td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="81" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <td>03.일광정공</td>
+                            <td>정공</td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td><input class="inputHide" data-fid="80" data-month="0" data-year="0" value="0"/></td>
+                            <td data-tag="avg">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">평균 근무일수</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                            <th class="right" data-tag="avg">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="sheetArea">
+                <table class="sheet tinyfont">
+                    <caption class="caption"></caption>
+                    <thead id="detailWattHead">
+                        <tr>
+                            <th colspan="2">2) 사용전력</th>
+                            <th colspan="11" data-tag="year">0000년</th>
+                            <th colspan="1" data-tag="year">0000년</th>
+                            <th rowspan="2">사용량 합계</th>
+                        </tr>
+                        <tr>
+                            <th>구분</th>
+                            <th>수전명</th>
+                            <th data-tag="month">01</th>
+                            <th data-tag="month">02</th>
+                            <th data-tag="month">03</th>
+                            <th data-tag="month">04</th>
+                            <th data-tag="month">05</th>
+                            <th data-tag="month">06</th>
+                            <th data-tag="month">07</th>
+                            <th data-tag="month">08</th>
+                            <th data-tag="month">09</th>
+                            <th data-tag="month">10</th>
+                            <th data-tag="month">11</th>
+                            <th data-tag="month">12</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailWatt">
+                        <tr>
+                            <td rowspan="6">01.유한회사</td>
+                            <td>가공D</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>가공E</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조A</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조C</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안2</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">01.유한회사 소계</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">02.제2공장</td>
+                            <td>A,B,C동</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>사봉</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">02.제2공장 소계</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td>03.일광정공</td>
+                            <td>정공</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">02.일광정공 소계</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">요금 합계</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="sheetArea">
+                <table class="sheet tinyfont">
+                    <caption class="caption"></caption>
+                    <thead id="detailGoldHead">
+                        <tr>
+                            <th colspan="2">4) 납입금액</th>
+                            <th colspan="11" data-tag="year">0000년</th>
+                            <th colspan="1" data-tag="year">0000년</th>
+                            <th rowspan="2">요금 합계</th>
+                        </tr>
+                        <tr>
+                            <th>구분</th>
+                            <th>수전명</th>
+                            <th data-tag="month">01</th>
+                            <th data-tag="month">02</th>
+                            <th data-tag="month">03</th>
+                            <th data-tag="month">04</th>
+                            <th data-tag="month">05</th>
+                            <th data-tag="month">06</th>
+                            <th data-tag="month">07</th>
+                            <th data-tag="month">08</th>
+                            <th data-tag="month">09</th>
+                            <th data-tag="month">10</th>
+                            <th data-tag="month">11</th>
+                            <th data-tag="month">12</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailGold">
+                        <tr>
+                            <td rowspan="6">01.유한회사</td>
+                            <td>가공D</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>가공E</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조A</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>단조C</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>천안2</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">01.유한회사 소계</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">02.제2공장</td>
+                            <td>A,B,C동</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <td>사봉</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">02.제2공장 소계</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <td>03.일광정공</td>
+                            <td>정공</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="no">0</td>
+                            <td data-tag="sum">0</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">02.일광정공 소계</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="no">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">요금 합계</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                            <th class="right" data-tag="sum">0</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

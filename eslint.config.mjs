@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Mirrored production assets and third-party browser bundles.
+    "public/**",
   ]),
 ]);
 

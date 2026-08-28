@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SolarSimz
 
-## Getting Started
+ABC 에너지 통합관제 화면을 복제하고 주요설비를 실제로 관리할 수 있는
+Next.js 16 기반 데모 프로젝트입니다.
 
-First, run the development server:
+## 시작하기
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```shell
+npm install
+npm run db:setup:demo
+npm run dev -- -p 3456
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 로그인: `http://localhost:3456`
+- 대시보드: `http://localhost:3456/main.html`
+- 주요설비 CRUD: `http://localhost:3456/admin/facilities`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+데모 계정은 `admin`, `operator`, `viewer`이며 비밀번호는 모두 `demo`입니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 주요설비 CRUD
 
-## Learn More
+- SQLite 마이그레이션과 시드
+- HttpOnly DB 세션, 관리자·운영자·조회자 권한
+- 테넌트 격리와 게이트웨이 관계 검사
+- 목록, 상세, 등록, 부분 수정
+- 검색, 다중 필터, 정렬, 페이지네이션
+- 버전 기반 동시 수정 충돌 감지
+- 소프트 삭제, 복구, 관리자 영구 삭제
+- 변경 전후 감사 로그
+- 한국어 반응형 화면과 접근성 상태
+- 단위·저장소·API·브라우저 E2E 테스트
 
-To learn more about Next.js, take a look at the following resources:
+설계와 운영 주의사항은 `docs/facility-crud-design.md`, API 계약은
+`docs/openapi/facilities.yaml`을 참고하세요.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 검증
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```shell
+npm run lint
+npm run typecheck
+npm test
+npm run test:e2e
+npm run build
+```

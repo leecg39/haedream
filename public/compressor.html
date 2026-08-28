@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>설비관리 - 콤프레셔</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/report.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/compressor.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">콤프레셔</h1>
+            <div class="deskTool">
+                <span class="deskLabel" data-lang="power010">설비</span>
+                <select class="select" id="lpList">
+                    <option value="0">설비 목록 준비</option>
+                </select>
+                <span class="mNext"></span>
+                <span class="deskLabel" data-lang="power015">날짜</span>
+                <div class="datePicker">
+                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                        <input type="text" class="inputDate" id="inputDate" aria-label="Date-Time" readonly>
+                        <i class="bi bi-calendar"></i>
+                    </div>
+                    <div id="sDateWrapper"></div>
+                </div>
+                <select class="select" id="dateType">
+                    <option value="daily">일간</option>
+                    <option value="weekly">주간</option>
+                    <option value="monthly">월간</option>
+                </select>
+                <span class="mNext"></span>
+                <span class="act actIcon" id="act">
+                    <i class="icon iconSearch"></i>
+                    <span data-lang="power013">조회</span>
+                </span>
+                <span class="act actIcon" id="actExcelSave">
+                    <i class="icon iconExcel"></i>
+                    <span data-lang="report013">저장</span>
+                </span>
+            </div>
+            <div class="chart" id="chart2"></div>
+            <div class="sheetArea sheetTwin" id="sheetArea">
+                <table class="sheet">
+                    <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>사용량(<span class="sheetEm">kWh</span>)</th>
+                            <th>최대수요(<span class="sheetEm">kW</span>)</th>
+                            <th>압력</th>
+                            <th>온도</th>
+                            <th>RPM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sheetAM">
+                        <tr>
+                            <th class="tLabel" data-t="s">00:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">00:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">00:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">00:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">01:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">01:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">01:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">01:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">02:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">02:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">02:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">02:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">03:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">03:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">03:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">03:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">04:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">04:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">04:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">04:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">05:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">05:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">05:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">05:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">06:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">06:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">06:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">06:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">07:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">07:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">07:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">07:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">08:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">08:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">08:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">08:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">09:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">09:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">09:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">09:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">10:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">10:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">10:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">10:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">11:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">11:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">11:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">11:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="sheet">
+                    <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>사용량(<span class="sheetEm">kWh</span>)</th>
+                            <th>최대수요(<span class="sheetEm">kW</span>)</th>
+                            <th>압력</th>
+                            <th>온도</th>
+                            <th>RPM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sheetPM">
+                        <tr>
+                            <th class="tLabel" data-t="s">12:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">12:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">12:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">12:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">13:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">13:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">13:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">13:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">14:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">14:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">14:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">14:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">15:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">15:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">15:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">15:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">16:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">16:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">16:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">16:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">17:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">17:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">17:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">17:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">18:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">18:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">18:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">18:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">19:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">19:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">19:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">19:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">20:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">20:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">20:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">20:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">21:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">21:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">21:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">21:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">22:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">22:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">22:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">22:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">23:00</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">23:15</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">23:30</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <th class="tLabel" data-t="s">23:45</th><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="sheetArea disable" id="sheetUnitArea">
+                <table class="sheet">
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>사용량(<span class="sheetEm">kWh</span>)</th>
+                            <th>최대수요(<span class="sheetEm">kW</span>)</th>
+                            <th>압력</th>
+                            <th>온도</th>
+                            <th>RPM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sheet">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

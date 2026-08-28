@@ -1,0 +1,33 @@
+.deskTool{text-align:center}
+
+.contentLabel{margin-bottom:1rem;font-size:1rem;color:#d0d0d0}
+.sheetArea+.contentLabel{margin-top:2rem}
+.sheetArea{display:flex;justify-content:space-evenly;gap:1rem}
+.sheet{position:relative;width:100%;table-layout:fixed;border-collapse:collapse;border-spacing:0;border-top:2px solid #505050;font-size:.84rem}
+.sheetCaption{text-align:right}
+.sheetLabel{position:absolute;left:4rem}
+.sheetHalf{width:50%}
+.sheet th{padding:.2rem;border:1px solid #303030;background-color:rgba(11,11,20,.9);color:#72bce3;font-size:inherit}
+.sheet td{padding:.2rem;border:1px solid #303030;background-color:rgba(18,18,30,.8);text-align:right;color:#e0e0e0;font-size:inherit}
+.caption{height:1.6rem;padding-top:.2rem}
+.layoutAuto{flex-grow:1;table-layout:auto;width:auto}
+
+.sheet .red{color:#f44336}
+.sheet .blue{color:#2196f3}
+.sheet .left{text-align:left}
+.sheet .right{text-align:right}
+
+.inputDate{padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.inputHide{width:100%;border:none;background-color:transparent;font-size:1rem;text-align:right}
+
+.act{display:inline-block;padding:.52rem 2rem;margin-left:1rem;border-radius:.4rem;background:linear-gradient(rgba(13,71,161,.6),rgba(81,45,168,.6));text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background:linear-gradient(rgba(13,71,161,.8),rgba(81,45,168,.8));color:#fff}
+.actIcon{position:relative;padding-left:3.2rem;padding-right:1rem}
+.actIcon .icon{position:absolute;left:.8rem;top:.4rem}
+.iconExcel{background-position:-24px 0}
+
+.actSave{display:inline-block;padding:0 1rem;border-radius:.2rem;background:linear-gradient(#81c257,#196e11);color:#fff;cursor:pointer}
+
+.meterChart{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:32rem 32rem;gap:1rem;margin-bottom:2rem}
+.tinyfont{font-size:.64rem}

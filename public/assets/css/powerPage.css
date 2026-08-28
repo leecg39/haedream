@@ -1,0 +1,120 @@
+.deskToolWrap{display:flex;flex-wrap:wrap;justify-content:center;padding:2rem 0 0 0;background-color:rgba(0,0,29,0.4);border-top:1px solid rgba(255,255,255,0.15)}
+.deskTool{display:flex;flex-wrap:wrap;align-items:center;text-align:center;margin-top:.5rem;margin-bottom:1rem;gap:7px}
+.deskLabel{margin:0 .4rem 0 1rem;color:#72bce3}
+.deskDash{margin:0 .4rem}
+.deskTab{position:absolute;right:4rem;top:3rem;color:#d8d8d8;font-size:1.2rem}
+.deskMargin{margin-left:1rem}
+.deskBooks{display:flex}
+.deskIndex{position:relative;width:20%;padding:1rem;border:1px solid rgba(255,255,255,0.15);border-right:0;background-color:#00001d}
+.deskRight{flex:1}
+.deskContent{background-color:rgba(0,0,29,0.4);padding:0 2rem 3rem;border:1px solid rgba(255,255,255,0.15);border-top:0;border-left:0}
+
+.seasonArea{position:sticky;top:70px;width:100%;padding:2rem 0}
+.seasonDate{padding:0 0 2rem 0}
+.seasonTime{display:block;line-height:1;color:#fff;font-size:2.5rem;font-weight:600;letter-spacing:-0.5px;text-align:center;font-variant-numeric:tabular-nums}
+.seasonWeek{display:block;padding:.4rem 0;font-size:1.2rem;text-align:center}
+
+.chart1{height:20vh}
+.powerLegendArea{display:flex;justify-content:space-around;padding:1rem 0}
+.powerLegend::before{content:"";display:inline-block;width:1rem;height:1rem;margin-right:.4rem;border-radius:.2rem;vertical-align:middle}
+.powerLegendLow::before{background-color:#9cc952}
+.powerLegendMiddle::before{background-color:#e4ce66}
+.powerLegendHigh::before{background-color:#d84420}
+
+.sheetLegendTitle{margin:0 0 1rem;font-size:20px;font-weight:500;color:#fff;text-align:center}
+.sheetLegend{border-collapse:collapse;border-spacing:0;text-align:center}
+.sheetLegend td{padding:.4rem;border:1px solid rgba(255,255,255,0.3)}
+.sheetPower{display:inline-block;width:1rem;height:1rem;border-radius:.2rem;vertical-align:middle}
+.pLow{background-color:#9cc952}
+.pMiddle{background-color:#e4ce66}
+.pHigh{background-color:#d84420}
+.sheetLegend .sheetNo{padding-right:1rem;text-align:right}
+
+.chart2{height:25rem;padding:1rem 0}
+.sheetArea{margin:0;background-color:transparent;padding:0;border:0}
+.sheetArea.no1{margin:2rem 0}
+.sheetScroll{overflow:auto}
+.sheetScroll::-webkit-scrollbar{width:3px;height:3px;background-color:#131538}
+.sheetScroll::-webkit-scrollbar-thumb{border-radius:3px;background:#2ba6d8;background:linear-gradient(90deg, #34bad7 0%, #4e73dd 100%)}
+.sheetScroll::-webkit-scrollbar-track{border-radius:3px}
+.sheet{clear:both;width:100%;margin-bottom:30px;border-collapse:collapse;border-spacing:0;text-align:center}
+
+.sheet th{padding:.2rem .1rem;border:1px solid #202020;background-color:rgba(11,11,20,.9);color:#72bce3;font-size:0.98rem;font-weight:400;line-height:1.3}
+.sheet td{padding:.2rem .1rem;border:1px solid #202020;background-color:rgba(18,18,30,.8);color:#c8c8c8;font-size:0.98rem}
+.sheet tr:hover td{background-color:rgba(63,81,181,.6);color:#fff}
+.sheet tr:hover .tLabel{background-color:rgba(63,81,181,.4)}
+.sheetEm{margin-right:4px;color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+.sheetTwin{display:flex;justify-content:space-between}
+.sheetTwin .sheet{width:49.8%;margin:0}
+.sheetSubtitle{position:relative;width:100%;margin:3rem 0 1.2rem 0;padding-left:20px;font-size:22px;font-weight:600;color:#fff}
+.sheetSubtitle::before{position:absolute;content:'';top:6px;left:0;display:block;width:6px;height:22px;border-radius:3px;background-color:#357da3}
+
+.inputDate{padding:8px;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem;height:40px}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.select{padding:8px .4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem;height:40px}
+.select option{background-color:#000}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.3rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+
+.mTBlock{display:flex;align-items:center}
+.mTBlock .select2-container--default .select2-selection--single{height:40px;padding:0 .4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.mTBlock .select2-container--default .select2-selection--single .select2-selection__rendered{line-height:40px}
+
+@media (max-width:1300px) {
+    .deskBooks{display:block}
+    .deskIndex{width:auto}
+    .deskLabel{margin:0 1rem}
+    .deskContent{width:auto;padding:0}
+    .deskTool{flex-direction:column}
+    .deskToolWrap{flex-direction:column}
+    
+    .seasonDate{padding-top:0}
+    .seasonArea{position:static;width:auto}
+    .chart1{height:16rem}
+    .chart2{height:28rem}
+    .sheetArea{overflow:auto}
+    .sheetTwin{flex-direction:column}
+    .sheetTwin .sheet{width:100%}
+    #itemTable1 tbody,
+    #itemTable1 tr,
+    #itemTable1 th,
+    #itemTable1 td{display:block}
+    
+    .inputDate{padding:.2rem .4rem;font-size:1rem}
+    .select{padding:.2rem .4rem;font-size:1rem}
+    .act{margin:0 0 .4rem 0;padding:.4rem}
+    .actIcon .icon{top:.5rem;left:.5rem}
+}
+@media (max-width:768px) {
+    .chart1{height:200px}
+    .powerLegendArea,
+    #dataCharges{width:300px;margin:0 auto}
+    #itemTable1 th, #itemTable1 td{display:inline-block}
+    .deskToolWrap{padding:1rem 0 0 0}
+    .deskTool:first-child{flex-direction:row;justify-content:center;margin:0 0 4px 0}
+    .deskTool{flex-direction:column;gap:4px;}
+    .deskLabel{margin:0}
+    .mTBlock{min-height:40px;gap:8px}
+    .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+    .chart1{height:150px}
+    .seasonArea{padding:1rem 0}
+    .seasonTime{font-size:2rem}
+    .seasonDate{padding:0 0 1rem 0}
+    .sheetScroll{width:100%;margin-bottom:2rem}
+    .sheetScroll .sheet{min-width:900px;margin-bottom:1rem}
+}
+@media (max-width:480px) {
+    .deskBooks{margin:10px 0 1rem 0}
+    .chart2{height:300px;padding:10px}
+    .datePicker .tui-datetime-input{width:130px}
+    .deskToolWrap .deskLabel{display:none}
+}
+
+

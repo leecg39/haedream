@@ -1,0 +1,11 @@
+AHA 제어
+
+냉난방          선택              ~| 제어이름
+제어모드        수동              ~| 전력계측         계측 선택         v
+
+AMOR
+
+제어기        00 순서 On 딜레이 Off eA Off 딜레이 고정
+
+ㅜㅠ그| A ML LEE a                TL                         n                THA)       nit dali.
+

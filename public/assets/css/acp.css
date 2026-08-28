@@ -1,0 +1,112 @@
+.kfeContent{border-radius:1rem;box-shadow: 0 0 1.6rem #000}
+.kfeHead{display:flex;justify-content:space-between;align-items:center;padding:.6rem 2rem;background-color:rgba(4,56,140,0.4);border-radius:1rem 1rem 0 0}
+.kfeBody{min-height:80vh;background-color:rgba(4,56,140,0.16);border-radius:0 0 1rem 1rem}
+.kfeHeadLabel{vertical-align:middle;font-size:1.2rem}
+
+.deskArea{flex-grow:1;margin:0}
+.deskLabel{padding:0 1rem;vertical-align:middle;color:#29b6f6}
+.desk{margin-top:1rem}
+.desk td{cursor:pointer}
+
+.iconGear{visibility:hidden;background-position:-216px 0}
+.active .iconGear{visibility:visible}
+.actConfig{position:absolute;top:2rem;right:2rem;cursor:pointer}
+
+.frozen{display:flex;gap:1rem;padding:1rem}
+.mapArea{flex:0 0 50%;padding:1rem;border:2px dashed #1a237e;border-radius:1rem}
+.mapImageArea{position:relative}
+.mapPoints{position:absolute;top:0;left:0}
+.floorMapImage{width:100%;max-width:100%}
+
+.mapPoint{position:absolute;padding:2px;border:2px solid transparent;border-radius:.4rem;font-size:0;cursor:pointer}
+.mapIcon{display:inline-block;width:.8rem;height:.8rem;border-radius:.2rem;background-color:#808080}
+.mapStart .mapIcon{background-color:#4caf50}
+.mapStop .mapIcon{background-color:#c2185b}
+.mapRequest .mapIcon{background-color:#2196f3}
+.mapFan .mapIcon{background-color:#43a047}
+.mapPoint.active{border-color:#ffc107}
+.mapPoint:hover{border-color:#ffc107}
+
+.chips{display:inline-block;padding:.2rem 1rem;border-radius:.6rem;background-color:#808080;color:#fff}
+.chipStart{background-color:#388e3c}
+.chipStop{background-color:#c2185b}
+.chipRequest{background-color:#2196f3}
+.chipFan{background-color:#43a047}
+
+.mapDesk{margin:1rem;text-align:center}
+.mapHead{margin:1rem;}
+.floorTitle{color:#808080}
+.floorLabel{display:inline-block;padding:1rem 2rem;border-radius:1rem 0;background-color:rgba(1,87,155,.6);font-size:1.6rem;font-weight:600}
+
+.modalContent{width:40rem;max-width:100%;min-height:16rem;padding:1rem;overflow-y:auto}
+.editTitle{margin:1rem 0;color:#fff;font-size:1.6rem;font-weight:600;text-align:center}
+.setArea{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center;padding:1rem 2rem;margin:1rem;border-radius:1rem;box-shadow:inset 3px 3px 3px 0 rgba(0,0,0,.4);background-color:rgba(0,0,0,.2)}
+.setLabel{flex:0 0 50%;font-size:1.2rem}
+.setItems{display:flex;;gap:1rem}
+.setItemAct{display:inline-block;position:relative;width:8rem;padding:.6rem 0;background:linear-gradient(to bottom, #000, #303030);border-radius:1rem;color:#606060;font-weight:600;text-align:center;cursor:pointer}
+.setItemAct:after{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;background-clip:padding-box;border:2px solid transparent;background-image:linear-gradient(to top, #000, #303030);line-height:200%;content:attr(data-alt)}
+.setItemAct.active{background:linear-gradient(to bottom, #64b5f6, #1a237e);color:#fff}
+.setItemAct.active:after{background-image:linear-gradient(to top, #64b5f6, #1a237e)}
+.setItemAct:active{transform:scale(.96)}
+
+.setAreaList{position:relative;padding:1rem 0}
+.waitControlBox{display:flex;justify-content:center;align-items:center;position:absolute;top:0;left:0;width:100%;height:100%;border-radius:1rem;background-color:rgba(0,0,0,.6)}
+.waitCircle{display:flex;justify-content:center;align-items:center;position:relative}
+.waitCircleIcon{position:absolute;width:2rem;height:2rem;border:3px solid #8bc34a;border-radius:50%;border-top-color:transparent}
+.waitCircleText{}
+.waitText{margin-left:2rem;color:#8bc34a}
+
+.menuName{vertical-align:middle}
+.toggle{display:inline-block;position:relative;width:2.2rem;height:1.2rem;background-color:#1976d2;border-radius:.6rem;vertical-align:middle;cursor:pointer;}
+.toggle::before{content:"";position:absolute;top:.1rem;left:.1rem;width:1rem;height:1rem;background-color:#fff;border-radius:50%;}
+.toggle.active{background-color:#ec407a}
+.toggle.active::before{left:auto;right:.1rem}
+
+.inArea{display:flex;flex-direction:column;box-shadow:0 0 .6em .4rem rgba(0,0,0,.4)}
+.inHead{padding:.8rem 1rem .6rem;border-radius:.6rem .6rem 0 0;background-color:rgba(13,71,161,.4);font-size:1rem;text-shadow:2px 2px #000}
+.inBody{display:grid;grid-template-columns:10rem 1fr;align-items:center;gap:.8rem 1rem;flex-grow:1;position:relative;margin-bottom:1rem;padding:1rem 2rem;border-radius:0 0 1rem 1rem;background-color:rgba(13,71,161,.2)}
+.deskTableBox{overflow-y:auto;height:30rem}
+.deskTableBox::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.deskTableBox::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.deskTableBox::-webkit-scrollbar-track{border-radius:2px}
+.deskTableBox::-webkit-scrollbar-corner{background-color:transparent}
+.deskTableBox thead{position:sticky;top:0}
+.deskTableBox .desk{margin-top:0}
+
+.eInput{width:16rem;padding:.4rem 1rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.eInputReadOnly{border-color:transparent}
+.eSelect{width:16rem;padding:.2rem .4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.eSelect option{background-color:#000}
+.eSelect optgroup{color:#c8c8c8;background-color:#181818}
+
+.toggle{display:inline-block;position:relative;width:2.2rem;height:1.2rem;background-color:#fff;border-radius:.6rem;vertical-align:middle;cursor:pointer;}
+.toggle::before{content:"";position:absolute;top:.1rem;left:.1rem;width:1rem;height:1rem;background-color:#989898;border-radius:50%;}
+.toggle.active{background-color:#1976d2}
+.toggle.active::before{left:auto;right:.1rem;background-color:#fff}
+
+.gaugeForm{display:flex;gap:.4rem;align-items:center}
+.gaugeArea{display:flex;gap:1px}
+.gauge{list-style:none;width:.6rem;height:1.6rem;border-radius:.4rem;background-color:rgba(80,80,80,.6)}
+.on{background-color:#8bc34a}
+.off{background-color:#cc3d32}
+.use{background-color:#039be5}
+.gaugeForm .eInput{width:3rem;padding:.2rem;text-align:right}
+.gaugeForm .eInput::-webkit-outer-spin-button,.gaugeForm .eInput::-webkit-inner-spin-button{-webkit-appearance:none}
+.statBad{font-size:.82rem;color:#f44336}
+.statGood{font-size:.82rem;color:#8bc34a}
+
+@media screen and (max-width:1024px){
+.frozen{display:block}
+}
+
+@media screen and (max-width:640px){
+.modalContent{max-width:100%}
+.editTitle{margin:0 0 1rem}
+.editForm{grid-template-columns:1fr 2fr}
+.editFormExtend{grid-column:auto}
+.eInput{width:100%;font-size:1rem}
+.eSelect{width:100%;font-size:1rem}
+.eInputFull{width:100%}
+
+.iconGear{background-position:-108px 0}
+}

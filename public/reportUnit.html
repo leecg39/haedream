@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>보고서 - 기간별 전력사용량</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/report.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/reportUnit.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle" data-lang="report003">기간별 전력사용량</h1>
+            <div class="chartbox repUnit">
+                <div class="deskTool">
+                    <div class="mTBlock">
+                        <span class="deskLabel" data-lang="report011">기간</span>
+                        <select class="select" id="unitType">
+                            <option value="hourly" data-lang="report060">시간단위</option>
+                            <option value="daily" data-lang="report061">일단위</option>
+                            <option value="monthly" data-lang="report062">월단위</option>
+                        </select>
+                        <span class="deskLabel" data-lang="report014">날짜</span>
+                        <div class="datePicker">
+                            <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                <input type="text" class="inputDate" id="sDate" aria-label="Date-Time" readonly>
+                                <i class="bi bi-calendar"></i>
+                            </div>
+                            <div id="sDateWrapper"></div>
+                        </div>
+                        <span class="deskDash disable" id="deskDash">~</span>
+                        <div class="datePicker disable">
+                            <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                <input type="text" class="inputDate" id="eDate" aria-label="Date-Time" readonly>
+                                <i class="bi bi-calendar"></i>
+                            </div>
+                            <div id="eDateWrapper"></div>
+                        </div>
+                        <span class="deskLabel" data-lang="report012">검색</span>
+                        <input class="inputText" id="keyword" maxlength="16" />
+                    </div>
+                    <div class="mTBlock">
+                        <span class="act actIcon" id="act">
+                            <i class="bi bi-search"></i>
+                            <span data-lang="report012">조회</span>
+                        </span>
+                        <span class="act actIcon" id="actExcelSave">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>
+                            <span data-lang="report013">엑셀로 다운</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="sheetAreaSticky shsroll">
+                    <table class="sheet" id="itemTable">
+                        <tbody id="itemList">
+                            <tr>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

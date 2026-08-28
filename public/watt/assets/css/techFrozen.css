@@ -1,0 +1,88 @@
+.kfeHeadSub{font-size:1rem;display:flex;align-items:center;gap:4px}
+.kfeBody{min-height:80vh;background-color:rgba(0,0,29,0.4);padding:2rem;border:1px solid rgba(255,255,255,0.15)}
+.deskArea{flex-grow:1;margin:0 0 0 1rem}
+.deskLabel{padding:0 1rem;vertical-align:middle;color:#29b6f6}
+.desk td{cursor:pointer}
+.desk .mark{color:#29b6f6}
+.iconGear{visibility:hidden;background-position:-216px 0}
+.active .iconGear{visibility:visible}
+
+.frozen{display:flex;padding:1rem}
+.mapArea{flex:0 0 50%;padding:1rem;border:2px dashed #1a237e;border-radius:8px}
+.mapImageArea{position:relative}
+.mapPoints{position:absolute;top:0;left:0}
+.floorMapImage{width:100%;max-width:100%}
+
+.mapPoint{position:absolute;padding:2px;border:2px solid transparent;border-radius:.4rem;font-size:0;cursor:pointer}
+.mapIcon{display:inline-block;width:.8rem;height:.8rem;border-radius:.2rem;background-color:#808080}
+.mapStart .mapIcon{background-color:#4caf50}
+.mapStop .mapIcon{background-color:#c2185b}
+.mapRequest .mapIcon{background-color:#2196f3}
+.mapFan .mapIcon{background-color:#43a047}
+.mapPoint.active{border-color:#ffc107}
+.mapPoint:hover{border-color:#ffc107}
+
+.chips{display:inline-block;padding:.4rem 1rem;border-radius:4px;background-color:#808080;color:rgba(255, 255, 255, 0.85);line-height:1;font-size:0.85rem}
+.chipStart{background-color:#388e3c}
+.chipStop{background-color:#c2185b}
+.chipRequest{background-color:#2196f3}
+.chipFan{background-color:#43a047}
+
+.mapDesk{margin:1rem;text-align:center}
+.mapHead{margin:1rem}
+.floorTitle{color:#c9c9c9}
+.floorLabel{display:inline-block;padding:0.5rem 2rem;border-radius:8px;background-color:rgba(1,87,155,.6);font-size:1.35rem;font-weight:600}
+
+.modalContent{width:40rem;max-width:100%;min-height:16rem;padding:1rem;overflow-y:auto}
+.editTitle{margin:1rem 0;color:#fff;font-size:1.6rem;font-weight:600;text-align:center}
+.setArea{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center;padding:1rem 2rem;margin:1rem;border-radius:1rem;box-shadow:inset 3px 3px 3px 0 rgba(0,0,0,.4);background-color:rgba(0,0,0,.2)}
+.setLabel{flex:0 0 50%;font-size:1.2rem}
+.setItems{display:flex;;gap:1rem}
+.setItemAct{display:inline-block;position:relative;width:8rem;height:40px;padding:.6rem 0;background:linear-gradient(to bottom, #000, #303030);border-radius:8px;color:#bdbdbd;font-weight:600;text-align:center;cursor:pointer}
+.setItemAct:after{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:8px;background-clip:padding-box;border:0;background-image:linear-gradient(to top, #000, #303030);line-height:2.5;content:attr(data-alt)}
+.setItemAct.active{color:#fff}
+.setItemAct.active:after{background-image:linear-gradient(to top, #146aaf, #4286e5)}
+.setItemAct:active{transform:scale(.96)}
+
+.setAreaList{position:relative;padding:1rem 0}
+.waitControlBox{display:flex;justify-content:center;align-items:center;position:absolute;top:0;left:0;width:100%;height:100%;border-radius:1rem;background-color:rgba(0,0,0,.6)}
+.waitCircle{display:flex;justify-content:center;align-items:center;position:relative}
+.waitCircleIcon{position:absolute;width:2rem;height:2rem;border:3px solid #8bc34a;border-radius:50%;border-top-color:transparent}
+.waitText{margin-left:2rem;color:#8bc34a}
+
+.menuName{vertical-align:middle}
+.toggle{display:inline-block;position:relative;width:38px;height:21px;background-color:#1976d2;border-radius:.6rem;vertical-align:middle;cursor:pointer}
+.toggle::before{content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;background-color:#fff;border-radius:50%}
+.toggle.active{background-color:#ec407a}
+.toggle.active::before{left:auto;right:3px}
+
+.eInput{padding:.2rem 1rem;width:8rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+
+@media screen and (max-width:1024px){
+    .frozen{display:block}
+}
+
+@media screen and (max-width:768px){
+    .modalContent{max-width:100%}
+    .editTitle{margin:0 0 1rem}
+    .editForm{grid-template-columns:1fr 2fr}
+    .editFormExtend{grid-column:auto}
+    .eInput{width:100%;font-size:1rem}
+    .eSelect{width:100%;font-size:1rem}
+    .eInputFull{width:100%}
+    .iconGear{background-position:-108px 0}
+    .kfeHead{flex-direction:column}
+}
+@media screen and (max-width:480px){
+    .deskArea{margin:1rem 0}
+    .kfeBody{padding:0;}
+    .kfeHead{flex-direction:column;align-items:start;margin-bottom:1rem;gap:8px}
+    .frozen{padding: 0;}
+    .desk{min-width:800px}
+    .floorLabel{font-size:1rem;padding:0.5rem 1rem}
+    .mapDesk{margin:1rem 0 0 0}
+    .mapHead{margin:1rem 0}
+    .deskLabel{padding:0 0.5rem}
+    .kfeHeadSub{justify-content:center;width:100%}
+}
+

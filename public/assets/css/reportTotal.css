@@ -1,0 +1,195 @@
+main.contents{display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(16,1fr) auto;height:calc(100vh - 80px)}
+.sectionArea{padding:0 2rem 2rem;background-color:rgba(0,0,29,0.4);border-left:1px solid rgba(255,255,255,0.15);border-right:1px solid rgba(255,255,255,0.15)}
+.sectionArea:first-of-type{grid-column:1/-1;grid-row:2/auto;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.15)}
+.sectionArea:last-of-type{grid-column:1/-1;grid-row:3/-1;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,0.15)}
+
+.sheetArea{padding:2rem 0}
+.deskTitle{grid-column:1/-1;grid-row:1/1;gap:20px;align-items:baseline;justify-content:start}
+.deskTitle span{font-size:18px;font-weight:500;color:#8ad2f8}
+.deskTool{padding-bottom:2rem}
+.deskTool .tabUi{display:flex;overflow:hidden;background-color:#070725;border:1px solid #2062bf;border-radius:10px}
+.deskTool .tabUi a{display:flex;align-items:center;justify-content:center;height:40px;padding:0 20px;font-weight:500}
+.deskTool .tabUi a.active{background-color:#2062bf;color:#ffffff}
+.deskTool .tabUi a:not(.active):hover{color:#ffffff}
+.deskTool{text-align:center}
+.deskTool .row1{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.act.btnFilter{background-color:#654fea}
+.act.btnFilter:hover{background-color:#765efe}
+.deskLabel{margin:0 .4rem 0 1rem;color:#72bce3;word-break:keep-all}
+.deskDash{margin:0 .4rem}
+
+.inputDate{padding:.4rem;border:1px solid #5190a5;height:40px;background-color:transparent;font-size:1rem;border-radius:.4rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.select{padding:.4rem .4rem;border:1px solid #5190a5;height:40px;background-color:transparent;font-size:1rem;border-radius:.4rem}
+.select option{background-color:#000000}
+.act{display:inline-block;margin-left:0.3rem;padding:.52rem 2rem;border:0;height:40px;background-color:#2062bf;font-size:1rem;color:rgba(255,255,255,0.9);text-align:center;cursor:pointer;border-radius:4px}
+.act:hover{background-color:#2b76df;;color:#ffffff}
+.actIcon{padding-right:1.3rem;padding-left:1.3rem;position:relative}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+.sheetAppend{text-align:right}
+.mTBlock{display:flex;align-items:center}
+
+/* 상세검색 */
+.filterTb{margin-bottom:12px}
+.filterTb td,.filterTb th{padding:6px 20px;border-bottom:1px solid #1a1c42;font-size:15px;color:rgba(255,255,255,0.85);text-align:left}
+.filterTb tr:last-child td,
+.filterTb tr:last-child th{border-bottom:0}
+.rowFilter{display:flex;flex-direction:column;margin-bottom:2rem;padding:2rem;background-color:#1a1c42}
+.fillterScroll{width:100%;padding-bottom:1rem}
+.filterGrp{display:flex;gap:3px;flex-wrap:wrap}
+
+.rowFilter label span{display:inline-block;min-width:130px;padding:2px 10px;opacity:0.6;background-color:#2d3775;border-radius:20px;text-align:center;cursor:pointer}
+.rowFilter label span:hover{opacity:1;color:#ffffff}
+.rowFilter input[type="checkbox"]{display:none}
+.rowFilter input[type="checkbox"]:checked + span{opacity:1;font-weight:bold}
+.filterTb th{width:130px;background-color:#0b0f27;font-weight:400;color:white}
+.filterTb td{background-color:#0b0f27}
+.rowFilter .btnGrp{display:flex;align-items:center;justify-content:space-between;width:100%}
+.rowFilter .btnGrp > div{display:flex;gap:1rem;align-items:center}
+.rowFilter .btn{display:flex;gap:8px;align-items:center;justify-content:center;padding:0 1rem;border:1px solid rgba(255,255,255,0.3);min-width:100px;height:40px;background-color:rgba(0,0,0,0.2);font-size:15px;color:rgba(255,255,255,0.8);border-radius:4px}
+.rowFilter .btn:hover{border:1px solid rgba(255,255,255,0.6);color:#ffffff}
+.rowFilter .btn.filtSearch{padding:0 25px;border:0;background-color:#654fea;font-size:16px;color:#ffffff}
+.rowFilter .btn.filtSearch:hover{background-color:#765efd}
+
+.ckTrSum{display:flex;align-items:center}
+input.check + label{margin:0;font-size:16px;cursor:pointer}
+input.check[type="checkbox"]{display:flex;align-items:center;justify-content:center;margin-right:10px;border:1px solid #888888;outline:none;width:24px;height:24px;cursor:pointer;appearance:none}
+input.check[type="checkbox"]::after{display:none;font-family:"bootstrap-icons";font-size:1rem;font-weight:bold;color:white;content:"\F633"}
+input.check[type="checkbox"]:checked{border:0;background-color:#3761ce}
+input.check[type="checkbox"]:checked::after{display:block}
+
+/* 북마크 */
+.bmarkArea{display:flex;gap:20px;align-items:center;justify-content:space-between;position:relative;z-index:101}
+.bmarkArea ul{display:flex;gap:12px;flex-wrap:wrap}
+.bookmark{position:relative}
+.bookmark > a{display:block;position:relative;overflow:hidden;width:260px;height:40px;line-height:40px;padding-right:25px;padding-left:15px;background-color:#362b87;white-space:nowrap;text-overflow:ellipsis;word-break:break-all}
+.bookmark:hover a{background-color:#654fea}
+.bookmark.active a{background-color:#654fea;color:white}
+.bookmark > a > i{margin-right:7px;opacity:0.7}
+.bookmark .dot{position:absolute;top:9px;right:5px;width:25px;text-align:right;cursor:pointer}
+.moreGp{position:absolute;bottom:-65px;right:20px;z-index:41;background-color:#4f3ac9;border-radius:5px;box-shadow:0 0 5px #000000}
+.bookmark .moreGp a{display:block;padding:5px;width:50px;text-align:center}
+.bookmark .moreGp a:hover{background-color:#6252c1}
+
+/* 종합보고서 테이블 */
+.sheetScroll{overflow:auto;max-height:100%}
+.sheetScroll::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetScroll::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetScroll::-webkit-scrollbar-track{border-radius:2px}
+.sheetScroll::-webkit-scrollbar-corner{background-color:transparent}
+
+.sheet{margin:0 0 .4rem;width:auto;max-width:100%;clear:both;text-align:center;border-collapse:separate;border-spacing:0}
+.sheet th{padding:.6rem .4rem;border:1px solid #31357b;position:relative;z-index:10;background-color:#202250;font-size:15px;font-weight:400;color:white;word-break:keep-all}
+.sheet thead tr:nth-child(2) th{font-size:14px;line-height:1.2;color:rgba(255,255,255,0.8);letter-spacing:-0.4px}
+.sheet thead tr.trSum .totalSum{position:sticky;left:0;z-index:20}
+.sheet tbody th{position:sticky;z-index:20;min-width:130px}
+.sheet tbody th.stk{left:130px}
+.sheet td{padding:.6rem .2rem;border:1px solid #31357b;min-width:45px;background-color:#0f1226;font-size:15px;color:#c8c8c8;text-align:right}
+.sheet tr:not(.trSum):hover td{background-color:#29347c !important;color:#ffffff}
+.trMidSum td{background-color:#0b0b16;color:white}
+.sheet .trSum th{background-color:#372c88;color:white}
+.sheet .trSum td{background-color:#372c88;color:white}
+.sheet thead .trSum .rightSum{background-color:#654fea;color:#ffffff}
+.sheet tbody th{background-color:#070725}
+.sheet tbody td{background-color:#070725}
+.sheet .start{position:sticky;top:0;z-index:10}
+
+.sheet thead .rightSum{background-color:#372c88}
+.sheet thead tr:nth-child(2) .rightSum,
+.sheet tbody .rightSum{width:90px;min-width:90px;max-width:90px}
+.sheet thead tr:nth-child(2) .rightSum:nth-last-child(2),
+.sheet tbody .rightSum:nth-last-child(2){right:90px}
+.sheet thead tr:nth-child(2) .rightSum:nth-last-child(3),
+.sheet tbody .rightSum:nth-last-child(3){right:180px}
+.sheet thead .rightSum,
+.sheet tbody .rightSum{border-top:1px solid #654fea;border-right:1px solid #654fea}
+.sheet thead .rightSum.start,
+.sheet tbody .rightSum.start{border-bottom:1px solid #654fea;border-left:1px solid #654fea}
+.sheet tbody .rightSum{background-color:#1d1f68}
+.sheet tbody .trMidSum:last-child .rightSum{border-bottom:1px solid #654fea}
+
+.sheet thead{position:sticky;top:0;z-index:100}
+.sheet .sticky{position:sticky;top:0;z-index:50}
+.sheet .sticky.type{left:0;z-index:52}
+.sheet .secondSticky{position:sticky;top:45px;z-index:50}
+.sheet .stickyRight{position:sticky;top:0;right:0;z-index:51}
+.sheet .secondStickyRight{position:sticky;top:45px;right:0;z-index:51}
+
+.tree1Name{left:0}
+.tree2Name{left:130px}
+.tree3Name{left:260px}
+.tree4Name{left:390px}
+.tree5Name{left:520px}
+
+.notFoundData{position:sticky;left:0;padding:10px}
+.notFoundData a{color:white;font-weight:500}
+.notFoundData a:hover{color:#e4efff}
+
+/* 팝업 */
+.modalBox.draggable{margin:0;cursor:move}
+.modalContent.noH,
+.modalContent.noH .sheetWrap{height:max-content}
+.modalContent.energyW{width:540px;height:450px}
+.modalContent.small{padding:3rem 2rem;width:420px;height:max-content;min-height:max-content}
+.modalContent.small .info{padding:0 0 1rem 0;font-size:16px;text-align:center}
+.popBtn{display:flex;gap:15px;align-items:center;justify-content:center}
+.btn{display:flex;align-items:center;justify-content:center}
+.popBtn .btn{border:1px solid rgba(109,203,255,0.5);min-width:100px;height:40px}
+.popBtn .btn.btnSave{background-color:#3761ce}
+.bookName{display:flex;align-items:center;justify-content:center;margin-bottom:2rem}
+.bookName input{border:1px solid #5190a5;width:250px;background-color:#00092a;font-size:1rem;border-radius:4px;border-radius:4px}
+.bookName input::placeholder{color:#cccccc}
+
+@media (max-width:768px){
+    .deskTool.snd{justify-content:flex-start}
+    .deskLabel{margin:0 0.5rem;white-space:nowrap}
+    .deskTab{position:static}
+    .sheetTwin{flex-direction:column;overflow-x:auto}
+    .sheetTwin .sheet{width:100%}
+    .sheetArea{margin:1rem 0;padding:1rem;overflow:auto}
+    .sheet{margin:0}
+    .sheet th{min-width:6rem}
+    .inputDate{padding:.2rem .4rem;width:100%;font-size:1rem}
+    .select{padding:.2rem .4rem;width:100%;font-size:1rem}
+    .chartbox{padding:1rem}
+    .deskTool{gap:8px;flex-direction:column}
+    .mTBlock{gap:8px;min-height:40px}
+    .act{display:flex;align-items:center;justify-content:center;margin:0;padding:0 1rem;width:max-content;min-width:80px;height:40px;letter-spacing:-0.3px;white-space:nowrap}
+    .sheetScroll{overflow-x:auto;width:100%}
+    .sheet{min-width:1000px}
+    .rowFilter .btnGrp{gap:10px;flex-direction:column}
+    .rightSum,.start,.sheet tbody th,
+    .sheet thead tr:first-child > th:first-child{position:relative !important}
+    .stk{left:inherit !important}
+    .sheet thead tr .rightSum,
+    .sheet tbody .rightSum{right:inherit !important}
+    .rowFilter{width:calc(100% - 10px)}
+}
+
+@media (max-width:520px){
+    .sheetArea{margin:10px 0 1rem 0;padding:0;border:0;overflow-x:hidden}
+    .chartbox{margin:10px 0 1rem 0}
+    .deskTab{margin-left:0}
+    .sheetTwin{width:100%}
+    .sheetTwin > .sheet{margin-bottom:1.5rem;min-width:450px}
+    .nomTBlock{display:none}
+    .deskTool.ckGroup .mTBlock{min-height:35px}
+    .deskTitle{gap:0;flex-direction:column}
+    .deskTool .tabUi a{width:105px}
+    .deskTool > span.act{position:absolute;top:15px;right:1rem;height:35px;font-size:13px}
+    .deskTitle span{font-size:16px}
+    .bmarkArea ul,
+    .bmarkArea,
+    .rowFilter .btnGrp > div.left{flex-direction:column}
+    .btnGrp > div.left{gap:10px}
+    .filterTb{min-width:760px}
+    .ckTrSum{display:none}
+    .fillterScroll{overflow:auto;width:100%}
+    .inputDate{font-size:14px}
+    .deskDash{margin:0}
+    .deskTool .deskLabel{display:none}
+    .modalContent.small{width:100%}
+    .modalBox{height:max-content}
+}

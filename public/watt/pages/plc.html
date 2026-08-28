@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>PLC 제어 관리</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/deskLib.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="assets/js/plc.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">PLC 제어 관리</h1>
+            <div class="sheetArea setSub">
+                <div class="deskStat">
+                    <div class="deskTool" id="deskTool">
+                        <span class="deskAct act" data-act="add">
+                            <i class="bi bi-node-plus"></i>추가
+                        </span>
+                        <a href="plcs.html" class="deskAct act" id="researchLink">모니터링</a>
+                    </div>
+                </div>
+                <div class="deskArea">
+                    <table class="desk">
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>읽기주소</th>
+                                <th>제어주소</th>
+                                <th>온도범위(°C)</th>
+                                <th>제어값(Hz)</th>
+                                <th>제어딜레이(s)</th>
+                                <th>활성</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deskList">
+                            <tr>
+                                <td colspan="7">데이터가 없습니다.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskPages" id="deskPages">
+                        <span class="deskPage act">prev</span>
+                        <span class="deskPage act active">1</span>
+                        <span class="deskPage act">next</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">PLC 제어 관리</div>
+                        <div class="editForm">
+                            <label for="edit-isEnable">활성</label>
+                            <span>
+                                <select class="eSelect" id="edit-isEnable">
+                                    <option value="0">비활성</option>
+                                    <option value="1">활성</option>
+                                </select>
+                            </span>
+                            <label for="edit-nickname">이름</label>
+                            <span>
+                                <input class="eInput" id="edit-nickname" value="" maxlength="32" placeholder="최대 32자">
+                            </span>
+                            <label for="edit-addressRule">온도주소</label>
+                            <span>
+                                <input class="eInput" id="edit-addressRule" value="" maxlength="16" placeholder="최대 16자">
+                            </span>
+                            <label for="edit-ruleUnit">온도소수점단위</label>
+                            <span>
+                                <input type="number" class="eInput" id="edit-ruleUnit" value="" min="0" max="4">
+                            </span>
+                            <label for="edit-addressRead">읽기주소</label>
+                            <span>
+                                <input class="eInput" id="edit-addressRead" value="" maxlength="16" placeholder="최대 16자">
+                            </span>
+                            <label for="edit-addressWrite">제어주소</label>
+                            <span>
+                                <input class="eInput" id="edit-addressWrite" value="" maxlength="16" placeholder="최대 16자">
+                            </span>
+                            <label for="edit-unit">소수점단위</label>
+                            <span>
+                                <input type="number" class="eInput" id="edit-unit" value="" min="0" max="4">
+                            </span>
+                            <label for="edit-delayTime">제어 딜레이</label>
+                            <span>
+                                <input type="number" class="eInput" id="edit-delayTime" value="" min="0" max="240">
+                            </span>
+                            <span>제어조건 <i class="bi bi-plus-lg iconAdd" id="actAddRule" title="추가"></i></span>
+                            <span class="editFormExtend" id="edit-rules"></span>
+                        </div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct cancel" id="modalActCancel">취소</span>
+                        <span class="modalAct cancel disable" id="modalActRemove">삭제</span>
+                        <span class="modalAct" id="modalActDone">확인</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

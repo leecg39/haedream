@@ -1,0 +1,129 @@
+.deskLabel{margin:0 .4rem 0 2rem;color:#72bce3;white-space:nowrap}
+.deskDash{margin:0 .4rem}
+.deskTool{display:flex;text-align:center}
+.deskTool.bGroup{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;margin-bottom:1.5rem}
+.deskTool.pop{display:flex;align-items:center;justify-content:space-between;margin:2rem 2rem 2rem 0}
+.deskTool.pop .left, .deskTool.pop .right{display:flex;align-items:center}
+.deskTool.pop .deskTitle{display:inline-block;width:max-content;padding:0;margin:0}
+.deskToolTop{position:absolute;right:2rem;top:12px;width:max-content;height:42px;display:flex;align-items:center;gap:1px;z-index:10}
+.deskToolTop .mTBlock{gap:1px}
+.deskToolTop .label{margin-right:12px}
+
+.kpiArea{display:flex}
+.itemList{position:relative;flex:none;width:20rem;height:calc(100vh - 180px);overflow-y:auto;padding:1rem 1rem 2rem 1.5rem;border:1px solid rgba(255,255,255,0.15);border-right:0;background-color:#00001d}
+.itemList::-webkit-scrollbar{width:5px;height:5px;background-color:rgba(19,21,24,0.5)}
+.itemList::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2}
+.itemList::-webkit-scrollbar-track{border-radius:2px}
+.itemMain{margin-top:1rem}
+.itemLine{position:relative;width:1rem;height:1.8rem;margin-left:1rem;border-left:1px solid #01579b;border-bottom:1px solid #01579b}
+.item{position:absolute;display:block;top:.8rem;left:.8rem;min-width:14rem;min-height:1.5rem;padding:.1rem 0 .1rem .6rem;border:1px solid rgba(3,169,244,.32);border-radius:.6rem 0;background-color:rgba(1,87,155,.1);color:#e3f2fd;font-size:.8rem;white-space:nowrap;cursor:pointer}
+.item:hover,.item.active{border-color:#03a9f4 ;background-color:#01579b}
+.itemInfo{padding-bottom:0}
+
+.chart1{height:24rem;margin:1.5rem 0}
+.sheetArea{margin-top:2rem}
+.itemInfo .sheetArea{margin-top:0;padding:2rem;border-left:0}
+.sheet{width:100%;table-layout:fixed;margin-top:2.5rem;border-collapse:collapse;border-spacing:0;text-align:center}
+.sheet th{padding:.4rem .2rem;border:1px solid #202020;background-color:rgba(11,11,20,.9);color:#72bce3;font-size:0.98rem;font-weight:400}
+.sheet td{padding:.4rem .2rem;border:1px solid #202020;background-color:rgba(18,18,30,.8);font-size:0.98rem}
+.sheet tr:hover td{background-color:rgba(63,81,181,.6) !important;color:#fff}
+.sheet tr:hover .tLabel{background-color:rgba(63,81,181,.4) !important}
+.sheetEm{color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+.sheetTwin{display:flex;justify-content:space-between}
+.sheetTwin .sheet{width:49%;margin:0}
+.sheetExport{text-align:right}
+
+.sheetWrap{overflow:scroll;height:calc(80vh - 150px);margin:1rem 0}
+.sheetWrap::-webkit-scrollbar{width:8px;height:8px;background-color:#131538}
+.sheetWrap::-webkit-scrollbar-thumb{border-radius:2px;background:rgba(28,79,151,0.7);border:1px solid #2b89d6}
+.sheetWrap::-webkit-scrollbar-track{border-radius:2px}
+.sheetWrap::-webkit-scrollbar-corner{background-color:transparent}
+.sheetWrap .sheet{width:max-content;margin-top:0;table-layout:auto}
+.sheetWrap .fixDay{top:0}
+.sheetWrap .fixId{top:0;left:0;width:4rem;z-index:9}
+.sheetWrap .fixName{top:0;left:4rem;padding:.4rem 1.2rem;text-align:left;z-index:9}
+.sheetWrap thead .fixId{z-index:19}
+.sheetWrap thead .fixName{text-align:center;z-index:19}
+.sheetWrap th{position:sticky}
+.sheetWrap td{width:8rem}
+
+.inputDate{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.select{height:40px;padding:.4rem .4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+
+.actAir{display:inline-block;padding:.52rem 1.2rem;margin-left:0;border-radius:0;background:#218d30;text-align:center;font-size:1rem;cursor:pointer}
+.deskToolTop span:last-child{border-top-right-radius:4px;border-bottom-right-radius:4px}
+.deskToolTop span:nth-child(1){border-top-left-radius:4px;border-bottom-left-radius:4px}
+.actAir:hover{background:#28aa39;color:#fff}
+.actAir i{margin-right:5px}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.3rem;border-radius:4px;border:0;background-color:#2062bf;text-align:center;font-size:1rem;cursor:pointer;white-space:nowrap}
+.act:hover{background-color:#2b76df;;color:#fff}
+.deskTool.pop .right .act{margin-left:1px;border-radius:0;background:#218d30}
+.deskTool.pop .right .act:first-child{border-top-left-radius:4px;border-bottom-left-radius:4px}
+.deskTool.pop .right .act:last-child{border-top-right-radius:4px;border-bottom-right-radius:4px}
+.deskTool.pop .right .act:hover{background:#28aa39}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:4px}
+.act i.excel{color:#41e350}
+
+.modalContent{width:80vw;min-height:80vh;padding:1rem 2rem}
+.modalTool{padding:1.6rem 0;text-align:center}
+
+.mNext{display:none}
+.mTBlock{display:flex;align-items:center;gap:4px}
+
+@media screen and (max-width:768px){
+    .kpiArea{display:block}
+    .itemList{display:grid;width:auto;margin-top:1rem;padding:1rem 1rem 2rem 0rem}
+    .itemMain{display:none}
+    .itemLine{width:auto;height:auto;border:none}
+    .item{position:static;min-width:auto}
+    .itemInfo{display:block}
+    .inputDate{width:100%;padding:.2rem;font-size:1rem}
+    .select{padding:.2rem;font-size:1rem}
+    .sheetExportArea{overflow:auto}
+    .sheet{table-layout:auto}
+    .sheet th{min-width:5rem}
+    
+    .chart1{height:32rem}
+    .actAir{width:max-content;padding:.4rem 1rem;border-radius:4px}
+    .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;font-size:15px;letter-spacing:-0.3px;white-space:nowrap}
+    .actIcon .icon{top:.5rem;left:.5rem}
+    .mNext{display:block;width:100%;margin:.4rem 0}
+    .modalContent{width:100%;min-height:90vh;padding:1rem}
+    
+    .deskTool{display:flex;flex-direction:column}
+    .deskTool.pop,
+    .deskTool.pop .left{flex-direction:column}
+    .deskTool.pop .left .mTBlock{min-height:40px;gap:8px;justify-content:center}
+    .deskTool.pop .right{flex-direction:row}
+
+    .deskTool.pop{gap:1rem;margin:1rem}
+    .deskTool.pop .left{gap:.4rem}
+    .deskTool.pop .right .act{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+    .deskLabel{margin:0;white-space:nowrap}
+
+    .deskToolTop{position:relative;width:inherit;height:inherit;right:inherit;top:inherit;display:flex;align-items:start;z-index:10;flex-direction:column;gap:8px}
+    .deskToolTop .mTBlock{width:100%}
+
+    .deskTool.bGroup{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;margin:1.5rem 0}
+    .deskTool.bGroup .mTBlock{display:flex;align-items:center;gap:8px}
+
+}
+@media screen and (max-width:480px){
+    .actAir i{display:none}
+    .deskToolTop{margin-top:10px}
+    .itemList{padding:1rem 0;gap:5px}
+    .itemLine{margin: 0;}
+    .sheetArea{padding:10px}
+    .itemInfo .sheetArea{padding:0}
+    .deskTool.bGroup{transform:scale(0.9)}
+    .deskDash{margin:0} 
+    .datePicker .tui-datetime-input{width:130px}
+    .itemList{height:300px;overflow:auto}
+}

@@ -1,0 +1,117 @@
+.deskTool{margin:0 0 1.5rem 0;text-align:center;display:flex;align-items:center;justify-content:center}
+.deskTool.snd{margin-top:-0.5rem;display:flex;align-items:center;justify-content:center}
+.deskTool.snd label{margin:0 10px 0 3px;font-size:1rem}
+.deskTool.snd input[type="checkbox"]{width:15px;height:15px;margin-top:1px}
+.deskLabel{margin:0 .5rem 0 1rem;color:#72bce3}
+.deskDash{margin:0 .4rem}
+.deskTab{margin-left:1rem;color:#98d4fb}
+.deskTitle{justify-content:start}
+.deskTool.ckGroup{gap: 0.5rem;}
+.deskTool.ckGroup .mTBlock{gap:0.5rem}
+.ckGroup label{margin-bottom:0;font-size:16px;line-height:1;cursor:pointer}
+
+.sheetArea{min-height:700px;padding:2rem}
+.sheetArea::-webkit-scrollbar{width:5px;background-color:#131538}
+.sheetArea::-webkit-scrollbar-thumb{border-radius:3px;background:#2ba6d8;background:linear-gradient(90deg, #34bad7 0%, #4e73dd 100%)}
+.sheetArea::-webkit-scrollbar-track{border-radius:3px}
+.chartbox{padding:2rem;background-color:rgba(0,0,29,0.4);border:1px solid rgba(255,255,255,0.15)}
+.sheet{clear:both;width:100%;margin:0 0 .4rem;border-collapse:separate;border-spacing:0;text-align:center}
+.sheet thead.sticky, 
+.reportFac thead{position:sticky;top:0}
+
+.sheetFixed{table-layout:fixed;width:280rem}
+.sheet th{padding:.6rem .2rem;border:1px solid #202020;background-color:#0b0b16;color:#72bce3;font-size:0.98rem;font-weight:400;word-break:keep-all}
+.sheet thead th,
+.sheet .sheetSticky th{white-space:nowrap;word-break:keep-all}
+.dateInfo tbody th{min-width:180px}
+.sheetSticky{position:sticky;top:0}
+
+.caption{padding:1rem 1rem .4rem}
+.sheet.time tr td:nth-child(8n-6), .sheet.time tr td:nth-child(8n-5), .sheet.time tr td:nth-child(8n-4), .sheet.time tr td:nth-child(8n-3), 
+.sheet.time tr:nth-child(2) th:nth-child(8n-6), .sheet.time tr:nth-child(2) th:nth-child(8n-5), .sheet.time tr:nth-child(2) th:nth-child(8n-4), 
+.sheet.time tr:nth-child(2) th:nth-child(8n-3), 
+.sheet.time tr:first-child th:nth-child(2n) {background-color:rgba(0,0,0,1)}
+
+.sheet td{min-width:45px;padding:.6rem .2rem;border:1px solid #202020;background-color:rgba(18,18,30,.8);color:#c8c8c8;font-size:0.98rem}
+.sheet tr:hover td{background-color:rgba(63,81,181,.6) !important;color:#fff}
+.sheet tr:hover .tLabel{background-color:rgba(63,81,181,.4) !important}
+.sheetEm{margin-right:4px;color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+.sheetTwin{display:flex;justify-content:space-between;gap:2rem;margin:2rem 0}
+.sheetScroll{overflow:auto;height:calc(100vh - 300px)}
+.sheetScroll.reportFac{height:calc(100vh - 340px)}
+.sheetScroll::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetScroll::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetScroll::-webkit-scrollbar-track{border-radius:2px}
+.sheetScroll::-webkit-scrollbar-corner{background-color:transparent}
+.sheetTwin .sheet{margin:0}
+.sheetTwin > div{width:100%;margin-bottom:1rem}
+.sheetAreaSticky{overflow-y:auto;height:calc(100vh - 300px)}
+.sheetAreaSticky::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetAreaSticky::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetAreaSticky::-webkit-scrollbar-track{border-radius:2px}
+.sheetAreaSticky::-webkit-scrollbar-corner{background-color:transparent}
+.sheetAreaSticky.shscroll::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetAreaSticky.shscroll::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetAreaSticky.shscroll::-webkit-scrollbar-track{border-radius:2px}
+.sheetAreaSticky.shscroll::-webkit-scrollbar-corner{background-color:transparent}
+
+.inputDate{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.inputText{width:8rem;padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.deskTool #dateType{margin-left:0.5rem}
+.select{height:40px;padding:.4rem .4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.1rem;padding-right:1.1rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+.sheetAppend{text-align:right}
+.mTBlock{display:flex;align-items:center;}
+
+.chart{height:32rem}
+
+@media (max-width:768px){
+    .deskTool.snd{justify-content:flex-start}
+    .deskLabel{margin:0 0.5rem;white-space:nowrap}
+    .deskTab{position:static}
+    .sheetTwin{display:block;overflow-x:auto}
+    .sheetTwin .sheet{width:100%}
+    .sheetArea{overflow:auto;margin:1rem 0;padding:1rem}
+    .sheet{margin:0}
+    .sheet th{min-width:6rem}
+    .inputDate{width:100%;padding:.2rem .4rem}
+    .inputText{padding:.2rem .4rem}
+    .select{width:100%;padding:.2rem .4rem;font-size:1rem}
+    
+    .chartbox{padding:1rem}
+    .deskTool{flex-direction:column;gap:8px;}
+    .mTBlock{flex-direction:column;gap:8px;min-height:40px}
+    .act{padding:0 1rem;width:max-content;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+    .sheetScroll{width:100%;overflow-x:auto;height:inherit}
+    .sheet{min-width:1000px}
+}
+@media (max-width:480px){
+    .sheetArea{margin:10px 0 1rem 0;padding:0;min-height:inherit}
+    .chartbox{margin:10px 0 1rem 0;padding:0}
+    .deskTab{margin-left:0}
+    .sheetTwin{width:100%;}
+    .sheetTwin > .sheet{min-width:450px;margin-bottom:1.5rem}
+    .nomTBlock{display:none}
+    .deskTool.ckGroup .mTBlock{min-height:35px;gap:4px}
+    .deskTool{flex-direction:row;gap:8px;flex-wrap:wrap;transform:scale(0.9)}
+    .deskTool .mTBlock{flex-direction:row;justify-content:center}
+    .deskTab{font-size:1.2rem}
+    .ckGroup label{white-space: nowrap;}
+    .deskDash{margin:0}
+    .datePicker .tui-datetime-input{width:130px}
+    .deskLabel{margin:0 4px}
+    .deskTool select#unitType{width:100px}
+    .chartbox.repUnit .sheetAreaSticky{height:inherit}
+    .chartbox.repUnit .deskTool .mTBlock{flex-wrap:wrap}
+    .sheetScroll.reportFac{height:inherit}
+    .sheetArea.repFac .datePicker .tui-datetime-input{width:175px}
+}

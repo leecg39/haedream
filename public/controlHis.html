@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>피크관리 - 피크제어이력</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/controlHis.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/controlHis.js?v=0.0.3"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">피크제어이력</h1>
+            <div class="chart1" id="chart1"></div>
+            <div class="deskToolWrap">
+                <div class="deskPages">
+                    <span class="deskLabel">날짜</span>
+                    <div class="datePicker">
+                        <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                            <input type="text" class="inputDate" id="mDate" aria-label="Date-Time" readonly>
+                            <i class="bi bi-calendar"></i>
+                        </div>
+                        <div id="wrapper"></div>
+                    </div>
+                    <input type="hidden" id="sDate" />
+                </div>
+                <div class="deskLimit">
+                    <span class="deskLabel">제어설비</span>
+                    <select class="deskSelect" id="facList">
+                        <option value="0">설비 선택</option>
+                    </select>
+                </div>
+                <div class="deskTool" id="deskTool">
+                    <span class="deskAct act" data-act="excel">
+                        <i class="bi bi-file-earmark-excel-fill excel"></i>엑셀로 다운
+                    </span>
+                    <span class="deskAct act" data-act="print">
+                        <i class="bi bi-printer"></i>프린트
+                    </span>
+                </div>
+            </div>
+            <div class="deskArea">
+                <div class="tableCaption">
+                    <!-- <div>
+                        <span class="captionMark" id="energyDate">0000-00월</span>
+                    </div> -->
+                    <div>
+                        <span class="captionTitle">총 제어시간</span>
+                        <span class="splitUnit">:</span>
+                        <span class="captionMark" id="energyTime">0</span>
+                    </div>
+                    <span class="splitUnit disable">/</span>
+                    <div id="totalFrugal" class="disable">
+                        <span class="captionTitle">총 절감액</span>
+                        <span class="splitUnit">:</span>
+                        <span class="captionMark" id="energyGold">0</span>
+                    </div>
+                    <span class="splitUnit">/</span>
+                    <div>
+                        <span class="captionTitle">최대 절감액</span>
+                        <span class="splitUnit">:</span>
+                        <span class="captionMark" id="energyGoldMax">0</span>
+                    </div>
+                </div>
+                <div class="sheetScroll">
+                    <table class="desk" id="deskTable">
+                        <thead>
+                            <tr id="deskSort">
+                                <th>CID</th>
+                                <th>제어설비</th>
+                                <th>제어시작</th>
+                                <th>제어종료</th>
+                                <th>예측전력</th>
+                                <th>목표전력</th>
+                                <th>제어시간</th>
+                                <th>절감 (<span class="sheetEm">만원</span>)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deskList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="deskStat">
+                <div class="deskLimit">
+                    <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                </div>
+                <div class="deskPages" id="deskPages">
+                    <span class="deskPage act">prev</span>
+                    <span class="deskPage act active">1</span>
+                    <span class="deskPage act">next</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

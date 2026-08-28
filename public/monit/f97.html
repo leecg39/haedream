@@ -1,0 +1,563 @@
+<!--# 능원금속공업 2공장 -->
+    <main class="contents disable" id="contentsArea">
+        <div class="monit">
+            <div class="groupKepco" id="groupKepco">
+                <span></span>
+                <span class="groupName">현재피크</span>
+                <span class="groupName">예측피크</span>
+                <span class="groupLabel">1공장</span>
+                <span data-kepco="power">0</span>
+                <span class="mEm">/</span>
+                <span data-kepco="predict">0</span>
+                <span class="mEm">kW</span>
+                <span class="groupLabel">2공장</span>
+                <span data-kepco="power">0</span>
+                <span class="mEm">/</span>
+                <span data-kepco="predict">0</span>
+                <span class="mEm">kW</span>
+                <span class="groupLabel">주조공장</span>
+                <span data-kepco="power">0</span>
+                <span class="mEm">/</span>
+                <span data-kepco="predict">0</span>
+                <span class="mEm">kW</span>
+                <span class="groupLabel">합계</span>
+                <span data-kepco="power">0</span>
+                <span class="mEm">/</span>
+                <span data-kepco="predict">0</span>
+                <span class="mEm">kW</span>
+            </div>
+            <div class="monitHead">
+                <div class="mKepco">
+                    <img class="mKepcoText" src="../assets/img/kepco.svg" alt="KEPCO" />
+                </div>
+                <div class="mKepcoLine">
+                    <span class="mLine"></span>
+                </div>
+                <div class="mMof">
+                    <div class="mMofStep">　</div>
+                    <div class="mMofBox">
+                        <span class="mMofText">MOF</span>
+                    </div>
+                    <div class="mMofRope">
+                        <span class="mRope"></span>
+                    </div>
+                </div>
+                <div class="mMofLine">
+                    <span class="mLine"></span>
+                </div>
+                <div class="mInfo">
+                    <span class="mInfoTitle">최대수요<br/>전력관리</span>
+                    <span class="mInfoLabel">목표전력</span>
+                    <span class="mInfoText">
+                        <span id="pwBest1">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">예측전력</span>
+                    <span class="mInfoText">
+                        <span id="pwPredict1">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">기준전력</span>
+                    <span class="mInfoText">
+                        <span id="pwDic1">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">현재전력</span>
+                    <span class="mInfoText">
+                        <span id="pwThis1">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                </div>
+            </div>
+            <div class="mNubArea">
+                <div class="mNub">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group1" data-group="12260,12259,12255,12254,12253,12241,12240">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR1</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#56</span>
+                            <span class="mItemText" id="pid12260">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#57</span>
+                            <span class="mItemText" id="pid12259">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#61</span>
+                            <span class="mItemText" id="pid12255">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#62</span>
+                            <span class="mItemText" id="pid12254">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#63</span>
+                            <span class="mItemText" id="pid12253">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#75</span>
+                            <span class="mItemText" id="pid12240">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#76</span>
+                            <span class="mItemText" id="pid12241">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="mNub mNubTwin">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group2" data-group="12258,12257,12252,12251,12250,12249,12248,12247,12246,12243,12242,12233,12237,12256,12236,12235,12234,12238,12232">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR 2</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItemTwin">
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#58</span>
+                                <span class="mItemText" id="pid12258">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#59</span>
+                                <span class="mItemText" id="pid12257">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#64</span>
+                                <span class="mItemText" id="pid12252">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#65</span>
+                                <span class="mItemText" id="pid12251">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#66</span>
+                                <span class="mItemText" id="pid12250">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#67</span>
+                                <span class="mItemText" id="pid12249">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#68</span>
+                                <span class="mItemText" id="pid12248">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#69</span>
+                                <span class="mItemText" id="pid12247">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mNubItemTwin">
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#70</span>
+                                <span class="mItemText" id="pid12246">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#73</span>
+                                <span class="mItemText" id="pid12243">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#74</span>
+                                <span class="mItemText" id="pid12242">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#83</span>
+                                <span class="mItemText" id="pid12233">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#79</span>
+                                <span class="mItemText" id="pid12237">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                            <div class="mNubItemSub">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#60</span>
+                                    <span class="mItemText" id="pid12256">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="mNubItemSub">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#80</span>
+                                    <span class="mItemText" id="pid12236">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="mNubItemSub mStepN3">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#81</span>
+                                    <span class="mItemText" id="pid12235">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="mNubItemSub mStepN4">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#82</span>
+                                    <span class="mItemText" id="pid12234">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mNubItem mNubPreN4">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#78</span>
+                                <span class="mItemText" id="pid12238">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#84</span>
+                                <span class="mItemText" id="pid12232">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group3" data-group="12245,12244,12239">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR3</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#71</span>
+                            <span class="mItemText" id="pid12245">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#72</span>
+                            <span class="mItemText" id="pid12244">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#77</span>
+                            <span class="mItemText" id="pid12239">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group4" data-group="12231">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR4</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#85</span>
+                            <span class="mItemText" id="pid12231">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>

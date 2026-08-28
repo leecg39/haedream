@@ -1,0 +1,26 @@
+GATE                     이름
+
+yous                 벤츄레이터
+3208          벤츄레이터 OFF 동작                      1           2  RRelay2 3655 176 0
+3208       벤츄레이터 PASH ON                                   R:Relayl 365.5 176 0
+3208        벤츄레이터 좌측2개 ON                   0          1  R:Relay2 365.5 176 0
+질화로#1 5001                          0          1         R: chiin         00 00 18
+
+질화로#1 SCR2                                  0              1            R: ch2in           00 #400 18
+
+30 0 0 0 0 0 ORR
+
+wow
+
+ow
+
+ow  질화로#1 SCR3     0  2  R: chtin  00 00 18
+yon   질화로#2 SCR1  자동  0  1  R: chiin 3671 0.0 33
+yon   질화로#2 SCR2  자동  0  1  R:ch2in 366.2 0.0 33
+yon
+
+질화로#2 SCR3    자동   0    2   R: chiin   366.7 0.0 33
+
+=
+
+ZXISLP wo Crp            TLS.         n           4         D* zahiin       ALA 20202 ALA

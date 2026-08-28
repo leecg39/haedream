@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>가스사용량</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/gasReports.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/gasReports.js?v=0.0.1"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">가스사용량</h1>
+            <div class="deskTool">
+                <span class="deskLabel">구분</span>
+                <select class="select" id="dataType">
+                    <option value="hourly">시간대별</option>
+                    <option value="daily">일별</option>
+                    <option value="monthly">월별</option>
+                </select>
+                <span class="deskLabel" data-lang="power010">설비</span>
+                <select class="select" id="lpList">
+                    <option value="0">설비 목록 준비</option>
+                </select>
+                <span class="deskLabel" data-lang="report014">날짜</span>
+                <input type="date" class="inputDate" id="inputDate" min="2024-01-01" />
+                <span class="mNext"></span>
+                <span class="act actIcon" id="act">
+                    <i class="icon iconSearch"></i>
+                    <span data-lang="report012">조회</span>
+                </span>
+                <span class="act actIcon" id="actExcelSave">
+                    <i class="icon iconExcel"></i>
+                    <span data-lang="report013">저장</span>
+                </span>
+            </div>
+            <div id="chartdiv" class="chartdiv"></div>
+            <div class="sheetAreaSticky">
+                <table class="sheet" id="itemTable1">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

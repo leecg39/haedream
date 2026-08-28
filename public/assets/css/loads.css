@@ -1,0 +1,29 @@
+.deskTool{padding-bottom:2rem;text-align:center}
+.deskLabel{margin:0 .4rem 0 2rem;color:#72bce3}
+
+.inputMonth{padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent}
+.inputMonth::-webkit-calendar-picker-indicator{filter:invert(.8)}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.1rem;padding-right:1.1rem}
+.act i{margin-right:5px}
+
+.sheet .sheetAct{color:#e91e63}
+.sheet .sheetAct:hover{background-color:#e91e63;color:#fff;cursor:pointer}
+.chart1{height:28rem}
+
+.powerLow{background-color:#9cc952}
+.powerMiddle{background-color:#e4ce66}
+.powerHigh{background-color:#d84420}
+
+.itemList{text-align:center;}
+.item{display:inline-block;padding:1rem;margin:.4rem;width:16rem;min-height:12.6rem;border:1px solid #888;border-radius:1rem;background-color:rgba(255,255,255,.2);vertical-align:top;box-shadow: 0 0 1rem #000;}
+.itemName{display:inline-block;padding-bottom:.4rem;font-weight:600;}
+.itemIcon{display:inline-block;width:1rem;height:1rem;border-radius:.2rem;vertical-align:middle}
+.itemLabel{display:inline-block;width:4rem;color:#c8c8c8;text-align:right;vertical-align:middle}
+.itemEm{display:inline-block;width:8rem;color:#c8c8c8;text-align:right;vertical-align:middle}
+.barBox{margin-top:.4rem;font-size:0}
+.bar{display:inline-block;height:.4rem;color:#ffffff}
+.range{width:100%;margin-top:.4rem}
+.rangeText{display:block}

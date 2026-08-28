@@ -1,0 +1,454 @@
+<!--(주)우전-->
+    <main class="contents disable" id="contentsArea">
+        <div class="monit">
+            <div class="monitHead">
+                <div class="mKepco">
+                    <img class="mKepcoText" src="../assets/img/kepco.svg" alt="KEPCO" />
+                </div>
+                <div class="mKepcoLine">
+                    <span class="mLine"></span>
+                </div>
+                <div class="mMof">
+                    <div class="mMofStep">LV1</div>
+                    <div class="mMofBox">
+                        <span class="mMofText">MOF</span>
+                    </div>
+                    <div class="mMofRope">
+                        <span class="mRope"></span>
+                    </div>
+                </div>
+                <div class="mMofLine">
+                    <span class="mLine"></span>
+                </div>
+                <div class="mInfo">
+                    <span class="mInfoTitle">최대수요<br/>전력관리</span>
+                    <span class="mInfoLabel">목표전력</span>
+                    <span class="mInfoText">
+                        <span id="pwBest0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">예측전력</span>
+                    <span class="mInfoText">
+                        <span id="pwPredict0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">기준전력</span>
+                    <span class="mInfoText">
+                        <span id="pwDic0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                    <span class="mInfoLabel">현재전력</span>
+                    <span class="mInfoText">
+                        <span id="pwThis0">00</span>
+                        <span class="mEm">kW</span>
+                    </span>
+                </div>
+            </div>
+            <div class="mNubArea">
+                <div class="mNub">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group1" data-group="9577,9574,9562,9564,9578,9558,9559,9560,9561">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR 1</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#5 사처리 메인</span>
+                            <span class="mItemText" id="pid9577">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#6 조형기 메인</span>
+                            <span class="mItemText" id="pid9574">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#17 사처리 집진기 #1</span>
+                            <span class="mItemText" id="pid9562">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#18 사처리 집진기 #2</span>
+                            <span class="mItemText" id="pid9564">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#20 용해 집진기</span>
+                            <span class="mItemText" id="pid9578">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#23 콤프레셔 #1</span>
+                            <span class="mItemText" id="pid9558">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#24 콤프레셔 #2</span>
+                            <span class="mItemText" id="pid9559">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#25 콤프레셔 #3</span>
+                            <span class="mItemText" id="pid9560">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#16 옥상 집진기</span>
+                            <span class="mItemText" id="pid9561">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group2" data-group="9571">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR 2</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#3 전기로 2호기</span>
+                            <span class="mItemText" id="pid9571">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="mNub mNubTwin">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group3" data-group="9580,9563,9568,9575,9565,9576,9566,9570,9567,9572,9573,9581,10221">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR 3</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItemTwin">
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#4 믹서기 메인</span>
+                                <span class="mItemText" id="pid9580">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#19 주형장입 집진기</span>
+                                <span class="mItemText" id="pid9563">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#21 탈사트롤리 집진기(225A)</span>
+                                <span class="mItemText" id="pid9568">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#14 에프론에어 블라스트 10A</span>
+                                <span class="mItemText" id="pid9575">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#15 에프론 블라스트 125A</span>
+                                <span class="mItemText" id="pid9565">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#22 연마시설 집진기</span>
+                                <span class="mItemText" id="pid9576">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mNubItemTwin">
+                        <div class="mNubItem">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#7 후처리 메인</span>
+                                <span class="mItemText" id="pid9573">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                            <div class="mNubItemSub">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#8 탈사 메인</span>
+                                    <span class="mItemText" id="pid9581">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="mNubItemSub">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#9 후처리 컨트롤</span>
+                                    <span class="mItemText" id="pid10221">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mNubItem mNubPreN3">
+                            <span class="mItem">
+                                <span class="mItemStep">LV3</span>
+                                <span class="mItemName">#10 가공기 메인</span>
+                                <span class="mItemText" id="pid9566">
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">kW</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">V</span>
+                                    <span class="mItemAmount">00.0</span>
+                                    <span class="mItemEm">A</span>
+                                </span>
+                            </span>
+                            <div class="mNubItemSub">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#11 가공기 #1</span>
+                                    <span class="mItemText" id="pid9570">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="mNubItemSub">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#12 가공기 #2</span>
+                                    <span class="mItemText" id="pid9567">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="mNubItemSub">
+                                <span class="mItem">
+                                    <span class="mItemStep">LV4</span>
+                                    <span class="mItemName">#13 가공기 #3</span>
+                                    <span class="mItemText" id="pid9572">
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">kW</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">V</span>
+                                        <span class="mItemAmount">00.0</span>
+                                        <span class="mItemEm">A</span>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mNub">
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubMain" id="group4" data-group="9582">
+                        <div class="mNubStep">LV2</div>
+                        <div class="mNubLabel">TR 4</div>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">kW</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">V</span><br/>
+                        <span class="mNubAmount">00.0</span>
+                        <span class="mNubEm">A</span>
+                    </div>
+                    <span class="mPipe"></span>
+                    <span class="mPipe"></span>
+                    <div class="mNubItem">
+                        <span class="mItem">
+                            <span class="mItemStep">LV3</span>
+                            <span class="mItemName">#2 전기로 1호기</span>
+                            <span class="mItemText" id="pid9582">
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">kW</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">V</span>
+                                <span class="mItemAmount">00.0</span>
+                                <span class="mItemEm">A</span>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>

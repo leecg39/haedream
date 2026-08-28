@@ -1,0 +1,85 @@
+.act{display:inline-block;height:40px;padding:.52rem 1.3rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+.act.off{background:#607d8b;cursor:not-allowed}
+.input{padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.label{cursor:pointer}
+.toggle{display:inline-block;position:relative;width:38px;height:21px;background-color:#fff;border-radius:.6rem;cursor:pointer}
+.toggle::before{position:absolute;top:3px;left:3px;width:15px;height:15px;background-color:#989898;border-radius:50%;content:""}
+.toggle.active{background-color:#1976d2}
+.toggle.active::before{left:auto;right:3px;background-color:#fff}
+.deskSearch{display:inline-block;padding:.2rem .6rem;border-radius:.4rem;border:1px solid #5190a5;vertical-align:middle;font-size:1rem}
+.deskInput{width:12rem;padding:.2rem;border:none;background-color:transparent;color:#fff;vertical-align:middle;font-size:1rem}
+.deskInput:focus{outline:none}
+
+.deskToolWrap{display:flex;justify-content:center;align-items:center;gap:0.5rem;margin:1.5rem 0}
+.deskStat{display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin:1.5rem 0}
+.deskSelect{padding:.32rem .4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;height:40px;vertical-align:middle;font-size:1rem}
+.deskSelect option{background-color:#000}
+.deskTool{display:flex;align-items:center;justify-content:center;flex-direction:row;gap: 0.5rem}
+.deskAct{width:max-content;border-radius:4px}
+
+.deskPages{display:flex;align-items:center;font-size:0}
+.deskPage{padding:.6rem 1rem}
+.deskPages .act{background-color:rgb(32 98 191 / 27%)}
+.deskPages .act.active{background-color:#2062bf}
+
+.deskArea{margin:1.5rem 0 1rem;padding:2rem;border:1px solid rgba(255,255,255,0.15);background-color:rgba(0,0,29,0.4)}
+.tableCaption{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem}
+.desk{clear:both;width:100%;border-collapse:collapse;border-spacing:0;text-align:center}
+.desk th{padding:0.6rem .2rem;background-color:rgba(4,56,140,0.4);color:#fff;font-size:0.98rem;font-weight:400}
+.desk td{padding:0.6rem .2rem;border-bottom:1px solid #042337;color:#c8c8c8;font-size:0.98rem}
+.desk .em{margin-left:.2rem;color:#808080;font-size:.86rem}
+.desk .mark{color:#29b6f6}
+.desk tr:hover td{background-color:rgba(26,35,126,0.4)}
+.active td{background-color:rgba(49,27,146,0.6);border-bottom:1px solid #283593}
+.unable td{color:#707070}
+.desk .textAct:hover{color:#8bc34a;cursor:pointer}
+
+.desk .sort{position:relative;padding-left:1rem;padding-right:1rem}
+.desk .asc{padding-left:0;padding-right:2rem}
+.desk .desc{padding-left:0;padding-right:2rem}
+.desk .sort:hover{padding-left:0;padding-right:2rem}
+.desk .sort::after{position:absolute;top:.8rem;right:0;width:24px;height:0;background-image:url("../img/icons.png");content:""}
+.desk .sort:hover::after{height:24px;background-position:-48px -24px}
+.desk .sort.asc::after{height:24px;background-position:-24px -24px}
+.desk .sort.desc::after{height:24px;background-position:0 -24px}
+
+.textMemo{margin:.4rem 1.6rem 0;padding:.2rem .8rem;border-radius:.4rem;background-color:#ad1457;color:#fff;font-size:.92rem}
+.deskLabel, 
+.deskToolWrap .deskLimit .deskLabel{margin:0 .4rem 0 1rem;color:#72bce3}
+.deskLimit .deskLabel{color:#fff}
+.deskPages .deskLabel{margin:0 .4rem 0 1rem;color:#72bce3;font-size:1rem}
+.chart1{height:30rem;padding:2rem;border: 1px solid rgba(255,255,255,0.15);background-color:rgba(0,0,29,0.4)}
+
+.input::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.sheetEm{margin-right:4px;color:inherit;font-style:italic}
+.sheetScroll{overflow:auto}
+.sheetScroll::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetScroll::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetScroll::-webkit-scrollbar-track{border-radius:2px}
+.caption{margin-bottom:1rem}
+.captionMark{color:#72bce3}
+.splitUnit{margin:0 .4rem;color:#808080;font-weight:600}
+
+@media (max-width:768px){
+    .deskTool+.deskPages{display:none}
+    .deskArea{overflow:auto;margin:1rem 0}
+    .deskSelect{padding:.2rem .4rem;font-size:1rem}
+    .desk th{min-width:6rem}
+    .input{width:8rem;padding:.2rem .4rem;font-size:1rem}
+    .deskStat, 
+    .deskToolWrap{flex-direction:column;gap:1rem}
+    .captionMark:first-child{display:block}
+    .tableCaption{gap:0;flex-direction:column;justify-content:flex-start}
+    .splitUnit{display:none}
+    .deskAct{padding:0 1rem;min-width:80px;margin:0;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-0.3px;white-space:nowrap}
+}
+@media (max-width:480px){
+    .deskArea{padding:1rem}
+    .chart1{margin-top:10px;height:300px;padding:10px}
+    .deskStat, .deskToolWrap {flex-direction:column;gap:10px;margin:0}
+    .deskToolWrap{transform:scale(0.9)}
+}

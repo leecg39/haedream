@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>대시보드 - 태양광 대시보드</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/echarts.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/solar.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/solar.js?v=0.0.1"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle" data-lang="power001">태양광 대시보드</h1>
+            <div class="deskBooks">
+                <div class="deskLeft">
+                    <div class="deskToolWrap">
+                        <div class="deskTool">
+                            <span class="deskLabel">그룹</span>
+                            <select class="select" id="dataGroup">
+                                <option value="">전체</option>
+                            </select>
+                        </div>
+                        <div class="deskTool">
+                            <span class="deskLabel">시간단위</span>
+                            <select class="select" id="dataType">
+                                <option value="hourly">시간대별</option>
+                                <option value="daily">일별</option>
+                                <option value="monthly">월별</option>
+                            </select>
+                        </div>
+                        <div class="deskTool" id="hourlyDeskTool">
+                            <div class="mTBlock">
+                                <span class="deskLabel" data-lang="power015">날짜</span>
+                                <div class="datePicker">
+                                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                        <input type="text" class="inputDate" id="inputDate" aria-label="Date-Time" readonly>
+                                        <i class="bi bi-calendar"></i>
+                                    </div>
+                                    <div id="wrapper"></div>
+                                </div>
+                            </div>
+                            <div class="mTBlock">
+                                <span class="act actIcon" id="act">
+                                    <i class="bi bi-search"></i>
+                                    <span data-lang="power013">조회</span>
+                                </span>
+                                <span class="act actIcon" id="actExcelSave">
+                                    <i class="bi bi-file-earmark-excel-fill excel"></i>
+                                    <span data-lang="power016">엑셀로 다운</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="deskTool disable" id="dailyDeskTool">
+                            <span class="deskLabel">설비</span>
+                            <select class="select" id="lpListDaily">
+                                <option value="0">설비 목록 준비</option>
+                            </select>
+                            <span class="deskLabel">날짜</span>
+                            <div class="datePicker">
+                                <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                    <input type="text" class="inputDate" id="inputDailyDate" aria-label="Date-Time" readonly>
+                                    <i class="bi bi-calendar"></i>
+                                </div>
+                                <div id="dailyWrapper"></div>
+                            </div>
+                            <span class="act actIcon" id="actDaily">
+                                <i class="bi bi-search"></i>조회
+                            </span>
+                            <span class="act actIcon" id="actDailyExcelSave">
+                                <i class="bi bi-file-earmark-excel-fill excel"></i>저장
+                            </span>
+                        </div>
+                    </div>
+                    <div class="deskContent">
+                        <div class="chart" id="chart"></div>
+                        <div class="sheetArea">
+                            <div class="sheetScroll">
+                                <table class="sheet" id="itemTable">
+                                    <thead id="itemHead"></thead>
+                                    <tbody id="itemList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="deskRight">
+                    <div class="deskCompare">
+                        <div>
+                            <div class="compareLabel">오늘 발전량</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="todayOutput">-</span>
+                                <span class="compareUnit">kWh</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="compareLabel">오늘 발전시간</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="todayHours">-</span>
+                                <span class="compareUnit">h</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="compareLabel">어제 발전량</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="yesterdayOutput">-</span>
+                                <span class="compareUnit">kWh</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="compareLabel">어제 발전시간</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="yesterdayHours">-</span>
+                                <span class="compareUnit">h</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="compareLabel">당월 발전량</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="monthOutput">-</span>
+                                <span class="compareUnit">kWh</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="compareLabel">당월 발전시간</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="monthHours">-</span>
+                                <span class="compareUnit">h</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="compareLabel">올해 발전량</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="yearOutput">-</span>
+                                <span class="compareUnit">kWh</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="compareLabel">올해 발전시간</div>
+                            <div class="compareItem">
+                                <span class="compareValue" id="yearHours">-</span>
+                                <span class="compareUnit">h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

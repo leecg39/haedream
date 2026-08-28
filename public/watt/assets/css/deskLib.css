@@ -1,0 +1,149 @@
+.act{display:inline-block;height:40px;padding:.52rem 1.1rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+
+.act.off{background:#607d8b;cursor:not-allowed}
+.input{padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.label{cursor:pointer}
+.toggle{display:inline-block;position:relative;width:38px;height:21px;background-color:#848493;border-radius:.6rem;cursor:pointer}
+.toggle::before{position:absolute;top:3px;left:3px;width:15px;height:15px;background-color:#fff;border-radius:50%;content:""}
+.toggle.active{background-color:#359af9}
+.toggle.active::before{left:auto;right:3px;background-color:#fff}
+
+.deskSearch{position:relative;display:inline-block;height:40px;padding:.2rem .6rem;border-radius:.4rem;border:1px solid #5190a5;vertical-align:middle;font-size:1rem}
+.deskSearch .iconSearch{position:absolute;right:3px;top:7px;opacity:0.9}
+.deskInput{width:150px;padding:.2rem;border:none;background-color:transparent;color:#fff;vertical-align:middle;font-size:1rem}
+.deskInput:focus{outline:none}
+.deskInput::placeholder{color:rgba(255,255,255,0.75)}
+
+.deskStatWrap{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.deskStat{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.deskStatCenter{display:flex;justify-content:center;align-items:center;margin-bottom:1.5rem}
+.deskSelect{padding:.32rem .4rem;height:40px;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;vertical-align:middle;font-size:1rem}
+.deskSelect option{background-color:#000}
+
+.deskTool{font-size:0;display:flex;align-items:center}
+.deskAct{width:max-content;border-radius:4px;text-decoration:none}
+
+.deskPages{display:flex;gap:2px;align-items:center;font-size:0}
+.deskPage{padding:.6rem 1rem}
+.deskPage.act{margin:0;background-color:rgba(32, 98, 191, 0.3)}
+.deskPage.active{background-color:#2062bf}
+.setSub .deskTool .act{margin:0 0.25rem 0 0}
+
+.sheetArea{min-height:calc(100vh - 220px);background-color:rgba(0,0,29,0.4);padding:2rem;border:1px solid rgba(255,255,255,0.15)}
+.deskArea{margin:1.5rem 0 1rem}
+.desk{clear:both;width:100%;border-collapse:collapse;border-spacing:0;text-align:center}
+.desk th{padding:0.6rem .2rem;background-color:rgba(4,56,140,0.4);color:#fff;font-size:1rem;font-weight:400;transition:all 0.2s}
+.desk td{padding:0.6rem .2rem;border-bottom:1px solid #042337;color:#c8c8c8;font-size:1rem}
+.desk .em{margin-left:.2rem;color:#808080;font-size:.86rem}
+.desk .mark{color:#29b6f6}
+.desk tr:hover td{background-color:rgba(26,35,126,0.4)}
+.active td{background-color:rgba(49,27,146,0.6);border-bottom:1px solid #283593}
+.unable td{color:#707070}
+.desk .textAct:hover{color:#2dd377;cursor:pointer}
+
+.desk .sort{position:relative;padding-left:1rem;padding-right:1rem}
+.desk .asc{padding-left:0;padding-right:2rem}
+.desk .desc{padding-left:0;padding-right:2rem}
+.desk .sort:hover{padding-left:0;padding-right:2rem}
+.desk .sort::after{position:absolute;top:.7rem;right:0;width:24px;height:0;background-image:url("../img/icons.png");content:""}
+.desk .sort:hover::after{height:24px;background-position:-48px -24px}
+.desk .sort.asc::after{height:24px;background-position:-24px -24px}
+.desk .sort.desc::after{height:24px;background-position:0 -24px}
+
+.off td{color:#2e7d32}
+.desk .off{color:rgba(255,255,255,0.5)}
+.desk .em{margin-left:.2rem;color:#808080;font-size:.86rem}
+.desk .mark{color:#e91e63}
+.desk .mask{color:#fb8c00}
+
+.editTitle{margin:1rem 0 2rem;color:#fff;font-size:1.6rem;font-weight:600;text-align:center}
+.editForm{display:grid;grid-template-columns:1fr 2.4fr 1fr 2.4fr;gap:.6rem 1rem;align-items:center;padding:0 2rem 1rem}
+.editFormExtend{grid-column:2 / span 3}
+.editExtend{display:grid;grid-auto-rows:1fr;grid-template-columns:1fr 3fr 2fr 1fr 2fr;gap:.4rem .2rem;overflow-y:auto;max-height:30rem;padding:1rem 2rem 0;font-size:.86rem;text-align:center}
+.editExtend .th{padding:.2rem 0;background-color:#01579b}
+.gridGateNode{grid-template-columns:1fr 3fr 2fr 1fr 1fr 1fr 1fr 1fr;max-height:28rem}
+.editExtendSub{grid-column:2 / span 4;color:#2dd377;text-align:left}
+.mark{color:#2dd377}
+.desk .safeText{color:#2dd377}
+.eSelect{padding:.2rem .4rem;width:15rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.eSelect option{background-color:#000}
+.eSelect optgroup{color:#c8c8c8;background-color:#181818}
+.eInput{padding:.2rem .4rem;width:15rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.eInput[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.eInputFull{width:98%}
+.eInputTiny{width:4rem;padding-right:0}
+
+.editAct{position:relative}
+.editAct .icon{display:none;position:absolute;top:.5rem}
+.editAct:hover .icon{display:block}
+.iconEdit{left:-24px;background-position:-72px 0}
+.iconDrop{right:-24px;background-position:-120px 0}
+.iconGear{background-position:-216px 0}
+.iconReset{background-position:-120px 0}
+
+.textMemo{margin:.4rem 1.6rem 0;padding:.2rem .8rem;border-radius:.4rem;background-color:#ad1457;color:#fff;font-size:.92rem}
+.modalContent{min-height:20rem}
+
+.tAct{color:#03a9f4;font-size:inherit}
+.tAct:hover{color:#e91e63;cursor:pointer}
+.tMark{color:#e91e63;font-size:inherit}
+.tCon.rotate{position:absolute;width:1rem;height:1rem;margin:-.5rem 0 0 -.5rem;border-radius:50%;border:.2rem solid #72bce3;border-top-color:transparent}
+
+.editFormSequence{display:grid;grid-template-columns:3fr 1fr 1fr 1fr 1fr 1fr .4fr;align-items:center;padding:.4rem 0}
+.editTab{color:#888;text-align:center}
+.editFormSequence .eSelect{width:4.4rem}
+
+.editExtendGroup{grid-template-columns:1fr 1fr 1fr;gap:.8rem;font-size:1rem}
+.editExtendGroup .icon{visibility:hidden}
+.editExtendGroup .group:hover .icon{visibility:visible}
+.editExtendGroup .group{padding:.4rem 0;border-radius:.4rem;background-color:rgba(1,87,155,.3);cursor:pointer}
+
+.editMapPosition{position:relative}
+.editMapImage{margin-bottom:1rem;width:100%;max-width:100%}
+.editMapPoint{position:absolute;width:.6rem;height:.6rem;background-color:#e91e63;border-radius:.2rem}
+.editMapPoint::after{position:absolute;margin-top:1.4rem;border-radius:.2rem;color:#e91e63;font-size:.92rem;white-space:nowrap;content:attr(data-point);z-index:32}
+
+.dayCk label{display:inline-flex;gap:0.5rem;align-items:center;margin:0;cursor:pointer}
+.dayCk input[type="checkbox"]{position:relative;width:39px;height:21px;background-color:#a7a7b5;cursor:pointer;appearance:none;border-radius:1.25em}
+.dayCk input[type="checkbox"]::before{position:absolute;top:3px;left:3px;width:15px;height:15px;background-color:#ffffff;transition:left 250ms linear;content:"";border-radius:50%}
+.dayCk input[type="checkbox"]:checked{background-color:#359af9}
+.dayCk input[type="checkbox"]:checked::before{left:21px}
+
+.eInputMini{width:6.8rem}
+.marginLeft{margin-left:1rem}
+.block{display:block;margin:.4rem 0}
+
+@media screen and (max-width:768px){
+    .sheetArea{padding:1rem}
+    .deskStat, 
+    .deskStatWrap,
+    .deskStatCenter{flex-direction:column;gap:.4rem}
+    .desk{min-width:1100px}
+    .deskArea{width:100%;overflow-x:auto}
+    .deskAct{width:auto;padding:0.52rem 0.6rem}
+    .deskSelect{padding:.2rem .4rem;font-size:1rem}
+    .desk th{min-width:6rem}
+    .modalBox{height: calc(100vh - 40px);width:calc(100% - 40px);max-width:calc(100% - 40px)}
+    .modalContent{max-height:calc(100vh - 150px);width:100%}
+    .modal .editForm{display:flex;flex-direction:column;align-items:start}
+}
+@media screen and (max-width:480px){
+    .act{font-size:15px;white-space:nowrap}
+    .deskTool{transform:scale(0.9)}
+    .deskTool.onlypci{display:grid;grid-template-columns:repeat(3, 1fr);gap:1px;width:90%;}
+    .deskTool.onlypci .act{border-radius:0.4rem}
+    .deskStatWrap .deskLimit{display:none}
+    .deskInput{width:100%}
+    .deskPages{flex-wrap:wrap}
+    .sheetArea.setSub{padding:1rem 0}
+    .sheetArea.setSub .sheetScroll{height:inherit}
+    .sheetArea.seq .deskTool.onlypci{row-gap:0.5rem;width:100%}
+    .sheetArea.seq .deskTool.onlypci .act{margin:0 2px}
+}

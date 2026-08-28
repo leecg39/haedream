@@ -1,0 +1,35 @@
+.deskTool{display:flex;align-items:center;justify-content:center;flex-direction:row;margin-bottom:1.5rem;text-align:center}
+.deskLabel{margin:0 .5rem 0 1rem;color:#72bce3}
+
+.inputDate{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.select{height:40px;padding:.4rem .4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+
+.act{display:inline-block;height:40px;padding:.52rem 2rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.act i{margin-right:4px}
+.peakChart{background-color:rgba(0,0,29,0.4);padding:2rem;border:1px solid rgba(255,255,255,0.15)}
+.chart1{height:32rem;min-height:calc(100vh - 300px)}
+
+.mTBlock{display:flex;align-items:center}
+
+@media (max-width:768px){
+    .deskArea{overflow:auto;margin:1rem 0}
+    .deskLabel{margin:0 1rem}
+    .deskTool{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0;padding-bottom:0}
+    .select{padding:.2rem .4rem;font-size:1rem}
+    .inputDate{padding:.2rem .4rem;font-size:1rem}
+    .act{margin-left:0;padding:.4rem 1rem .4rem 1rem}
+    .actIcon .icon{top:.5rem;left:.5rem}
+    .peakChart{padding:0}
+    .chart1{min-height:inherit}
+}
+@media (max-width:480px){
+    .peakChart{margin-top:10px}
+    .deskTool{flex-direction:column;gap:4px;transform:scale(0.9)}
+    .mTBlock{min-height:40px;gap:8px;justify-content:center}
+    .act{padding:0 1rem;min-width:80px;margin:0 4px;height:40px;display:flex;align-items:center;justify-content:center}
+}

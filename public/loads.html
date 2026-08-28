@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>가상 부하분산</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/loads.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/loads.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">가상 부하분산</h1>
+            <div class="chart1" id="chart1"></div>
+            <div class="deskTool">
+                <span class="deskLabel">날짜</span>
+                <input type="month" class="inputMonth" id="inputMonth" min="2021-01" />
+                <span class="act actIcon" id="act">
+                    <i class="icon iconSearch"></i>
+                    <span>조회</span>
+                </span>
+            </div>
+            <div class="itemList" id="itemList">
+                <div class="item">
+                    <div>
+                        <span class="itemIcon"></span>
+                        <span class="itemName">전체</span>
+                    </div>
+                    <div>
+                        <span class="itemIcon powerLow"></span>
+                        <span class="itemLabel">경부하</span>
+                        <span class="itemEm">123,456,000원</span>
+                    </div>
+                    <div>
+                        <span class="itemIcon powerMiddle"></span>
+                        <span class="itemLabel">중부하</span>
+                        <span class="itemEm">123,456,000원</span>
+                    </div>
+                    <div>
+                        <span class="itemIcon powerHigh"></span>
+                        <span class="itemLabel">최대부하</span>
+                        <span class="itemEm">123,456,000원</span>
+                    </div>
+                    <div class="barBox">
+                        <span class="bar powerLow" style="width:20%"></span>
+                        <span class="bar powerMiddle" style="width:50%"></span>
+                        <span class="bar powerHigh" style="width:30%"></span>
+                    </div>
+                </div>
+                <div class="item">
+                    <div>
+                        <span class="itemIcon"></span>
+                        <span class="itemName">가나다라마바사</span>
+                    </div>
+                    <div>
+                        <span class="itemIcon powerLow"></span>
+                        <span class="itemLabel">경부하</span>
+                        <span class="itemEm">123,456,000원</span>
+                    </div>
+                    <div>
+                        <span class="itemIcon powerMiddle"></span>
+                        <span class="itemLabel">중부하</span>
+                        <span class="itemEm">123,456,000원</span>
+                    </div>
+                    <div>
+                        <span class="itemIcon powerHigh"></span>
+                        <span class="itemLabel">최대부하</span>
+                        <span class="itemEm">123,456,000원</span>
+                    </div>
+                    <div class="barBox">
+                        <span class="bar powerLow" style="width:20%"></span>
+                        <span class="bar powerMiddle" style="width:50%"></span>
+                        <span class="bar powerHigh" style="width:30%"></span>
+                    </div>
+                    <div>
+                        <input type="range" class="range" list="tickmarks">
+                        <datalist id="tickmarks">
+                            <option value="0"></option>
+                            <option value="10"></option>
+                            <option value="20"></option>
+                            <option value="30"></option>
+                            <option value="40"></option>
+                            <option value="50"></option>
+                            <option value="60"></option>
+                            <option value="70"></option>
+                            <option value="80"></option>
+                            <option value="90"></option>
+                            <option value="100"></option>
+                        </datalist>
+                        <span class="rangeText">최대부하 50%</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

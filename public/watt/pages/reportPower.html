@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>보고서 - 전력요금보고서</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/report.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/reportPower.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle" data-lang="report001">
+                전력요금 보고서
+                <span class="deskTab" id="contract">요금제: 준비</span>
+            </h1>
+            <div class="chartbox">
+                <div class="deskTool">
+                    <div class="mTBlock">
+                        <span class="deskLabel" data-lang="report010">설비</span>
+                        <select class="select" id="lpList">
+                            <option value="0">설비 목록 준비</option>
+                        </select>
+                    </div>
+                    <div class="mTBlock">
+                        <span class="deskLabel" data-lang="report014">날짜</span>
+                        <div class="datePicker">
+                            <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                <input type="text" class="inputDate" id="inputMonth" aria-label="Date-Time" readonly>
+                                <i class="bi bi-calendar"></i>
+                            </div>
+                            <div id="wrapper"></div>
+                        </div>
+                        <span class="act actIcon" id="act">
+                            <i class="bi bi-search"></i>
+                            <span data-lang="report012">조회</span>
+                        </span>
+                        <span class="act actIcon" id="actExcelSave">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>
+                            <span data-lang="report013">저장</span>
+                        </span>
+                        <a href="power.html" target="_blank" class="deskAct act" id="chargeLink">요금표</a>
+                    </div>
+                </div>
+                <div class="sheetTwin">
+                    <table class="sheet">
+                        <thead>
+                            <tr>
+                                <th data-lang="report030">구분</th>
+                                <th data-lang="report031">월 전력사용량 (<span class="sheetEm">kWh</span>)</th>
+                                <th data-lang="report032">월 전력사용요금 (<span class="sheetEm">원</span>)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemListMonth">
+                            <tr>
+                                <th class="tLabel" data-lang="report015">중간부하</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <th class="tLabel" data-lang="report016">최대부하</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <th class="tLabel" data-lang="report017">경부하</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <th class="tLabel" data-lang="report018">전체</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="sheet">
+                        <thead>
+                            <tr>
+                                <th data-lang="report030">구분</th>
+                                <th data-lang="report034">연 전력사용량 (<span class="sheetEm">kWh</span>)</th>
+                                <th data-lang="report035">연 전력사용요금 (<span class="sheetEm">원</span>)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemListYear">
+                            <tr>
+                                <th class="tLabel" data-lang="report015">중간부하</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <th class="tLabel" data-lang="report016">최대부하</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <th class="tLabel" data-lang="report017">경부하</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <th class="tLabel" data-lang="report018">전체</th>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="sheetScroll">
+                    <table class="sheet" id="itemTable">
+                        <thead class="sticky">
+                            <tr>
+                                <th rowspan="2" data-lang="report014">일자</th>
+                                <th colspan="24" data-lang="report027">시간별 전력량 요금 (<span class="sheetEm">만원</span>)</th>
+                                <th colspan="4" data-lang="report028">전력량요금 (<span class="sheetEm">만원</span>)</th>
+                                <th rowspan="2" data-lang="report025">역률 (<span class="sheetEm">%</span>)</th>
+                            </tr>
+                            <tr>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                <th>5</th>
+                                <th>6</th>
+                                <th>7</th>
+                                <th>8</th>
+                                <th>9</th>
+                                <th>10</th>
+                                <th>11</th>
+                                <th>12</th>
+                                <th>13</th>
+                                <th>14</th>
+                                <th>15</th>
+                                <th>16</th>
+                                <th>17</th>
+                                <th>18</th>
+                                <th>19</th>
+                                <th>20</th>
+                                <th>21</th>
+                                <th>22</th>
+                                <th>23</th>
+                                <th>24</th>
+                                <th data-lang="report015">중간부하</th>
+                                <th data-lang="report016">최대부하</th>
+                                <th data-lang="report017">경부하</th>
+                                <th data-lang="report018">계</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="sheetAppend">
+                    <span class="deskLabel" data-lang="report025">평균역률</span>
+                    <span id="totalAVGFactor">0.0%</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>
