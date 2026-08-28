@@ -1,3 +1,5 @@
+import { PageStyles } from "@/components/fit/shared/PageStyles";
+import { LIB_STYLES } from "@/lib/fit-styles";
 import { LiveUseArea } from "@/components/fit/peak/LiveUseArea";
 import { PeakArea } from "@/components/fit/peak/PeakArea";
 import { PeakResults } from "@/components/fit/peak/PeakResults";
@@ -16,9 +18,7 @@ export const metadata = { title: "피크상태" };
 export default function FitPeakPage() {
   return (
     <>
-      <link rel="stylesheet" href="/fit/assets/css/lib/tom-select.css" precedence="default" />
-      <link rel="stylesheet" href="/fit/assets/css/lib/tui-date-picker.css" precedence="default" />
-      <link rel="stylesheet" href="/fit/assets/css/peak.css" precedence="default" />
+      <PageStyles files={[...LIB_STYLES, "/fit/assets/css/peak.css"]} />
       <main className="peakGrid contents" id="contentsArea">
         <PeakTopInfo header={PEAK_HEADER} />
         <PeakArea realtime={PEAK_REALTIME} points={PEAK_POINTS} />

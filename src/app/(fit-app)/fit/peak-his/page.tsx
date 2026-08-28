@@ -1,3 +1,5 @@
+import { PageStyles } from "@/components/fit/shared/PageStyles";
+import { LIB_STYLES } from "@/lib/fit-styles";
 import { PeakHisPanel } from "@/components/fit/peak-his/PeakHisPanel";
 
 export const metadata = { title: "피크 그래프" };
@@ -11,9 +13,7 @@ export const metadata = { title: "피크 그래프" };
 export default function FitPeakHisPage() {
   return (
     <>
-      <link rel="stylesheet" href="/fit/assets/css/lib/tom-select.css" precedence="default" />
-      <link rel="stylesheet" href="/fit/assets/css/lib/tui-date-picker.css" precedence="default" />
-      <link rel="stylesheet" href="/fit/assets/css/peakHis.css" precedence="default" />
+      <PageStyles files={[...LIB_STYLES, "/fit/assets/css/peakHis.css"]} />
       <main className="contents" id="contentsArea">
         <h1 className="deskTitle">피크 그래프</h1>
         <PeakHisPanel />
