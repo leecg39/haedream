@@ -1,0 +1,36 @@
+.titleArea{display:flex;flex-direction:row;justify-content:space-between}
+.actArea{position:absolute;top:1rem;right:2rem;text-align:right}
+.sheetArea{width:100%;height:auto;max-height:calc(100vh - 150px);overflow:auto}
+.sheet{width:100%;height:100%;margin:0;border-collapse:separate;border-radius:20px;text-align:center}
+.sheet thead{position:sticky;top:0;width:100%;height:50px;background-color:rgba(0,0,29,0.6);backdrop-filter:blur(5px)}
+.sheet thead th{color:#00ffff;font-weight:400}
+.sheet tbody tr th{width:30%;min-width:200px;padding-left:20px;background-color:rgba(0,0,0,0.1);color:#b8faff;font-weight:400}
+.sheet td{padding:.6rem .2rem;font-size:1rem;font-weight:400}
+.sheet tbody tr td{padding:14px 20px 14px 40px}
+.sheet tbody tr:hover{background-color:rgba(238,238,238,0.2)}
+.sheet tbody tr td:last-child{width:calc(50vw - 240px)}
+.sheet tbody tr:first-child td{padding-top:20px}
+.sheet tbody tr:last-child td{padding-bottom:20px}
+.input,
+.select{width:100%;min-width:200px;height:35px;padding:.2rem 1rem;border:1px solid #00ffff;border-radius:5px;background-color:#2C3540;font-size:1rem}
+.input:hover,
+.select:hover{border:1px solid #b8faff;background-color:rgba(6,65,255,0.1)}
+.select{width:100%;font-size:1rem}
+option{background-color:#2C3540;font-size:1rem}
+.sheetEm{color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+
+@media (max-width:768px){
+    .deskArea{overflow:auto;margin:1rem 0}
+    .input{font-size:1rem}
+    .select{font-size:1rem}
+}
+@media (max-width:670px){
+    .sheetArea{overflow:auto}
+    .sheet{min-width:500px}
+    tbody tr td{padding:15px 10px}
+}
+@media (max-width:480px){
+    .sheetArea{width:100%;margin:15px 0 1rem 0}
+    .actArea{height:40px}
+}

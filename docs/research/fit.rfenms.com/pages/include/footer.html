@@ -1,0 +1,144 @@
+<!-- 토스트 알람 -->
+<div class="toastArea disable" id="toastArea">
+    <div class="toast toastRed">
+        <div class="textArea" id="toastText"></div>
+    </div>
+</div>
+<!-- 토스트 끝 -->
+
+<!-- 팝업 -->
+<div class="darkPopupArea disable">
+    <div class="dPopup">
+        <div class="header">
+            <h3>팝업창 타이틀 들어가는 곳</h3>
+            <p class="close">
+                <i class="bi bi-x-lg"></i>
+            </p>
+        </div>
+        <div class="popContents">
+            설정 등 팝업창의 디자인은
+            보더라인과 드롭쉐도우를 적용하고 있습니다.
+            <div class="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>항목</td>
+                            <td>내용</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>테이블</td>
+                            <td>테이블 사용시 예제</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="popupBtn">
+            <button type="submit" class="no">취소</button>
+            <button type="submit" class="ok">저장</button>
+        </div>
+    </div>
+</div>
+<!-- 팝업 끝 -->
+
+<div class="disable" id="appLoading">
+    <div class="appLoading">
+        <span class="appProgress rotate"></span>
+    </div>
+</div>
+
+<div class="disable" id="dialog">
+    <div class="dialog">
+        <div class="dialogBox">
+            <div class="dialogMemo" id="dialogMemo">알림<br/>최적화는 필수 입니다.</div>
+            <div class="dialogActArea">
+                <span class="dialogAct bgDanger" id="dialogAct">Cancel</span>
+                <span class="dialogAct bgPrimary">OK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="disable" id="profModal">
+    <div class="modal">
+        <div class="modalBox">
+            <i class="modalClose" onclick="document.getElementById('profModal').classList.add('disable')"></i>
+            <div class="profContents">
+                <h2>고객정보</h2>
+                <div class="modalScroll">
+                    <table class="profSheet">
+                        <caption>
+                            <div class="datePicker">
+                                <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                                    <input type="text" class="inputDate" id="profSearch" aria-label="Date-Time" readonly>
+                                    <i class="bi bi-calendar"></i>
+                                </div>
+                                <div id="profSearchWrapper"></div>
+                            </div>
+                        </caption>
+                        <tbody id="profTable">
+                            <tr>
+                                <th class="profLabel">업체명</th>
+                                <td class="profText"></td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">고객번호</th>
+                                <td class="profText">0000000000</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">청구년월</th>
+                                <td class="profText">0000년 00일</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">정기검침일</th>
+                                <td class="profText">00일</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">요금적용전력</th>
+                                <td class="profText">0 ㎾</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">전력량요금</th>
+                                <td class="profText">0 원</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">기본요금</th>
+                                <td class="profText">0 원</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">전기요금계</th>
+                                <td class="profText">0 원</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">청구요금</th>
+                                <td class="profText">0 원</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">경부하사용량</th>
+                                <td class="profText">0 ㎾h</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">중부하사용량</th>
+                                <td class="profText">0 ㎾h</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">최대부하사용량</th>
+                                <td class="profText">0 ㎾h</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">진상역률</th>
+                                <td class="profText">0 %</td>
+                            </tr>
+                            <tr>
+                                <th class="profLabel">지상역률</th>
+                                <td class="profText">0 %</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

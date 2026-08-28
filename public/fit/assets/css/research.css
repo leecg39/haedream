@@ -1,0 +1,45 @@
+.deskTitle{position:relative;margin:0 0 12px;padding:0 15px 10px 28px;font-size:1.25rem;letter-spacing:-0.02em}
+.researchHead{display:flex;align-items:center;flex-wrap:wrap;gap:10px;min-height:72px;margin:0;padding:15px 20px;border:1px solid rgba(184, 250, 255, 0.12);border-radius:18px;background:linear-gradient(135deg, rgba(0, 0, 29, 0.88), rgba(12, 24, 48, 0.72));box-shadow:0 12px 34px rgba(0, 0, 0, 0.18)}
+.researchLabel{color:#b8faff;font-size:0.9rem;white-space:nowrap;vertical-align:middle}
+.researchInfoText{min-height:34px;padding:7px 12px;border:1px solid rgba(184, 250, 255, 0.14);border-radius:8px;background-color:#182431;color:#ffffff;font-size:0.92rem;text-align:center;white-space:nowrap}
+.researchInfoText[data-name="kepcoStatus"]{color:#7dd3fc}
+.researchInfoText[data-name="kepcoTime"]{color:#aab8c8}
+.researchAct{display:inline-flex;justify-content:center;align-items:center;min-width:104px;min-height:38px;margin-left:auto;padding:7px 16px;border:1px solid rgba(110, 231, 183, 0.8);border-radius:8px;background-color:rgba(16, 185, 129, 0.16);color:#6ee7b7;font-size:0.92rem;text-align:center;cursor:pointer;transition:border-color 0.2s, background-color 0.2s, color 0.2s, transform 0.2s}
+.researchAct:hover{border-color:#6ee7b7;background-color:rgba(16, 185, 129, 0.28);color:#d1fae5;transform:translateY(-1px)}
+.researchAct.progress{background:linear-gradient(90deg, rgba(16, 185, 129, 0.18) 40%, rgba(110, 231, 183, 0.42) 50%, rgba(16, 185, 129, 0.18) 60%);background-size:280% 100%;animation:onprogress 1s infinite linear;cursor:wait}
+@keyframes onprogress{0%{background-position:right}}
+.researchNav{display:flex;gap:8px;margin:14px 0 0;padding:0 6px;border-bottom:1px solid rgba(184, 250, 255, 0.16)}
+.toggleAct{position:relative;min-width:160px;padding:11px 18px;border:1px solid transparent;border-bottom:0;border-radius:9px 9px 0 0;background-color:rgba(24, 36, 49, 0.72);color:#9aa8b8;font-size:0.94rem;text-align:center;cursor:pointer;transition:background-color 0.2s, color 0.2s}
+.toggleAct:hover{background-color:rgba(35, 63, 95, 0.82);color:#ffffff}
+.toggleAct.active{border-color:rgba(0, 255, 255, 0.2);background-color:#173454;color:#b8faff}
+.researchData{display:grid;gap:0;place-items:stretch;overflow:auto;width:100%;min-height:180px;max-height:calc(100vh - 300px);margin-top:0;border:1px solid rgba(184, 250, 255, 0.14);border-radius:0 0 14px 14px;background-color:rgba(4, 11, 24, 0.74);box-shadow:0 12px 28px rgba(0, 0, 0, 0.24);font-variant-numeric:tabular-nums}
+.researchData::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19, 21, 24, 0.5)}
+.researchData::-webkit-scrollbar-thumb{border:1px solid #00ffff;border-radius:3px;background-color:rgba(0, 255, 255, 0.45)}
+.researchData::-webkit-scrollbar-track{border-radius:3px}
+.researchData::-webkit-scrollbar-corner{background-color:transparent}
+.researchData > span{display:flex;justify-content:flex-end;align-items:center;min-width:102px;min-height:40px;padding:8px 12px;border-right:1px solid rgba(184, 250, 255, 0.11);border-bottom:1px solid rgba(184, 250, 255, 0.11);color:#e8edf5;font-size:0.88rem;text-align:right;white-space:nowrap;transition:background-color 0.18s, color 0.18s}
+.researchData > span:not(.researchDataLabel):hover{background-color:rgba(0, 255, 255, 0.09);color:#ffffff}
+.researchDataLabel{position:sticky;top:0;z-index:2;justify-content:center!important;min-width:116px!important;background-color:rgba(17, 53, 91, 0.98);color:#b8faff!important;font-weight:500;text-align:center!important}
+.researchDataLabel:first-child{left:0;z-index:3}
+.researchDate{width:100%;min-width:110px;border:0;outline:0;background-color:transparent;color:#b8faff;font:inherit;text-align:center}
+.researchDate::-webkit-calendar-picker-indicator{filter:invert(.8);cursor:pointer}
+@media screen and (max-width:1200px){
+    .researchAct{margin-left:0}
+    .researchData{max-height:calc(100vh - 340px)}
+}
+@media screen and (max-width:768px){
+    .deskTitle{padding-left:24px}
+    .researchHead{align-items:stretch;gap:8px;padding:14px}
+    .researchLabel{display:flex;align-items:center;flex:0 0 84px}
+    .researchInfoText{flex:1 1 calc(100% - 92px);overflow:hidden;text-overflow:ellipsis}
+    .researchAct{flex:1 1 100%;margin:4px 0 0}
+    .researchNav{overflow-x:auto;padding:0}
+    .toggleAct{flex:1 0 150px;min-width:150px;padding:10px 12px}
+    .researchData{max-height:calc(100vh - 430px);border-radius:0 0 10px 10px}
+    .researchData > span{min-width:92px;padding:7px 9px;font-size:0.84rem}
+    .researchDataLabel{min-width:104px!important}
+}
+@media screen and (max-width:420px){
+    .researchLabel{flex-basis:76px;font-size:0.84rem}
+    .researchInfoText{flex-basis:calc(100% - 84px);font-size:0.84rem}
+}

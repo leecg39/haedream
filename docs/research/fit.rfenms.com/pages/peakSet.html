@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>피크 제어설정</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="assets/css/common.css?v=0.0.2">
+    <link rel="stylesheet" href="./assets/css/peakSet.css?v=0.0.1">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/peakSet.js?v=0.0.2"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">피크 제어설정</h1>
+            <div class="sheetArea">
+                <table class="sheet">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>입력범위(단위)</th>
+                            <th>현재값</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>목표전력</th>
+                            <td>1~100000(kW)</td>
+                            <td><input class="input" id="powerLimit" type="number" step="1" min="1" max="65000" /></td>
+                        </tr>
+                        <tr>
+                            <th>PCT 비율</th>
+                            <td>1~65000</td>
+                            <td><input class="input" id="pct_ratio" type="number" step="1" min="1" max="65000" /></td>
+                        </tr>
+                        <tr>
+                            <th>펄스정수</th>
+                            <td>1~65000</td>
+                            <td><input class="input" id="pulse_num" type="number" step="1" min="1" max="65000" /></td>
+                        </tr>
+                        <tr>
+                            <th>운전모드</th>
+                            <td>수동/자동</td>
+                            <td>
+                                <select class="select" id="peakRunMode">
+                                    <option value="0">수동</option>
+                                    <option value="1">자동</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>제어 On Delay</th>
+                            <td>1~900(second)</td>
+                            <td><input class="input" id="peakOnDelay" type="number" step="1" min="1" max="900" /></td>
+                        </tr>
+                        <tr>
+                            <th>제어 Off Delay</th>
+                            <td>1~900(second)</td>
+                            <td><input class="input" id="peakOffDelay" type="number" step="1" min="1" max="900" /></td>
+                        </tr>
+                        <tr>
+                            <th>안전 퍼센트</th>
+                            <td>0~50(%)</td>
+                            <td><input class="input" id="peakSafe" type="number" step="1" min="0" max="50" /></td>
+                        </tr>
+                        <tr>
+                            <th>초기제어금지</th>
+                            <td>1~900(second)</td>
+                            <td><input class="input" id="peakFirstDelay" type="number" step="1" min="1" max="900" /></td>
+                        </tr>
+                        <tr>
+                            <th>알람유지시간</th>
+                            <td>0~900(second)</td>
+                            <td><input class="input" id="peakAlarmTime" type="number" step="1" min="0" max="900" /></td>
+                        </tr>
+                        <tr>
+                            <th>제어방식</th>
+                            <td>우선제어/순차제어</td>
+                            <td>
+                                <select class="select" id="peakControlMode">
+                                    <option value="0">우선</option>
+                                    <option value="1">순차</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="actArea">
+                    <span class="act" id="actSave">설정 저장</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

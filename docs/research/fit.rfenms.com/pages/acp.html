@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>시스템에어컨 관리</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="assets/css/common.css?v=0.0.2">
+    <link rel="stylesheet" href="./assets/css/deskLib.css?v=0.0.1">
+    <link rel="stylesheet" href="./assets/css/acp.css?v=0.0.2">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/acp.js?v=0.0.2"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <div class="kfeContent">
+                <div class="kfeHead">
+                    <span class="kfeHeadLabel">시스템에어컨 관리</span>
+                    <span class="kfeHeadSub">
+                        <span class="deskLabel">시스템에어컨</span>
+                        <select class="eSelect" id="acpIdn">
+                            <option value="0">설비 선택</option>
+                        </select>
+                    </span>
+                </div>
+                <div class="kfeBody">
+                    <div class="frozen">
+                        <div class="mapArea">
+                            <div class="mapHead">
+                                <span class="floorTitle" id="floorMapName"></span>
+                            </div>
+                            <div class="mapImageArea">
+                                <img class="floorMapImage" id="floorMapImage" src="/assets/img/empty.png" alt="냉난방제어 도면"/>
+                                <div class="mapPoints" id="floorMapPoints"></div>
+                            </div>
+                            <div class="mapDesk">
+                                <span class="floorLabel" id="floorPlanName"></span>
+                            </div>
+                        </div>
+                        <div class="deskArea">
+                            <div class="inBody">
+                                <span class="actConfig active" id="actConfig">설정 <i class="icon iconGear"></i></span>
+                                <div>운전방식</div>
+                                <div class="gaugeForm" id="acpPeakType">대기중</div>
+                                <div class="tip" data-tip="목표 운전율 표시">희망운전율</div>
+                                <div class="gaugeForm">
+                                    <ul class="gaugeArea" id="acpRateHope">
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                    </ul>
+                                    <span>0%</span>
+                                </div>
+                                <div class="tip" data-tip="ACP5는 우선순위 제어상태 일때만 표시됩니다.">현재운전율</div>
+                                <div class="gaugeForm">
+                                    <ul class="gaugeArea" id="acpRateCurrent">
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                    </ul>
+                                    <span>0%</span>
+                                </div>
+                                <div class="tip" data-tip="미래에너지 서버와 ACP 서버 연결상태 표시">통신상태</div>
+                                <div class="gaugeForm">
+                                    <span class="statBad">나쁨</span>
+                                    <ul class="gaugeArea" id="connStatGauge">
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                        <li class="gauge"></li>
+                                    </ul>
+                                    <span class="statGood">좋음</span>
+                                </div>
+                                <div>제어동작상태</div>
+                                <div>
+                                    <span class="disable tip"data-tip="피크제어 비활성 상태" data-name="정지" id="acpOperation">정지 (미제어)</span>
+                                    <span class="tip" data-tip="피크제어가 진행중인 상태" data-name="운전">운전 (제어)</span>
+                                </div>
+                            </div>
+                            <div class="deskTableBox lowBox">
+                                <table class="desk" id="deskTable">
+                                    <thead>
+                                        <tr id="deskSort">
+                                            <th>운전모드</th>
+                                            <th>이름</th>
+                                            <th>동작상태</th>
+                                            <th>현재온도</th>
+                                            <th>설정온도</th>
+                                            <th>풍량</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="deskList">
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">시스템에어컨 피크제어설정</div>
+                        <div class="inBody">
+                            <div>에어컨 종류</div>
+                            <div>
+                                <select class="eSelect" id="acpType">
+                                    <option value="0">피크제어 사용안함</option>
+                                    <option value="1">엘지 ACP4</option>
+                                    <option value="2">엘지 ACP5</option>
+                                    <option value="3">삼성 DMS 2.5</option>
+                                </select>
+                            </div>
+                            <div class="tip" data-tip="IP/PORT 변경시 최소 20초후 적용됩니다.">접속 아이피</div>
+                            <div>
+                                <input class="eInput" id="acpIp" />
+                            </div>
+                            <div>접속 포트</div>
+                            <div>
+                                <input class="eInput" id="acpPort" />
+                            </div>
+                            <div>접속 아이디</div>
+                            <div>
+                                <input class="eInput" id="acpId" />
+                            </div>
+                            <div>접속 패스워드</div>
+                            <div>
+                                <input class="eInput" id="acpPasswd" />
+                            </div>
+                            <div>내부연결 전용</div>
+                            <div>
+                                <input type="checkbox" id="acpIsLocal" />
+                            </div>
+                            <div class="tip" data-tip="피크제어시 목표 운전율">제어시 희망운전율</div>
+                            <div class="gaugeForm">
+                                <ul class="gaugeArea" id="acpRatePeak">
+                                    <li class="gauge off" data-rate="0"></li>
+                                    <li class="gauge" data-rate="5"></li>
+                                    <li class="gauge" data-rate="10"></li>
+                                    <li class="gauge" data-rate="15"></li>
+                                    <li class="gauge" data-rate="20"></li>
+                                    <li class="gauge" data-rate="25"></li>
+                                    <li class="gauge" data-rate="30"></li>
+                                    <li class="gauge" data-rate="35"></li>
+                                    <li class="gauge" data-rate="40"></li>
+                                    <li class="gauge" data-rate="45"></li>
+                                    <li class="gauge" data-rate="50"></li>
+                                    <li class="gauge" data-rate="55"></li>
+                                    <li class="gauge" data-rate="60"></li>
+                                    <li class="gauge" data-rate="65"></li>
+                                    <li class="gauge" data-rate="70"></li>
+                                    <li class="gauge" data-rate="75"></li>
+                                    <li class="gauge" data-rate="80"></li>
+                                    <li class="gauge" data-rate="85"></li>
+                                    <li class="gauge" data-rate="90"></li>
+                                    <li class="gauge" data-rate="95"></li>
+                                    <li class="gauge" data-rate="100"></li>
+                                </ul>
+                                <input type="number" class="eInput" value="0" readonly />
+                                <em>%</em>
+                            </div>
+                            <div>제어모드</div>
+                            <div>
+                                <select class="eSelect" id="acpControlMode">
+                                    <option value="0">수동(피크자동제어동작안함)</option>
+                                    <option value="1">자동</option>
+                                </select>
+                            </div>
+                            <div class="tip" data-tip="제어모드가 수동일때 상태변경을 할 수 있습니다.">동작상태 수동제어</div>
+                            <div>
+                                <span class="statBad">정지（미제어）</span>
+                                <span class="toggle" id="acpStatPeak"></span>
+                                <span class="statGood">운전（제어）</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalActDone">확인</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modalFan">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalFanActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">에어컨 온도설정</div>
+                        <div class="inBody">
+                            <div>운전모드</div>
+                            <div>
+                                <input class="eInput eInputReadOnly" id="fanDriveMode" readonly />
+                            </div>
+                            <div>설비이름</div>
+                            <div>
+                                <input class="eInput eInputReadOnly" id="fanAirName" readonly />
+                            </div>
+                            <div>동작상태</div>
+                            <div>
+                                <input class="eInput eInputReadOnly" id="fanStatus" readonly />
+                            </div>
+                            <div>현재온도</div>
+                            <div>
+                                <input class="eInput eInputReadOnly" id="fanTemperature" readonly />
+                            </div>
+                            <div>설정온도</div>
+                            <div>
+                                <input type="number" class="eInput" id="fanSetTemperature" />
+                            </div>
+                            <div>풍량</div>
+                            <div>
+                                <input class="eInput eInputReadOnly" id="fanFanspeed" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalFanActDone">확인</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

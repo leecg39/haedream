@@ -1,0 +1,78 @@
+html#powerUsagePage,html#powerUsagePage body{width:100%;height:100%;overflow:hidden}
+#dashboard .contentsArea{min-width:0;height:100vh;overflow:hidden}
+#dashboard main.contents{display:flex;flex-direction:column;min-width:0;min-height:0;height:calc(100vh - 80px);overflow:hidden}
+.deskTool{display:flex;align-items:center;gap:15px;padding:15px 20px;background:linear-gradient(rgba(0, 0, 29, 0.6), rgba(0, 0, 29, 0.6)), rgba(3, 3, 5, 0.4);border-radius:20px 20px 0 0;text-align:center}
+.deskTollLeft{display:flex;width:100%;gap:15px}
+.deskLabel{color:#b8faff;white-space:nowrap}
+.selectBoxDay{display:flex;align-items:center;width:100%}
+.datePickerWrap{display:flex;align-items:center}
+.datePickerWrap .datePicker{overflow:hidden;min-width:110px;height:40px;border:1px solid #2c3540;border-radius:10px;background-color:#2c3540;margin-left:15px;padding:0 15px}
+.datePickerWrap .datePicker:hover, .selectboxWrap:hover{border:1px solid #b8faff;background-color:rgba(6,65,255,0.1)}
+.datePickerWrap .inputMonth{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.datePickerWrap .inputMonth::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.selectbox{overflow:hidden;min-width:110px;height:40px;padding:0 15px;background-color:#2c3540;border:1px solid #2c3540;border-radius:10px;font-size:1rem}
+.tui-datepicker-input {border:0}
+.selectbox option{background-color:#000}
+
+.lgtB{border:1px solid #00ffff;background-color:#030305;color:#00ffff}
+.boardInfo{justify-content:center;gap:15px;width:100%}
+.boardInfo span:nth-child(2),
+.boardInfo span:nth-child(3),
+.boardInfo span:nth-child(7),
+.boardInfo span:nth-child(8){color:#00ffff}
+.boardInfoPowerDate{margin-right:15px}
+.boardInfoLabelbox{display:flex;flex-direction:row;flex-wrap:nowrap;gap:5px;color:#00ffff}
+.boardInfoLabel{color:#b8faff;white-space:nowrap}
+.boardInfoSlash{color:#eee}
+.boardInfoLabelbox>span:last-child{color:#eee;white-space:nowrap}
+
+.sheetArea{overflow:auto;flex:1 1 auto;min-width:0;min-height:0;width:100%;max-width:100%;height:auto;max-height:none;margin:0;padding:0 0 10px 10px;border-radius:0 0 20px 20px}
+.sheetArea::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetArea::-webkit-scrollbar-thumb{border-radius:2px;background:rgba(0,255,255,0.5);border:1px solid #b8faff}
+.sheetArea::-webkit-scrollbar-track{border-radius:2px}
+.sheetArea::-webkit-scrollbar-corner{background-color:transparent}
+.sheet{clear:both;width:100%;margin:0;border-collapse:separate;border-spacing:0;text-align:center}
+.sheet thead{position:sticky;top:0;background-color:rgba(0,0,29,0.6);backdrop-filter:blur(10px)}
+tbody{padding-top:60px}
+thead tr:first-child{border-top:3px solid rgba(238,238,238,0.3)}
+thead tr:first-child th:not(:nth-child(8)){border-bottom:1px solid rgba(238,238,238,0.3)}
+thead tr:last-child {border-bottom:2px solid rgba(238,238,238,0.3)}
+thead tr:last-child>th{table-layout:fixed;color:#b8faff}
+tbody tr:last-child{border-bottom:2px solid rgba(238,238,238,0.3)}
+.sheet th{padding:.5rem 5px;border:1px solid rgba(238,238,238,0.2);background-color:transparent;color:#00ffff;font-size:0.98rem;font-weight:400;white-space:nowrap}
+.sheet td{padding:.5rem 5px;border-bottom:1px solid rgba(238,238,238,0.2);border-right:1px solid rgba(238,238,238,0.2);color:#eee;font-size:0.98rem}
+.sheet tr:hover td{background-color:rgba(217,217,217,.2);color:#fff}
+.sheetEm{color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+.sheet tbody.liketh tr td:nth-child(2),
+.sheet tbody.liketh tr td:nth-child(3),
+.sheet tbody.liketh tr td:nth-child(4),
+.sheet tbody.liketh tr td:nth-child(5){background-color:rgba(11,11,20,.9)}
+
+.sheet tr:hover .wattMax{background-color:#ff005b;color:#030305}
+.sheet .wattMax{background-color:rgba(140,140,140,0.2);;color:#ff005b}
+
+@media (max-width:1470px){
+    .deskTool{flex-direction:row;flex-wrap:wrap}
+}
+
+@media (max-width:768px){
+    .sheetScroll{width:100%}
+    .sheetScroll .sheet{min-width:1400px;margin:0}
+    .deskTool{display:flex;flex-direction:row;gap:15px}
+    .deskTollLeft{flex-wrap:wrap;gap:10px}
+    .sheetArea{max-height:calc(100vh - 360px);margin:1rem 0}
+    .inputMonth{width:100%;padding:.2rem .4rem;font-size:1rem}
+    .deskLabel{width:60px}
+    .datePickerWrap{flex-basis:100%}
+    .selectbox,
+    .datePicker{flex-basis:calc(100% - 75px)}
+    .boardInfo{flex-wrap:wrap;gap:15px}
+}
+@media (max-width:600px){
+    .boardInfo{flex-wrap:wrap;gap:5px}
+}
+@media (max-width:400px){
+    .boardInfo{flex-wrap:wrap;gap:5px}
+    .sheetArea{max-height:calc(100vh - 390px)}
+}

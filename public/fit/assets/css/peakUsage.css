@@ -1,0 +1,63 @@
+.lowBox{margin-bottom:15px}
+.deskTool{display:flex;align-items:center;justify-content:space-between;flex-direction:row;gap:10px;padding:15px 20px;background:linear-gradient(rgba(0, 0, 29, 0.6), rgba(0, 0, 29, 0.6)), rgba(3, 3, 5, 0.4);border-radius:20px 20px 0 0;text-align:center}
+.deskLabel{color:#b8faff;white-space:nowrap}
+.chart1{width:100%;height:calc(60vh - 180px);margin:0 0 15px 0;overflow:hidden;background-color:rgba(3, 3, 5, 0.4);border:2px solid rgba(0, 0, 0, 0.1);border-radius:20px;box-shadow:rgba(0, 0, 0, 0.15) 0 0 120px inset}
+.pickerBox{display:flex;align-items:center;gap:15px;width:100%}
+.datePicker{overflow:hidden;width:100%;min-width:170px;height:40px;padding:0 15px;border:1px solid #2c3540;border-radius:10px;background-color:#2c3540}
+.datePicker:hover{border:1px solid #b8faff;background-color:rgba(6,65,255,0.1)}
+.tui-datepicker-input{border:0}
+.inputDate{text-align:center}
+.lgtB{border:1px solid #00ffff;background-color:#030305;color:#00ffff}
+.sheetArea{overflow:auto;height:auto;max-height:calc(40vh - 70px);padding:0 20px 20px;border-radius:0 0 20px 20px}
+.sheetArea::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetArea::-webkit-scrollbar-thumb{border-radius:2px;border:1px solid #b8faff;background:rgba(0,255,255,0.5)}
+.sheetArea::-webkit-scrollbar-track{border-radius:2px}
+.sheetArea::-webkit-scrollbar-corner{background-color:transparent}
+.sheet{clear:both;width:100%;height:100%;border-top:2px solid rgba(238,238,238,0.3);border-collapse:separate;border-spacing:0;text-align:center}
+.sheet thead.sticky{position:sticky;top:0;background-color:rgba(0,0,29,0.6);backdrop-filter:blur(10px)}
+.sheet thead th{border-bottom:2px solid rgba(238,238,238,0.3)}
+.sheet th{padding:.6rem .2rem;border-bottom:1px solid rgba(238,238,238,0.2);border-left:1px solid rgba(238,238,238,0.2);color:#00ffff;font-size:0.98rem;font-weight:400;white-space:nowrap}
+.sheet tr:first-child th:nth-child(1){border-left:0}
+.sheet td{padding:.6rem .2rem;border-bottom:1px solid rgba(238,238,238,0.2);color:#eee;font-size:0.98rem}
+.stick tr:first-child th:last-child{color:#00ffff}
+#itemList tr{border-bottom:1px solid rgba(238,238,238,0.3)}
+#itemList tr:last-child{border-bottom:3px solid rgba(238,238,238,0.3)}
+#itemList tr th:nth-child(1){border-left:0;color:#00ffff}
+#itemList tr td:nth-child(2){color:#b8faff;}
+.sheet tr:hover td{background-color:rgba(217,217,217,.2);color:#fff}
+.sheet tr:hover .tLabel{background-color:rgba(217,217,217,.2);color:#fff}
+.sheetEm{color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+.sheetSticky{position:sticky;top:0}
+
+.inputMonth{height:40px;padding:.4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.inputMonth::-webkit-calendar-picker-indicator{filter:invert(.8)}
+
+.sheet .sheetAct{color:#ff005b}
+.sheet .sheetAct:hover{background-color:#ff005b;color:#fff;cursor:pointer}
+
+.sheet tr:hover .wattMax{background-color:#ff005b;color:#030305}
+.sheet .wattMax{background-color:rgba(140,140,140,0.2);color:#ff005b}
+
+.underline{text-decoration:underline;text-decoration-color:green}
+
+@media (max-width:1470px){
+    .chart1{padding:15px}
+}
+
+@media (max-width:768px){
+    .sheetArea{overflow:auto;width:100%}
+    .inputMonth{padding:.2rem .4rem;font-size:1rem}
+    .inputDate{text-align:start}
+}
+@media (max-width:586px){
+    .chart1{min-height:30vh ;height:calc(50vh - 190px)}
+    .sheetArea{max-height:calc(50vh - 190px)}
+    .sheetArea .sheet{min-width:1100px}
+    .deskTool{flex-wrap:wrap}
+    .datePicker{padding:0;margin-left:0}
+    .datePicker i{right:15px}
+    .tui-datepicker-input > input{padding:15px}
+    .deskLabel{width:15%}
+    .datePicker{width:calc(85% - 15px)}
+}

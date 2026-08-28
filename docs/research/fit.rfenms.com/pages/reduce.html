@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>저압 절감 분석</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="assets/css/common.css?v=0.0.2">
+    <link rel="stylesheet" href="./assets/css/reduce.css?v=0.0.1">
+    <script src="./assets/js/lib/echarts.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/reduce.js?v=0.0.2"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <div class="topTitle">
+                <h1 class="deskTitle">저압 절감 분석</h1>
+                <div class="selectContainer">
+                    <select class="selectbox" id="dataType">
+                        <option value="hours">시간별</option>
+                        <option value="days">일자별</option>
+                        <option value="months">월별</option>
+                    </select>
+                </div>
+                <div class="datePicker">
+                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                        <input type="text" class="inputDate" id="sDate" aria-label="Date-Time" readonly>
+                        <i class="bi bi-calendar"></i>
+                    </div>
+                    <div id="wrapper"></div>
+                </div>
+                <button class="searchBtn" id="search">
+                    <i class="bi bi-search"></i>조회
+                </button>
+                <label for="isBaseCost" class="isBaseCost">기본요금 포함</label>
+                <input type="checkbox" id="isBaseCost" role="switch">
+                <label for="isCheckDay" class="isCheckDay">검침일 적용</label>
+                <input type="checkbox" id="isCheckDay" role="switch" checked disabled>
+            </div>
+            <div class="basicTop">
+                <div class="lowBox chartBox">
+                    <div class="chart" id="chart"></div>
+                </div>
+                <div class="lowBox reduceBox">
+                    <div class="lineMint lineE"></div>
+                    <h2>저압 절감 금액</h2>
+                    <div class="circleFill" id="goalRatio">
+                        <div class="wave"></div>
+                        <div class="waveValue">-%</div>
+                    </div>
+                    <div class="reduceMoney" id="frugal">
+                        <h3>
+                            목표 절감 금액
+                        </h3>
+                        <div>
+                            <span class="goal">-</span><span>원</span>
+                        </div>
+                        <h3>
+                            저압 절감 금액
+                        </h3>
+                        <div>
+                            <span class="frugalTotal">-</span><span>원</span>
+                        </div>
+                        <h3>
+                            평균 절감 금액
+                        </h3>
+                        <div>
+                            <span class="frugalAvg">-</span><span>원</span>
+                        </div>
+                        <h3>
+                            평균 절감률
+                        </h3>
+                        <div>
+                            <span class="ratioAvg">-</span><span>%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+            <div class="basicBottom">
+                <div class="lowBox tableBox">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>일시</th>
+                                <th>사용전력량(kWh)</th>
+                                <th>고압 전력 요금</th>
+                                <th>저압 전력 요금</th>
+                                <th>절감 금액</th>
+                                <th>절감률</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemList"></tbody>
+                    </table>
+                </div>
+                <div class="lowBox lowPay">
+                    <div class="lineBlue lineE"></div>
+                    <h2>저압 전력 요금</h2>
+                    <div class="dataBox" id="low">
+                            <h3>
+                                <i class="bi bi-lightning-charge-fill"></i> 저압 전력 요금
+                            </h3>
+                            <div>
+                                <span class="billTotal">-</span> <span>원</span>
+                            </div>
+                            <h3>
+                                <i class="bi bi-plug-fill"></i> 사용 전력량
+                            </h3>
+                            <div>
+                                <span class="wattTotal">-</span> <span>kWh</span>
+                            </div>
+                            <h3>
+                                <i class="bi bi-chevron-bar-up"></i> 최고 전력 요금
+                            </h3>
+                            <div>
+                                <span class="billMax">-</span> <span>원</span>
+                            </div>
+                            <h3>
+                                <i class="bi bi-align-center"></i> 평균 사용 전력량
+                            </h3>
+                            <div>
+                                <span class="avgWatt">-</span> <span>kWh</span>
+                            </div>
+                            <h3>
+                                <i class="bi bi-align-center"></i> 평균 저압 전력 요금
+                            </h3>
+                            <div>
+                                <span class="avgLow">-</span><span>원</span>
+                            </div>
+                    </div>
+                </div>
+                <div class="lowBox lowBefore">
+                    <div class="linePuple lineE"></div>
+                    <h2>직전 동일 기간 대비</h2>
+                    <div class="dataBox" id="compare">
+                        <h3>
+                            <i class="bi bi-lightning-charge-fill"></i> 저압 전력 요금
+                        </h3>
+                        <div>
+                            <div class="beforValue" id="billTotal">
+                                <i class="bi"></i><span>-</span>
+                            </div>
+                            <span>원</span>
+                        </div>
+                        <h3>
+                            <i class="bi bi-plug-fill"></i> 사용 전력량
+                        </h3>
+                        <div>
+                            <div class="beforValue" id="wattTotal">
+                                <i class="bi"></i><span>-</span>
+                            </div>
+                            <span>kWh</span>
+                        </div>
+                        <h3>
+                            <i class="bi bi-chevron-bar-up"></i> 최고 전력 요금
+                        </h3>
+                        <div>
+                            <div class="beforValue" id="billMax">
+                                <i class="bi"></i><span>-</span>
+                            </div>
+                            <span>원</span>
+                        </div>
+                        <h3>
+                            <i class="bi bi-align-center"></i> 평균 절감 금액
+                        </h3>
+                        <div>
+                            <div class="beforValue" id="avgWatt">
+                                <i class="bi"></i><span>-</span>
+                            </div>
+                            <span>원</span>
+                        </div>
+                        <h3>
+                            <i class="bi bi-align-center"></i> 평균 절감률
+                        </h3>
+                        <div>
+                            <div class="beforValue" id="avgLow">
+                                <i class="bi"></i><span>-</span>
+                            </div>
+                            <span>%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

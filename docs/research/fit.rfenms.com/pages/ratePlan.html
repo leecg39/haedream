@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>전기 요금 비교</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="assets/css/common.css?v=0.0.2">
+    <link rel="stylesheet" href="./assets/css/ratePlan.css?v=0.0.1">
+    <script src="./assets/js/lib/echarts.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/ratePlan.js?v=0.0.2"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <div class="topTitle">
+                <h1 class="deskTitle">전기 요금 비교</h1>
+            </div>
+            <div class="deskTool">
+                <label for="ratePlan1" class="deskLabel">요금제1</label>
+                <select class="selectbox" id="ratePlan1">
+                    <option value="">요금제 선택</option>
+                    <option value="IEHAS1">산업용(을)고압A 선택I</option>
+                    <option value="IEHAS2">산업용(을)고압A 선택II</option>
+                    <option value="IEHAS3">산업용(을)고압A 선택III</option>
+                    <option value="IEHBS1">산업용(을)고압B 선택I</option>
+                    <option value="IEHBS2">산업용(을)고압B 선택II</option>
+                    <option value="IEHBS3">산업용(을)고압B 선택III</option>
+                    <option value="IEHCS1">산업용(을)고압C 선택I</option>
+                    <option value="IEHCS2">산업용(을)고압C 선택II</option>
+                    <option value="IEHCS3">산업용(을)고압C 선택III</option>
+                    <option value="IGHAS1">산업용(갑)II고압A 선택I</option>
+                    <option value="IGHAS2">산업용(갑)II고압A 선택II</option>
+                    <option value="IGHBS1">산업용(갑)II고압B 선택I</option>
+                    <option value="IGHBS2">산업용(갑)II고압B 선택II</option>
+                    <option value="IGL1">산업용(갑)I 저압</option>
+<!--                    <option value="EHAS2">일반용전력(을)-고압A-선택II</option>-->
+<!--                    <option value="GL1">일반용전력(갑I)-저압</option>-->
+                </select>
+                <label for="ratePlan2" class="deskLabel">요금제2</label>
+                <select class="selectbox" id="ratePlan2">
+                    <option value="">요금제 선택</option>
+                    <option value="IEHAS1">산업용(을)고압A 선택I</option>
+                    <option value="IEHAS2">산업용(을)고압A 선택II</option>
+                    <option value="IEHAS3">산업용(을)고압A 선택III</option>
+                    <option value="IEHBS1">산업용(을)고압B 선택I</option>
+                    <option value="IEHBS2">산업용(을)고압B 선택II</option>
+                    <option value="IEHBS3">산업용(을)고압B 선택III</option>
+                    <option value="IEHCS1">산업용(을)고압C 선택I</option>
+                    <option value="IEHCS2">산업용(을)고압C 선택II</option>
+                    <option value="IEHCS3">산업용(을)고압C 선택III</option>
+                    <option value="IGHAS1">산업용(갑)II고압A 선택I</option>
+                    <option value="IGHAS2">산업용(갑)II고압A 선택II</option>
+                    <option value="IGHBS1">산업용(갑)II고압B 선택I</option>
+                    <option value="IGHBS2">산업용(갑)II고압B 선택II</option>
+                    <option value="IGL1">산업용(갑)I 저압</option>
+<!--                    <option value="EHAS2">일반용전력(을)-고압A-선택II</option>-->
+<!--                    <option value="GL1">일반용전력(갑I)-저압</option>-->
+                </select>
+            </div>
+            <div class="sheetArea">
+                <table class="sheet" id="planTable">
+                    <thead>
+                        <tr>
+                            <th>계절</th>
+                            <th>부하구분</th>
+                            <th id="ratePlan1Name">요금제1</th>
+                            <th id="ratePlan2Name">요금제2</th>
+                            <th>절감액</th>
+                            <th>절감률</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hoursList">
+                        <tr>
+                            <th rowspan="3">여름철</th>
+                            <td>경부하</td>
+                            <td data-cost="plan1CostLS">0</td>
+                            <td data-cost="plan2CostLS">0</td>
+                            <td data-cost="costLSGap">0</td>
+                            <td data-cost="costLSRate">0</td>
+                        </tr>
+                        <tr>
+                            <td>중부하</td>
+                            <td data-cost="plan1CostMS">0</td>
+                            <td data-cost="plan2CostMS">0</td>
+                            <td data-cost="costMSGap">0</td>
+                            <td data-cost="costMSRate">0</td>
+                        </tr>
+                        <tr>
+                            <td>최대부하</td>
+                            <td data-cost="plan1CostHS">0</td>
+                            <td data-cost="plan2CostHS">0</td>
+                            <td data-cost="costHSGap">0</td>
+                            <td data-cost="costHSRate">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">봄·가을철</th>
+                            <td>경부하</td>
+                            <td data-cost="plan1CostLF">0</td>
+                            <td data-cost="plan2CostLF">0</td>
+                            <td data-cost="costLFGap">0</td>
+                            <td data-cost="costLFRate">0</td>
+                        </tr>
+                        <tr>
+                            <td>중부하</td>
+                            <td data-cost="plan1CostMF">0</td>
+                            <td data-cost="plan2CostMF">0</td>
+                            <td data-cost="costMFGap">0</td>
+                            <td data-cost="costMFRate">0</td>
+                        </tr>
+                        <tr>
+                            <td>최대부하</td>
+                            <td data-cost="plan1CostHF">0</td>
+                            <td data-cost="plan2CostHF">0</td>
+                            <td data-cost="costHFGap">0</td>
+                            <td data-cost="costHFRate">0</td>
+                        </tr>
+                        <tr>
+                            <th rowspan="3">겨울철</th>
+                            <td>경부하</td>
+                            <td data-cost="plan1CostLW">0</td>
+                            <td data-cost="plan2CostLW">0</td>
+                            <td data-cost="costLWGap">0</td>
+                            <td data-cost="costLWRate">0</td>
+                        </tr>
+                        <tr>
+                            <td>중부하</td>
+                            <td data-cost="plan1CostMW">0</td>
+                            <td data-cost="plan2CostMW">0</td>
+                            <td data-cost="costMWGap">0</td>
+                            <td data-cost="costMWRate">0</td>
+                        </tr>
+                        <tr>
+                            <td>최대부하</td>
+                            <td data-cost="plan1CostHW">0</td>
+                            <td data-cost="plan2CostHW">0</td>
+                            <td data-cost="costHWGap">0</td>
+                            <td data-cost="costHWRate">0</td>
+                        </tr>
+                        <tr>
+                            <th>평균</th>
+                            <td></td>
+                            <td data-cost="plan1Sum">0</td>
+                            <td data-cost="plan2Sum">0</td>
+                            <td data-cost="planFrugal">0</td>
+                            <td data-cost="planFrugalRate">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

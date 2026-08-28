@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="refresh" content="no-cache">
+    <title>통합관제</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" href="./assets/css/stat.css?v=0.0.1">
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=183d8d8c6a6aa20033c7ff2308ec58c8&libraries=services"></script>
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/echarts.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/stat.js?v=0.0.1"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea" id="content">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <div class="widget firmData">
+                <div class="listFilter">
+                    <div class="selectIcon">
+                        <i class="bi bi-justify-left"></i>
+                        <select id="orderBy">
+                            <option value="">정렬 보기</option>
+                            <option value="firmNameDESC">업체명 내림차순</option>
+                            <option value="firmNameASC">업체명 오름차순</option>
+                            <option value="thisPowerDESC">실시간 전력 내림차순</option>
+                            <option value="thisPowerASC">실시간 전력 오름차순</option>
+                            <option value="frugalRatioDESC">절감률 내림차순</option>
+                            <option value="frugalRatioASC">절감률 오름차순</option>
+                            <option value="frugalMonthDESC">절감금액 내림차순</option>
+                            <option value="frugalMonthASC">절감금액 오름차순</option>
+                        </select>
+                    </div>
+                    <div class="listStatus">
+                        <span class="statusIcon"></span> 제안
+                        <span class="statusIcon good"></span> 정상
+                        <span class="statusIcon emergency"></span> 통신불량
+                        <span class="statusIcon warning"></span> 피크발생
+                    </div>
+                </div>
+                <div class="listCover">
+                    <div class="list">
+                        <ul class="listHeader">
+                            <li class="headerRow">
+                                <div class="column"></div>
+                                <div class="column firmName">업체명</div>
+                                <div class="column">계약전력<br>(kW)</div>
+                                <div class="column">실시간 전력<br>(kW)</div>
+                                <div class="column">절감률<br>(%/월별)</div>
+                                <div class="column">절감금액<br>(원/월별)</div>
+                            </li>
+                        </ul>
+                        <ul class="listBody" id="firmList">
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                            <li class="dataRow">
+                                <span></span>
+                                <span class="firmName">-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pagination" id="deskPages"></div>
+            </div>
+            <div class="rightsection">
+                <div class="widget until">
+                    <div class="title">참여 업체 수</div>
+                    <div class="untilData">
+                        <span class="label">
+                            제안
+                        </span>
+                        <div>
+                            <span class="value countNumber" id="preCount">-</span>
+                            <span class="unit">개</span>
+                        </div>
+                    </div>
+                    <div class="untilData">
+                        <span class="label">
+                            설치
+                        </span>
+                        <div>
+                            <span class="value countNumber" id="frugalCount">-</span>
+                            <span class="unit">개</span>
+                        </div>
+                    </div>
+                    <div class="title">총 누적 절감 금액</div>
+                    <div class="untilData">
+                        <span class="label">
+                            제안
+                        </span>
+                        <div>
+                            <span class="value countNumber" id="preTotal">-</span>
+                            <span class="unit">원</span>
+                        </div>
+                    </div>
+                    <div class="untilData">
+                        <span class="label">
+                            설치
+                        </span>
+                        <div>
+                            <span class="value countNumber" id="frugalTotal">-</span>
+                            <span class="unit">원</span>
+                        </div>
+                    </div>
+                    <hr>                    
+                    <div class="upday">
+                        <i class="bi bi-flag-fill"></i>
+                        <span id="updateTime">-</span> 업데이트
+                        <span>
+                            [D+<span id="elapsedTime">0</span>, <span id="startDate">0000.00.00</span> ~ ]
+                        </span>
+                    </div>
+                </div>
+                <div class="widget ranking">
+                    <div class="rankingTop">
+                        <div class="title">절감금액 랭킹 TOP 5</div>
+                        <div class="rankingFilter">
+                            <input type="hidden" id="topStartDate" value="">
+                            <input type="hidden" id="topEndDate" value="">
+                            <select id="rankingFilter">
+                                <option value="today">오늘</option>
+                                <option value="week">이번주</option>
+                                <option value="month">이번달</option>
+                                <option value="year">올해</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="rankingChart" id="rankingChart"></div>
+                </div>
+                <div class="widget csBox" >
+                    <div class="title">알림</div>
+                    <div class="cs" id="cs">
+                    </div>
+                </div>
+            </div>
+            <div class="map" id="map"></div>
+            <div class="peakDetailWrap disable" id="peakDetailWrap">
+                <div class="peakDetail">
+                    <div class="kfeContent peakDetailData">
+                        <div class="peakFirmNameHeader">
+                            <div class="peakDetailFirmName" onclick="vio.changeFirm()"></div>
+                            <div class="overlayCloseButton" onclick="vio.closeOverlay()" title="닫기"><i class="bi bi-x-lg"></i></div>
+                        </div>
+                        <div class="peakDetailHead">
+                            <div class="peakDetailColumn"></div>
+                            <div class="peakDetailColumn peakDetailToday">오늘</div>
+                            <div class="peakDetailColumn peakDetailWeek">이번주</div>
+                            <div class="peakDetailColumn peakDetailMonth">이번달</div>
+                            <div class="peakDetailColumn peakDetailYear">올해</div>
+                        </div>
+                        <div class="peakDetailContent">
+                            <div class="peakDetailRow">
+                                <div class="peakDetailLabel">
+                                    사용 전력<span class="peakDetailUnit">(kW)</span>
+                                </div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                            </div>
+                            <div class="peakDetailRow">
+                                <div class="peakDetailLabel">
+                                    절감률<span class="peakDetailUnit">(%)</span>
+                                </div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                            </div>
+                            <div class="peakDetailRow">
+                                <div class="peakDetailLabel">
+                                    절감금액<span class="peakDetailUnit">(만원)</span>
+                                </div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                                <div class="peakDetailRowValue"></div>
+                            </div>
+                        </div>
+                        <div class="peakDetailFirmInfo">
+                            <div class="peakDetailInfoItem">
+                                <div class="peakDetailItemWrap">
+                                    <div class="peakDetailItemLabel">총 절감금액</div>
+                                    <div class="peakDetailItemValue"></div>
+                                </div>
+                                <div class="peakDetailItemWrap">
+                                    <div class="peakDetailItemLabel">계약전력</div>
+                                    <div class="peakDetailItemValue"></div>
+                                </div>
+                                <div class="peakDetailItemWrap">
+                                    <div class="peakDetailItemLabel">검침일</div>
+                                    <div class="peakDetailItemValue"></div>
+                                </div>
+                            </div>
+                            <div class="peakDetailInfoItem">
+                                <div class="peakDetailItemWrap">
+                                    <div class="peakDetailItemIcon">
+                                        <svg>
+                                            <use href="/assets/img/icons.svg#icon-person"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="peakDetailItemValue"></div>
+                                </div>
+                                <div class="peakDetailItemWrap">
+                                    <div class="peakDetailItemIcon">
+                                        <svg>
+                                            <use href="/assets/img/icons.svg#icon-contact"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="peakDetailItemValue"></div>
+                                </div>
+                                <div class="peakDetailItemWrap">
+                                    <div class="peakDetailItemIcon">
+                                        <svg>
+                                            <use href="/assets/img/icons.svg#icon-address"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="peakDetailItemValue"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

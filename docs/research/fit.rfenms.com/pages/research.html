@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>한전데이터 수집</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="./assets/css/common.css?v=0.0.2">
+    <link rel="stylesheet" href="./assets/css/deskLib.css?v=0.0.1">
+    <link rel="stylesheet" href="./assets/css/research.css?v=0.0.2">
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/research.js?v=0.0.3"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">한전데이터 수집</h1>
+            <div class="researchHead" id="researchInfo">
+                <span class="researchLabel">전력타입</span>
+                <span class="researchInfoText" data-name="contract">없음</span>
+                <span class="researchLabel">고객번호</span>
+                <span class="researchInfoText" data-name="kepcoCyber">0000000000</span>
+                <span class="researchLabel">한전비번</span>
+                <span class="researchInfoText" data-name="kepcoPasswd">password</span>
+                <span class="researchLabel">스케줄 상태</span>
+                <span class="researchInfoText" data-name="kepcoStatus">스케줄 없음</span>
+                <span class="researchInfoText" data-name="kepcoTime">업데이트정보 없음</span>
+                <span class="researchAct" data-name="kepcoProgress" id="researchRequest">수집 요청</span>
+            </div>
+            <div class="researchNav">
+                <span class="toggleAct active" id="researchCharges">월별 요금정보</span>
+                <span class="toggleAct" id="researchQuarter">시간별 전력사용량 kW</span>
+            </div>
+            <div class="researchData" id="researchData">
+                <span class="researchDataLabel">일자</span>
+                <span class="researchDataLabel">검침일</span>
+                <span class="researchDataLabel">요금적용전력</span>
+                <span class="researchDataLabel">기본요금</span>
+                <span class="researchDataLabel">전력량요금</span>
+                <span class="researchDataLabel">청구요금</span>
+                <span class="researchDataLabel">경부하전력량</span>
+                <span class="researchDataLabel">중부하전력량</span>
+                <span class="researchDataLabel">최대부하전력량</span>
+                <span class="researchDataLabel">지상역률</span>
+                <span class="researchDataLabel">진상역률</span>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

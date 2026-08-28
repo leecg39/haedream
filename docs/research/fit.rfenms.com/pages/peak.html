@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>피크상태</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" href="./assets/css/peak.css?v=0.0.1">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <script src="./assets/js/lib/echarts.min.js"></script>
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/peak.js?v=0.0.2"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="peakGrid contents disable" id="contentsArea">
+            <div class="topInfo">
+                <h1 class="title">피크상태</h1>
+                <div class="topInfoRt">
+                    <div class="day">
+                        검침일&nbsp;
+                        <span class="blue" id="meterDate">-일</span>
+                    </div>
+                    <div class="dayCk">
+                        <label>
+                            <span>검침일 기준 적용</span>
+                            <input type="checkbox" id="isMeterDate" role="switch" checked>
+                        </label>
+                    </div>
+                    <div>
+                        데이터정확도
+                        <span class="blue" id="dataVerifyRate">-%</span>
+                    </div>
+                    <div class="dayCk">
+                        <label>
+                            <span>알림</span>
+                            <input role="switch" type="checkbox" id="peakMediaAlarm">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="peakArea lowBox" id="peakBase">
+                <div class="peakControlBar">
+                    <div>
+                        <i class="bi bi-exclamation-diamond"></i>
+                        현재 부하 <span>0</span> 개
+                    </div>
+                    <div class="controlBar controlEnd">
+                        <i class="bi bi-check-lg"></i> 부하 제어 완료
+                    </div>
+                    <div class="controlBar controlWait">
+                        <i class="bi bi-three-dots"></i> 부하 제어 대기
+                    </div>
+                    <div class="controlBar controlIng">
+                        <i class="bi bi-wrench-adjustable"></i> 부하 제어 중
+                    </div>
+                </div>
+                <div class="peakContents">
+                    <div class="nodePowerChart" id="chartPeak"></div>
+                    <div class="nodeInfo">
+                        <div class="peakTimeArea">
+                            <div class="decotitle">실시간 피크 상태</div>
+                            <div class="peakWattLimit">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208.99 104">
+                                    <defs>
+                                        <linearGradient id="linear-gradient" y1="52" x2="208.99" y2="52" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0" stop-color="#0041ff"/>
+                                            <stop offset="0.49" stop-color="#eda024"/>
+                                            <stop offset="1" stop-color="#ff005b"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <g id="Layer_2" data-name="Layer 2">
+                                        <g id="Layer_1-2" data-name="Layer 1">
+                                            <path class="cls-1" d="M23,104a81.49,81.49,0,0,1,163,0h23A104.5,104.5,0,0,0,0,104Z" fill="url(#linear-gradient)"/>
+                                        </g>
+                                    </g>
+                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="needle realTimePeakGauge" id="realTimePeakGauge" viewBox="0 0 42.01 104">
+                                    <path id="needle-path" d="M24,72.36,21.89,1.24c-.23-1.65-1.55-1.65-1.78,0L18,72.36a10,10,0,1,0,6,0Z"></path>
+                                </svg>
+                                <div class="needlePer">
+                                    <span class="realTimePeakRatio" id="realTimePeakRatio">0</span><sub>%</sub>
+                                </div>
+                            </div>
+                            <div class="peakStatusArea" id="peakStatusArea">
+                                <div class="statCheap">
+                                    <span class="statClip blue" data-alt="안정"></span>
+                                </div>
+                                <hr>
+                                <div class="statCheap">
+                                    <span class="statClip" data-alt="근접"></span>
+                                </div>
+                                <hr>
+                                <div class="statCheap">
+                                    <span class="statClip" data-alt="초과"></span>
+                                </div>
+                            </div>
+                            <div class="peakTimeLimit">
+                                <div class="peakMeterLine">
+                                    <span class="peakMeter"></span>
+                                    <span class="peakMeterOn" id="peakMeterOn"></span>
+                                </div>
+                            </div>
+                            <div class="peakTimeInfo">
+                                <div class="peakTimeDigit">
+                                    <span id="peakTimeDigit">00:00 /</span>
+                                    <span>15:00</span>
+                                </div>
+                                <div class="peakTimeWatch">
+                                    <span class="peakTimeInfoLabel">계기시간</span>
+                                    <span id="peakAbleTime">00:00:00</span>
+                                </div>
+                                <span class="peakTimeDiffArea">
+                                    <span class="peakTimeText">시간차</span>
+                                    <span class="peakTimeText" id="peakTimeDiff">0</span>
+                                    <span>초</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="peakPointArea" id="peakPointArea">
+                            <div class="peakPointBoxA pointBox">
+                                <span class="peakPointLabel peakPointA">예측 전력</span>
+                                <span class="peakPoint peakPointA">0</span>
+                                <div class="decoDot"></div>
+                            </div>
+                            <div class="peakPointBoxB pointBox">
+                                <span class="peakPointLabel peakPointB">목표 전력</span>
+                                <span class="peakPoint peakPointB">0</span>
+                                <div class="decoDot"></div>
+                            </div>
+                            <div class="peakPointBoxC pointBox">
+                                <span class="peakPointLabel peakPointC">현재 전력</span>
+                                <span class="peakPoint peakPointC">0</span>
+                                <div class="decoDot"></div>
+                            </div>
+                            <div class="peakPointBoxD pointBox">
+                                <span class="peakPointLabel peakPointD">기준 전력</span>
+                                <span class="peakPoint peakPointD">0</span>
+                                <div class="decoDot"></div>
+                            </div>
+                            <!-- <div class="peakPointBoxE">
+                                <span class="peakPointLabel peakPointE disable">순간 전력</span>
+                                <span class="peakPoint peakPointE disable">0</span>
+                                <div class="decoDot"></div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="liveUseArea lowBox">
+                <h2>실시간 전력 사용 추이</h2>
+                <div class="peakSort">
+                    <h3>피크 현황</h3>
+                    <ul>
+                        <li>
+                            <span>계약전력</span>
+                            <p class="peakContract"><span id="peakContract">-</span> kW</p>
+                        </li>
+                        <li>
+                            <span>100% 초과</span>
+                            <p class="peakOver"><span id="peakOver">-</span> 회</p>
+                        </li>
+                        <li>
+                            <span>90 ~ 100%</span>
+                            <p class="peakNine"><span id="peakNine">-</span> 회</p>
+                        </li>
+                        <li>
+                            <span>80 ~ 90%</span>
+                            <p class="peakEight"><span id="peakEight">-</span> 회</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="liveUseContent">
+                    <div class="liveUseChart">
+                        <div class="useChartData active">
+                            <div id="wattChart"></div>
+                        </div>
+                    </div>
+                    <div class="liveUseTag">
+                        <div class="liveUseLabel">
+                            <div class="useSign">
+                                <span>전력 사용량</span>
+                                <div class="UseLabelBox">
+                                    <div class="UseLabelSign"></div><span>최대부하</span>
+                                </div>
+                                <div class="UseLabelBox">
+                                    <div class="UseLabelSign"></div><span>중부하</span>
+                                </div>
+                                <div class="UseLabelBox">
+                                    <div class="UseLabelSign"></div><span>경부하</span>
+                                </div>
+                            </div>
+                            <div class="billSign">
+                                <span>전력 요금</span>
+                                <div class="UseLabelBox">
+                                    <div class="UseLabelSign"></div><span>산업용(을)고압</span>
+                                </div>
+                                <div class="UseLabelBox">
+                                    <div class="UseLabelSign"></div><span>산업용(갑)저압</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="peakRight" id="results">
+                <div class="goal lowBox">
+                    <h2>목표 절감액 달성 현황</h2>
+                    <ul class="goalAccordion" id="goalEffect">
+                        <li class="item" data-type="hour">
+                            <div class="mainItemBox">
+                                <div class="goalMeterLine">
+                                    <span class="goalMeter"></span>
+                                    <span class="goalMeterOn"></span>
+                                </div>
+                                <svg class="goalCircle">
+                                    <circle cx="40" cy="40" r="30" fill="transparent" stroke-width="13"/>
+                                    <circle cx="40" cy="40" r="30" class="circleFront" stroke-dasharray="188.495" stroke-dashoffset="188.495"/>
+                                    <text x="40" y="40" dominant-baseline="middle" text-anchor="middle" class="goalCircleText">0%</text>
+                                </svg>
+                                <div class="golaCirdleBg"></div>
+                                <div class="goalBarTop">
+                                    <b>1시간</b>
+                                    <p>
+                                        <span class="hourFrugal">0</span>원
+                                    </p>
+                                </div>
+                                <div class="goalBarBtm">
+                                    <b>목표 절감액 :</b>
+                                    <p>
+                                        <span class="hourFrugalGoal">0</span>원
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="subTextBox">
+                                <div>
+                                    <b>사용전력</b>
+                                    <p>
+                                        <span class="hourWatt">0</span>kw
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 전력 요금</b>
+                                    <p>
+                                        <span class="hourLowBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>고압 전력 요금</b>
+                                    <p>
+                                        <span class="hourHighBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 요금 절감률</b>
+                                    <p>
+                                        <i class="bi bi-caret-up-fill" aria-hidden="true"></i>
+                                        <span class="hourRatio">0</span>%
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item" data-type="day">
+                            <div class="mainItemBox">
+                                <div class="goalMeterLine">
+                                    <span class="goalMeter"></span>
+                                    <span class="goalMeterOn"></span>
+                                </div>
+                                <svg class="goalCircle">
+                                    <circle cx="40" cy="40" r="30" fill="transparent" stroke-width="13"/>
+                                    <circle cx="40" cy="40" r="30" class="circleFront" stroke-dasharray="188.495" stroke-dashoffset="188.495"/>
+                                    <text x="40" y="40" dominant-baseline="middle" text-anchor="middle" class="goalCircleText">0%</text>
+                                </svg>
+                                <div class="golaCirdleBg"></div>
+                                <div class="goalBarTop">
+                                    <b>오늘</b>
+                                    <p>
+                                        <span class="todayFrugal">0</span>원
+                                    </p>
+                                </div>
+                                <div class="goalBarBtm">
+                                    <b>목표 절감액 :</b>
+                                    <p>
+                                        <span class="todayFrugalGoal">0</span>원
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="subTextBox">
+                                <div>
+                                    <b>사용전력</b>
+                                    <p>
+                                        <span class="todayWatt">0</span>kw
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 전력 요금</b>
+                                    <p>
+                                        <span class="todayLowBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>고압 전력 요금</b>
+                                    <p>
+                                        <span class="todayHighBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 요금 절감률</b>
+                                    <p>
+                                        <i class="bi bi-caret-up-fill" aria-hidden="true"></i>
+                                        <span class="todayRatio">0</span>%
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item" data-type="week">
+                            <div class="mainItemBox">
+                                <div class="goalMeterLine">
+                                    <span class="goalMeter"></span>
+                                    <span class="goalMeterOn"></span>
+                                </div>
+                                <svg class="goalCircle">
+                                    <circle cx="40" cy="40" r="30" fill="transparent" stroke-width="13"/>
+                                    <circle cx="40" cy="40" r="30" class="circleFront" stroke-dasharray="188.495" stroke-dashoffset="188.495"/>
+                                    <text x="40" y="40" dominant-baseline="middle" text-anchor="middle" class="goalCircleText">0%</text>
+                                </svg>
+                                <div class="golaCirdleBg"></div>
+                                <div class="goalBarTop">
+                                    <b>이번 주</b>
+                                    <p>
+                                        <span class="weekFrugal">0</span>원
+                                    </p>
+                                </div>
+                                <div class="goalBarBtm">
+                                    <b>목표 절감액 :</b>
+                                    <p>
+                                        <span class="weekFrugalGoal">0</span>원
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="subTextBox">
+                                <div>
+                                    <b>사용전력</b>
+                                    <p>
+                                        <span class="weekWatt">0</span>kw
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 전력 요금</b>
+                                    <p>
+                                        <span class="weekLowBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>고압 전력 요금</b>
+                                    <p>
+                                        <span class="weekHighBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 요금 절감률</b>
+                                    <p>
+                                        <i class="bi bi-caret-up-fill" aria-hidden="true"></i>
+                                        <span class="weekRatio">0</span>%
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item" data-type="month">
+                            <div class="mainItemBox">
+                                <div class="goalMeterLine">
+                                    <span class="goalMeter"></span>
+                                    <span class="goalMeterOn"></span>
+                                </div>
+                                <svg class="goalCircle">
+                                    <circle cx="40" cy="40" r="30" fill="transparent"/>
+                                    <circle cx="40" cy="40" r="30" class="circleFront" stroke-dasharray="188.495" stroke-dashoffset="188.495"/>
+                                    <text x="40" y="40" dominant-baseline="middle" text-anchor="middle" class="goalCircleText">0%</text>
+                                </svg>
+                                <div class="golaCirdleBg"></div>
+                                <div class="goalBarTop">
+                                    <b>이번 달</b>
+                                    <p>
+                                        <span class="monthFrugal">0</span>원
+                                    </p>
+                                </div>
+                                <div class="goalBarBtm">
+                                    <b>목표 절감액 :</b>
+                                    <p>
+                                        <span class="monthFrugalGoal">0</span>원
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="subTextBox">
+                                <div>
+                                    <b>사용전력</b>
+                                    <p>
+                                        <span class="monthWatt">0</span>kw
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 전력 요금</b>
+                                    <p>
+                                        <span class="monthLowBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>고압 전력 요금</b>
+                                    <p>
+                                        <span class="monthHighBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 요금 절감률</b>
+                                    <p>
+                                        <i class="bi bi-caret-up-fill" aria-hidden="true"></i>
+                                        <span class="monthRatio">0</span>%
+                                    </p>    
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item" data-type="year">
+                            <div class="mainItemBox">
+                                <div class="goalMeterLine">
+                                    <span class="goalMeter"></span>
+                                    <span class="goalMeterOn"></span>
+                                </div>
+                                <svg class="goalCircle">
+                                    <circle cx="40" cy="40" r="30" fill="transparent" stroke-width="13"/>
+                                    <circle cx="40" cy="40" r="30" class="circleFront" stroke-dasharray="188.495" stroke-dashoffset="188.495"/>
+                                    <text x="40" y="40" dominant-baseline="middle" text-anchor="middle" class="goalCircleText">0%</text>
+                                </svg>
+                                <div class="golaCirdleBg"></div>
+                                <div class="goalBarTop">
+                                    <b>올해</b>
+                                    <p>
+                                        <span class="yearFrugal">0</span>원
+                                    </p>
+                                </div>
+                                <div class="goalBarBtm">
+                                    <b>목표 절감액 :</b>
+                                    <p>
+                                        <span class="yearFrugalGoal">0</span>원
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="subTextBox">
+                                <div>
+                                    <b>사용전력</b>
+                                    <p>
+                                        <span class="yearWatt">0</span>kw
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 전력 요금</b>
+                                    <p>
+                                        <span class="yearLowBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>고압 전력 요금</b>
+                                    <p>
+                                        <span class="yearHighBill">0</span>원
+                                    </p>
+                                </div>
+                                <div>
+                                    <b>저압 요금 절감률</b>
+                                    <p>
+                                        <i class="bi bi-caret-up-fill" aria-hidden="true"></i>
+                                        <span class="yearRatio">0</span>%
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="disMoney lowBox" id="disMoney">
+                    <div>
+                        <b>투자회수기간(ROI)</b>
+                        <p>
+                            <span class="frugalDays">-</span>일
+                            &#40;<span class="investRatio">-</span>%&#41;
+                        </p>
+                    </div>
+                    <div class="roiGoalLine">
+                        <span class="roiGoal"></span>
+                        <span class="roiGoalOn" id="roiGoalOn"></span>
+                    </div>
+                    <div>
+                        <b>
+                            <i class="bi bi-cursor-fill" aria-hidden="true"></i>투자금
+                        </b>
+                        <p>
+                            <span class="investGold">-</span>원
+                        </p>
+                    </div>
+                    <div>
+                        <b>
+                            <i class="bi bi-graph-down-arrow" aria-hidden="true"></i>누적 절감액
+                        </b>
+                        <p>
+                            <i class="bi bi-arrow-up-short" aria-hidden="true"></i>
+                            <span class="frugal">-</span>원
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

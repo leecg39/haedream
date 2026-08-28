@@ -1,0 +1,159 @@
+label{margin-bottom:0;cursor:pointer}
+input[type="checkbox"]{position:relative;width:39px;height:21px;background-color:#2c3540;cursor:pointer;appearance:none;border-radius:1.25em}
+input[type="checkbox"]::before{position:absolute;top:3px;left:3px;width:15px;height:15px;background-color:#ffffff;transition:left 250ms linear;content:"";border-radius:50%}
+input[type="checkbox"]:checked{background-color:#00ffff}
+input[type="checkbox"]:checked::before{left:21px;background-color:#030305}
+input[type="checkbox"]:disabled{background-color:#1e242b}
+input[type="checkbox"]:disabled::before{background-color:#7a7f85}
+
+.isBaseCost{margin-left:auto}
+
+.lowBox{padding:1rem}
+.lowBox h2{margin:0;text-align:center;font-size:1.125rem}
+.lowBox h3{margin:0;font-size:1rem;font-weight:normal}
+.lineE{margin:0 0 5px;width:40%;height:3px}
+
+.billBox{display:grid;grid-template-columns:1fr 1fr;align-items:center;width:100%;height:100%;margin-top:auto;color:#b8faff}
+.billAmount{color:#00ffff;text-align:right;font-variant-numeric:tabular-nums}
+.billBox .separator{border-bottom:1px solid #a7a7a7bd}
+
+/* top searchbar */
+.topTitle{display:flex;gap:10px;justify-content:start;align-items:center}
+.titleLabel{display:flex;flex-direction:column;justify-content:space-between;width:fit-content;height:100%;padding:20px 10px 20px 20px}
+.deskTitle{width:130px;padding:0;white-space:nowrap}
+.selectbox{width:100%;border:0;font-size:1rem}
+.selectbox option{background-color:#2c3540}
+.selectContainer{overflow:hidden;width:200px;height:35px;padding:0 15px;border:1px solid #2c3540;border-radius:10px;background-color:#2c3540;color:#eee;text-align:center;font-size:1rem;accent-color:white;color-scheme:dark}
+.selectContainer:hover{border:1px solid #b8faff;background-color:rgba(6,65,255,0.1)}
+.datePicker{display:flex;;overflow:hidden;align-items:center;width:200px;height:35px;padding:0 15px;border:1px solid #2c3540;border-radius:10px;background-color:#2c3540;color:#eee;text-align:center;font-size:1rem;accent-color:white;color-scheme:dark}
+.datePicker:hover{border:1px solid #b8faff;background-color:rgba(6,65,255,0.1)}
+.tui-datepicker-type-date{position:absolute;top:20px;left:-180px}
+.tui-datepicker-input{border:0}
+button{width:100px;height:35px;padding:5px 15px;border:1px solid #0041ff;background-color:#0041ff;color:#b8faff;font-size:1rem;font-weight:400}
+button i{margin-right:10px}
+button:hover{border:1px solid #b8faff;background-color:#3654eb;color:#eee}
+
+/* basicTop -graph*/
+.basicTop{display:flex;gap:1rem;width:100%;height:calc(50vh - 70px);margin:1rem 0}
+.chartBox{width:75%}
+.chart{width:100%;height:100%}
+.chart img{width:100%;height:100%;object-fit:fill}
+.chartCtg{display:flex;justify-content:center;width:100%;gap:5%;margin-top:5px;word-break:keep-all;font-size:14px}
+.ctgMint, .ctgBlue, .ctgPuple{display:flex;align-items:center;gap:5px}
+.ctgMint>div{width:24px;height:6px;border-radius:10px;background-color:#00ffff}
+.ctgBlue>div{width:24px;height:6px;border-radius:10px;background-color:#0041ff}
+.ctgPuple>div{width:24px;height:6px;border-radius:10px;background-color:#ad44ff}
+
+/* basicTop-저압절감금액 */
+.reduceBox, .lowPay, .lowBefore{position:relative;;display:flex;flex-direction:column;justify-content:space-between;align-items:center;width:25%;min-width:300px}
+.lineMint{background-color:#00ffff}
+.reduceBox h2{color:#00ffff}
+.circleFill{overflow:hidden;position:relative;width:8vw;min-width:110px;height:8vw;min-height:110px;margin:10px auto;border-radius:100%;box-shadow:0 0 30px rgb(184, 250, 255,50%);background:linear-gradient(#00ffff,#7b00ff);transform:translate3d(0,0,0)}
+/* wave:bottom % 만큼 차오르는 효과 */
+.wave{position:absolute;bottom:50%;left:-90%;width:22vw;min-width:240px;height:22vw;min-height:240px;border-radius:45%;background-color:#354157;animation:move 10s infinite linear}
+@keyframes move{
+    100%{transform:rotate(360deg)}
+}
+.waveValue{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#eee;font-size:1.5rem}
+.reduceBox h3{display:block;color:#b8faff}
+.reduceMoney{display:grid; grid-template-columns:0.7fr 1fr;align-items:center;justify-content:space-evenly;width:100%;height:50%}
+.reduceMoney>div{display:flex;overflow:hidden;position:relative;align-items:center;height:24px;color:#00ffff;font-size:1.125rem}
+.reduceMoney>div>span:first-child{position:absolute;right:30px;animation:upup 4s infinite linear}
+.reduceMoney>div:nth-child(2n+6){color:#ffec7d}
+.reduceMoney>div>span:last-child{position:absolute;right:5px;color:#eee}
+/* basicBottom- table */
+.basicBottom{display:flex;flex-wrap:nowrap;gap:1rem;width:100%;height:calc(50vh - 90px)}
+.lowBox.tableBox{overflow-x:scroll;width:50%;padding:0;text-align:center}
+.tableBox table{width:100%;min-width:580px}
+.tableBox th,td{width:20%}
+.tableBox th:first-child,td:first-child{width:80px;padding-left:1rem;white-space:nowrap}
+.tableBox th:last-child,td:last-child{width:100px}
+.tableBox thead{background-color:rgba(0,0,29,0.6)}
+.tableBox thead tr{display:table;width:100%;height:50px;align-items:center}
+.tableBox tr>th:nth-child(2){color:#b8faff}
+.tableBox tr>td:nth-child(2){color:#b8faff}
+.tableBox tr>th:nth-child(5){color:#00ffff}
+.tableBox tr>td:nth-child(5){color:#00ffff}
+.tableBox tr>th:nth-child(6){color:#ffec7d}
+.tableBox tr>td:nth-child(6){color:#ffec7d}
+.tableBox tbody tr{display:table;width:100%;height:40px}
+.tableBox tbody{display:block;overflow:auto;width:100%;height:calc(50vh - 170px)}
+.tableBox::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.tableBox::-webkit-scrollbar-thumb{border-radius:2px;background:rgba(0,255,255,0.5);border:1px solid #b8faff}
+.tableBox::-webkit-scrollbar-track{border-radius:2px}
+.tableBox::-webkit-scrollbar-corner{background-color:transparent}
+.tableBox tbody::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.tableBox tbody::-webkit-scrollbar-thumb{border-radius:2px;background:rgba(0,255,255,0.5);border:1px solid #b8faff}
+.tableBox tbody::-webkit-scrollbar-track{border-radius:2px}
+.tableBox tbody::-webkit-scrollbar-corner{background-color:transparent}
+.tableBox tbody tr:hover{background-color:rgba(217,217,217,.2)}
+.tableBox tbody tr:hover>td:nth-child(-n+4){color:#b8faff}
+.tableBox tbody tr:hover>td:nth-child(n+6){color:#fdf800}
+.tableBox tbody tr:hover>td:nth-child(1){color:#b8faff}
+.tableBox tbody tr:hover>td:nth-child(2){color:#00ffff}
+.tableBox tbody .high td:nth-child(n+1):nth-child(-n+4){color:#ff005b}
+.tableBox tbody .high tr:hover>td:nth-child(n+3):nth-child(-n+4){color:#ff005b}
+/* basicBottom- 저압 전력 요금 */
+.lineBlue{background-color:#0c39ec}
+.dataBox{display:grid;width:100%;height:100%}
+.dataBox h3{color:#b8faff;text-align:start}
+.dataBox>div{overflow:hidden;color:#eee;text-align:end;height:23px}
+.lowPay h2{color:#97b1ff; padding-bottom:15px}
+.lowPay .dataBox>div span{color:#ffec7d}
+.lowPay .dataBox>div:nth-child(-n+6)>span{color:#00ffff}
+.lowPay .dataBox>div{display:flex;position:relative;align-items:center}
+.lowPay .dataBox>div>span:first-child{position:absolute;right:50px;animation:upup 2s infinite linear}
+.lowPay .dataBox>div>span:last-child{position:absolute;width:30px;right:10px;text-align:left;color:#eee}
+/* basicBottom- 직전 동일 기간 대비 */
+.linePuple{background-color:#ad44ff}
+.lowBefore h2{color:#ad44ff}
+.lowBefore .dataBox>div{display:flex;position:relative;flex-wrap:nowrap;align-items:center;width:100%}
+.beforValue{display:flex;position:absolute;justify-content:space-between;left:0;width:calc(100% - 60px);padding:0 5px 0 1rem;color:white;animation:upup 2s infinite linear}
+@keyframes upup {
+    from{bottom:-30%}
+    20%{bottom:0px}
+    80%{bottom:0px}
+    to{bottom:90%}
+}
+.beforValue{color:#00ffff}
+.beforValue.bad{color:#ff005b}
+.lowBefore .dataBox>div>span{position:absolute;left:calc(100% - 50px);width:50px;text-align:start}
+
+
+@media screen and (max-height:839px){
+    .basicTop{height:auto;max-height:500px}
+    .basicBottom{height:auto}
+}
+@media screen and (max-width:1230px){
+    .wave{left:-70%}
+}
+
+@media screen and (max-width:1024px){
+    main.contents{padding:1rem}
+    .basicTop{max-height:530px}
+    .lowPay, .lowBefore{min-width:220px}
+    .wave{left:-50%}
+}
+
+@media screen and (max-width:920px){
+    .wave{left:-60%}
+}
+
+@media screen and (max-width:750px){
+    .basicTop{height:auto;max-height:fit-content;flex-direction:column}
+    .chartBox{width:100%;height:400px}
+    .reduceBox, .lowPay, .lowBefore{width:100%;height:400px}
+    .basicBottom{height:auto;flex-direction:column-reverse}
+    .lowBox.tableBox{width:100%;height:400px}
+    .selectContainer{width:100px;padding:0 10px 0 0}
+    .datePicker{padding:0 5px}
+    .wave{left:-60%}
+}
+
+@media screen and (max-width:530px){
+    .topTitle{flex-direction:column}
+    .selectContainer{width:100%}
+    .datePicker{width:100%}
+    button{width:100%}
+    .chartCtg{display:grid;grid-template-rows:0.2fr 1fr}
+}

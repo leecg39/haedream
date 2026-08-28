@@ -1,0 +1,49 @@
+.peakChart{overflow:hidden;width:100%;margin:0;padding:0;background-color:rgba(3, 3, 5, 0.4);border:2px solid rgba(0, 0, 0, 0.1);border-radius:20px;box-shadow:rgba(0, 0, 0, 0.15) 0 0 120px inset}
+.deskTool{display:flex;align-items:center;gap:15px;flex-direction:row;width:100%;padding:15px 20px;background-color:rgba(0,0,29,0.6);text-align:center}
+.chartSerachBtn{width:inherit;display:flex;gap:15px}
+.mTBlock{display:flex;align-items:center}
+.deskTool .datePicker, .select{overflow:hidden;width:100%;height:40px;border:1px solid #2c3540;border-radius:10px;background-color:#2c3540;margin-left:15px;padding:0 15px}
+.deskTool .datePicker:hover, .select:hover{border:1px solid #b8faff;background-color:rgba(6,65,255,0.1)}
+.deskTool .select{padding:8px 23px;font-size:1rem}
+.deskTool .tui-datepicker-input{border:0}
+.deskTool .inputDate{height:100%;border-radius:10px;font-size:1rem;text-align:start}
+.deskTool .inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.deskLabel{color:#b8faff;white-space:nowrap}
+/*.select{width:100%;min-width:100px;height:100%;border:0;background-color:transparent;font-size:1rem}*/
+.select option{width:100%;background-color:#000;font-size:1rem}
+.chartLableBox{display:flex;justify-content:space-around;gap:15px;width:60%}
+.chartLable{display:flex;align-items:center;gap:10px;line-height:1.2}
+.chartLable hr{width:30px}
+.chartLable:nth-child(1)>hr{border:2px solid #ffec7d}
+.chartLable:nth-child(2)>hr{border:2px dashed #ff8600}
+.chartLable:nth-child(3)>hr{border:2px solid #00ffff}
+.chartLable:nth-child(4)>hr{border:2px dashed #ad44ff}
+.chart1{height:calc(100vh - 280px);margin:20px}
+
+@media (max-width:1470px){
+    .chartLableBox{width:100%}
+    .chart1{height:calc(100vh - 320px);margin:15px}
+}
+
+@media (max-width:1180px){
+    .deskTool{flex-wrap:wrap}
+    .chartSerachBtn{justify-content:space-between}
+    .chartLableBox{justify-content:center}
+    .mTBlock{justify-content:end}
+    .datePicker,
+    .select{width:calc(100% - 80px)}
+}
+
+@media (max-width:768px){
+    .deskArea{overflow:auto;margin:1rem 0}
+    .mTBlock{flex-wrap:wrap;flex-basis:100%}
+    .deskLabel{width:60px;margin:0;text-align:start}
+    .chartSerachBtn{flex-wrap:wrap}
+    .select{padding:.2rem .4rem;font-size:1rem}
+    .inputDate{padding:.2rem .4rem;font-size:1rem}
+    .peakChart{padding:0}
+    .chart1{height:50vh}
+}
+@media (max-width:480px){
+    .peakChart{margin-top:10px}
+}

@@ -1,0 +1,8 @@
+.deskTool{display:flex;align-items:center;gap:15px;padding:15px 20px;background:linear-gradient(rgba(0, 0, 29, 0.6), rgba(0, 0, 29, 0.6)), rgba(3, 3, 5, 0.4);border-radius:20px 20px 0 0;text-align:center}
+.deskLabel{color:#b8faff;white-space:nowrap}
+.sheetArea{border-radius:0 0 20px 20px}
+.sheet{table-layout:fixed;width:100%}
+.sheet th{padding:.5rem 5px;border:1px solid rgba(238,238,238,0.2);background-color:transparent;color:#00ffff;font-size:0.98rem;font-weight:400;white-space:nowrap}
+.sheet td{padding:.5rem 5px;border-bottom:1px solid rgba(238,238,238,0.2);border-right:1px solid rgba(238,238,238,0.2);color:#eee;font-size:0.98rem;text-align:center}
+.mTBlock{display:flex;align-items:center;}
+.selectbox option{background:linear-gradient(rgba(0, 0, 29, 0.6), rgba(0, 0, 29, 0.6)), rgba(3, 3, 5, 0.4)}

@@ -1,0 +1,80 @@
+<div class="topArea">
+    <div class="left">
+        <!-- 공장이 여러개일 경우 셀렉트박스 보이기 -->
+        <select name="" id="firmSelect" class="firmSelect"></select>
+        <i class="bi bi-person-circle" onclick="vio.getProf()"></i>
+        <div class="goodbad">
+            <ul id="currentStatus">
+                <li class="disable">
+                    <a href="#">
+                        <span class="state badbad">주의요함&nbsp;&nbsp;이번주는 피크관리에 각별한 관심이 필요합니다!</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state bad">관심필요&nbsp;&nbsp;이번주 피크 횟수가 평균을 초과하였습니다.</span>
+
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state normal">보통&nbsp;&nbsp;이번주 피크현황이 안정적입니다.</span>
+
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state good">좋아요!&nbsp;&nbsp; 이번주 에너지 사용이 원활합니다.</span>
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="day">
+            <i class="bi bi-clock"></i>
+            <span class="ymd" id="ymd"></span>
+            <span class="dtime" id="dtime"></span>
+        </div>
+    </div>
+
+    <div class="mobileIcon">
+        <div class="line"></div>
+    </div>
+</div>
+<div class="topRightArea">
+
+    <ul class="topBtn">
+
+        <li class="tb-refresh">
+            <a href="javascript:void(0)" onclick="location.reload(true)">
+                <i class="bi bi-arrow-clockwise" role="img" aria-label="새로고침"></i>
+                <span class="text">새로고침</span>
+            </a>
+        </li>
+        <li class="tb-set">
+            <a href="#" class="bluebtn">
+                <i class="bi bi-gear" role="img" aria-label="환경설정"></i>
+                <span class="text">환경설정</span>
+            </a>
+            <div class="tbSetNav">
+                <ul>
+                    <li><a href="../user.html">사용자관리</a></li>
+                    <li><a href="../notify.html">알람설정</a></li>
+                    <li><a href="../gateNode.html">게이트웨이 관리</a></li>
+                    <li><a href="../gateway.html">복합제어기 관리</a></li>
+                    <li><a href="../sequence.html">시퀀스제어</a></li>
+                    <li><a href="../gateRTU.html">RTU관리</a></li>
+                    <li><a href="../device.html">모드버스 계측</a></li>
+                    <li><a href="../net.html">실시간데이터</a></li>
+                    <li><a href="../bad.html">통신상태 불량</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="tb-logout" id="appLogout">
+            <a href="javascript:void(0)">
+                <i class="bi bi-door-open" role="img" aria-label="로그아웃"></i>
+                <span class="text">로그아웃</span>
+            </a>
+        </li>
+    </ul>
+</div>

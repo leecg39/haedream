@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>저압 절감 보고서</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="./assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="assets/css/common.css?v=0.0.2">
+    <link rel="stylesheet" href="./assets/css/report.css?v=0.0.2">
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <script src="./assets/js/lib/tom-select.complete.min.js"></script>
+    <script src="./assets/js/base.js?v=0.0.1"></script>
+    <script src="./assets/js/report.js?v=0.0.5"></script>
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <div class="lowBox lowTopChart">
+                <div class="titleLabel">
+                    <div class="topfivBox">
+                        <h1 class="deskTitle">저압 절감 보고서</h1>
+                        <div class="fiveHigh">
+                            <div>
+                                <img src="./assets/img/fiveup.svg">전력타입
+                            </div>
+                            <div class="fiveHighDate">
+                                <span id="lastContract">-</span>
+                            </div>
+                        </div>
+                        <div class="fiveHigh">
+                            <div>
+                                <img src="./assets/img/fiveup.svg">기본요금단가
+                            </div>
+                            <div class="fiveHighDate">
+                                <span id="lastContractCost">-</span>
+                            </div>
+                        </div>
+                        <div class="fiveHigh">
+                            <div>
+                                <img src="./assets/img/fiveup.svg">최근 5개년 피크
+                            </div>
+                            <div class="fiveHighDate">
+                                <span id="maxAbleWatt">-</span>kw / <span id="maxAbleDate">-</span>년
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reportLabel">
+                        <div class="labelBox">
+                            <div class="labelSign"></div><span>누적 절감 요금</span>
+                        </div>
+                        <div class="labelBox">
+                            <div class="labelSign"></div><span>저압 전력 요금</span>
+                        </div>
+                        <div class="labelBox">
+                            <div class="labelSign"></div><span>고압 전력 요금</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart1" id="chart1"></div>
+                <div class="lowMoney" id="lowMoney">
+                    <div class="lowMonyBox">
+                        <span><i class="bi bi-graph-down-arrow"></i> 평균 절감률</span>
+                        <p class="frugalAvg" id="frugalAvg">
+                            <span class="frugalRatio" id="frugalRatio">-</span>
+                            <input type="text" class="frugalInput" id="edit-frugalRatio" value="">%
+                        </p>
+                    </div>
+                    <div class="lowMonyBox">
+                        <span>일간 평균 절감액</span>
+                        <p><span class="lowDay" id="avgFrugalDaily">-</span>원</p>
+                    </div>
+                    <div class="lowMonyBox">
+                        <span>월간 평균 절감액</span>
+                        <p><span class="lowMon" id="avgFrugal">-</span>원</p>
+                    </div>
+                    <div class="lowMonyBox">
+                        <span>연간 평균 절감액</span>
+                        <p><span class="lowYear" id="avgFrugalYear">-</span>원</p>
+                    </div>
+                </div>
+                <div class="tableBtnBox business">
+                    <button class="exlBtn disable" id="print">
+                        <i class="bi bi-printer-fill"></i>제안서 A
+                    </button>
+                    <button class="exlBtn disable" id="print2">
+                        <i class="bi bi-printer-fill"></i>제안서 B
+                        <span class="disable factoring">(팩토링 선취)</span>
+                    </button>
+                    <button class="exlBtn disable" id="truth">
+                        <i class="bi bi-bag-check-fill"></i>사업 타당성 검토
+                    </button>
+                    <button class="exlBtn disable" id="print3">
+                        <i class="bi bi-printer-fill"></i>제안서 C
+                        <span class="disable factoring">(팩토링 후취)</span>
+                    </button>
+                    <button class="exlBtn disable" id="truth2">
+                        <i class="bi bi-bag-check-fill"></i>사업 타당성 검토
+                    </button>
+                </div>
+            </div>
+            <div class="lowBox lowBtmTable">
+                <div class="tableInfoBox">
+                    <div class="tableDateBox">
+                        <label for="lowDateStart">기간</label>
+                        <div class="lowDateInput">
+                            <div class="lowInputStart">
+                                <input type="month" class="lowDate" id="lowDateStart" value="2024-12">
+                                <div>&#126;</div>
+                            </div>
+                            <input type="month" class="lowDate" id="lowDateEnd" value="2024-12">
+                        </div>
+                    </div>
+                    <div class="tableBtnBox">
+                        <button class="searchBtn" id="search">
+                            <i class="bi bi-search"></i>조회
+                        </button>
+                        <button class="exlBtn" id="excel">
+                            <i class="bi bi-file-earmark-arrow-down-fill"></i>엑셀로 저장
+                        </button>
+                    </div>
+                </div>
+                <div class="tableBodyBox">
+                    <table id="deskTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">날짜</th>
+                                <th rowspan="2">요금적용전력&#40;kW&#41;</th>
+                                <th rowspan="2">사용전력량&#40;kWh&#41;</th>
+                                <th colspan="3">전력 요금 &#40;고압&#41;</th>
+                                <th colspan="3">전력 요금 &#40;저압&#41;</th>
+                                <th rowspan="2">절감액</th>
+                            </tr>
+                            <tr>
+                                <th>기본요금</th>
+                                <th>전력량요금+a</th>
+                                <th>소계</th>
+                                <th>기본요금</th>
+                                <th>전력량요금+a</th>
+                                <th>소계</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemList">
+                            <tr>
+                                <td colspan="10">데이터가 없습니다.</td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="itemFooter"></tfoot>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>
