@@ -15,14 +15,16 @@ const FIRM_SORT_OPTIONS: readonly { readonly key: FirmSortKey; readonly label: s
   { key: "firmName", label: "이름" },
   { key: "contract", label: "전력타입" },
   { key: "kepcoNo", label: "한전고객번호" },
-  { key: "registTime", label: "메모" },
 ];
 
 export function FirmManager() {
   const [serviceType, setServiceType] = useState(0);
   const [query, setQuery] = useState("");
-  const [sortKey, setSortKey] = useState<FirmSortKey>("fid");
-  const [descending, setDescending] = useState(false);
+  // 원본 firm.js 는 _sheet.sortTag='registTime', sortAsc=0(내림차순) 으로 시작하되
+  // asc/desc 클래스는 th 를 클릭해야 붙는다. 로드 직후에는 정렬 화살표가 없다.
+  const [sortKey, setSortKey] = useState<FirmSortKey>("registTime");
+  const [descending, setDescending] = useState(true);
+  const [sortTouched, setSortTouched] = useState(false);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<FirmRow | null>(null);
   const [mapOpen, setMapOpen] = useState(false);
@@ -55,6 +57,7 @@ export function FirmManager() {
   const last = Math.min(safePage * FIRM_PAGE_LIMIT, filtered.length);
 
   const changeSort = (key: FirmSortKey) => {
+    setSortTouched(true);
     if (sortKey === key) setDescending((value) => !value);
     else {
       setSortKey(key);
@@ -70,16 +73,20 @@ export function FirmManager() {
         <div className="sheetArea">
           <div className="deskStat">
             <div className="deskLimit"><span className="deskLabel" id="deskLimit">{first} - {last} / {filtered.length}</span></div>
+            {/* 원본은 <button> 이 아니라 <span class="deskAct act" data-act="..."> 다.
+                .deskAct 에 배경/보더 리셋이 없어 button 으로 만들면 UA 기본 상자가 보인다. */}
             <div className="deskTool" id="deskTool">
-              <button className="deskAct act" type="button" onClick={() => setSelected(FIRM_ROWS[0])}>추가</button>
-              <button className="deskAct act" type="button" onClick={() => window.print()}>프린트</button>
-              <Link href="/fit/rate-plan" className="deskAct act" id="chargeLink">요금표</Link>
-              <Link href="/fit/research" className="deskAct act" id="researchLink">한전수집</Link>
+              <span className="deskAct act" data-act="add" role="button" onClick={() => setSelected(FIRM_ROWS[0])}>추가</span>
+              <span className="deskAct act" data-act="excel" role="button" onClick={() => window.print()}>엑셀</span>
+              <span className="deskAct act" data-act="print" role="button" onClick={() => window.print()}>프린트</span>
+              <Link href="/fit/rate-plan" target="_blank" className="deskAct act" id="chargeLink">요금표</Link>
+              <Link href="/fit/research" target="_blank" className="deskAct act" id="researchLink">한전수집</Link>
             </div>
             <div className="deskPages">
               <select
                 className="eSelect serviceType"
                 id="serviceType"
+                style={{ width: "auto", height: 40 }}
                 value={serviceType}
                 onChange={(event) => { setServiceType(Number(event.target.value)); setPage(1); }}
               >
@@ -107,7 +114,13 @@ export function FirmManager() {
                 <tr id="deskSort">
                   {FIRM_SORT_OPTIONS.map((option) => (
                     <th
-                      className={sortKey === option.key ? (descending ? "sort desc" : "sort asc") : "sort"}
+                      className={
+                        sortTouched && sortKey === option.key
+                          ? descending
+                            ? "sort desc"
+                            : "sort asc"
+                          : "sort"
+                      }
                       data-sort={option.key}
                       key={option.key}
                       onClick={() => changeSort(option.key)}
@@ -117,6 +130,8 @@ export function FirmManager() {
                   ))}
                   <th>EOI</th><th>PCT</th><th>최근전력</th><th>목표전력</th>
                   <th>운전모드</th><th>제어방식</th><th>활성</th><th>서비스</th>
+                  {/* 원본에서 메모는 13번째이고 data-sort 만 있고 .sort 클래스는 없다 */}
+                  <th data-sort="registTime" onClick={() => changeSort("registTime")}>메모</th>
                 </tr>
               </thead>
               <tbody id="deskList">
@@ -134,6 +149,7 @@ export function FirmManager() {
                     <td>{row.peakControlMode ? "순차" : "우선"}</td>
                     <td>{row.isDisable ? "비활성" : "활성"}</td>
                     <td>{FIRM_SERVICE_TYPE_LABELS[row.serviceType]}</td>
+                    <td>{row.memo || "-"}</td>
                   </tr>
                 ))}
               </tbody>

@@ -604,7 +604,7 @@ export function AdminTablePage({ page: pageKind }: { readonly page: AdminPageKin
 
   return (
     <>
-      <PageStyles files={["/fit/assets/css/deskLib.css"]} />
+      <PageStyles files={["/fit/assets/css/deskLib.css", "/fit/clone-css/admin-extras.css"]} />
       <main className="contents adminContents" id="contentsArea">
         <h1 className="deskTitle">{config.title}</h1>
         <section

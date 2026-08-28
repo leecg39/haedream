@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>업체관리</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="/fit/assets/css/lib/tom-select.css">
+    <link rel="stylesheet" href="/fit/assets/css/lib/tui-date-picker.css">
+    <link rel="stylesheet" href="/fit/assets/css/common.css?v=0.0.2">
+    <link rel="stylesheet" href="/fit/assets/css/deskLib.css?v=0.0.1">
+    <link rel="stylesheet" href="/fit/assets/css/firm.css?v=0.0.1">
+    
+    
+    
+    
+    
+    
+</head>
+<body id="dashboard">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"><div class="leftNav">
+    <div class="leftLogo">
+        <a href="/peak.html">
+            <img src="/fit/assets/img/logo_eggfit_white.png" id="platformLogo" alt="home">
+        </a>
+    </div>
+    <nav id="navigation">
+        <ul class="d1">
+            <li class="navLi active" id="peak">
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li class="disable" id="stat">
+                            <a href="/stat.html" id="statMenu">
+                                <i class="bi bi-globe2"></i> 통합관제
+                            </a>
+                        </li>
+                        <li class="disable" id="firm">
+                            <a href="/firm.html" id="firmMenu">
+                                <i class="bi bi-building"></i>업체관리
+                            </a>
+                        </li>
+                        <li class="disable" id="research">
+                            <a href="/research.html" id="researchMenu">
+                                <i class="bi bi-boxes"></i> 한전데이터 수집
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/peak.html" id="peakMenu">
+                                <i class="bi bi-speedometer2"></i> 피크상태
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/peakPanel.html" id="peakPanelMenu">
+                                <i class="bi bi-activity"></i>부하상황판
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/peakSet.html" id="peakSetMenu">
+                                <i class="bi bi-gear-wide-connected"></i> 피크 제어설정
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/peakHis.html" id="peakHisMenu">
+                                <i class="bi bi-graph-up"></i> 피크 그래프
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/powerUsage.html" id="powerUsageMenu">
+                                <i class="bi bi-clipboard-data"></i> 전력 사용 보고서
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/peakUsage.html" id="peakUsageMenu">
+                                <i class="bi bi-bar-chart"></i> 피크 15분 전력보고서
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/controlHis.html" id="controlHisMenu">
+                                <i class="bi bi-bezier2"></i>피크제어이력
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/acp.html" id="acpMenu">
+                                <i class="bi bi-fan"></i> 시스템에어컨
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/ratePlan.html" id="ratePlanMenu">
+                                <i class="bi bi-calculator"></i> 전기 요금 비교
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/reduce.html" id="reduceMenu">
+                                <i class="bi bi-bar-chart-fill"></i> 저압 절감 분석
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/report.html" id="reportMenu">
+                                <i class="bi bi-clipboard-data-fill"></i> 저압 절감 보고서
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+        <div class="eggOnLogo">
+            <a href="" id="eggOnLink">
+                <img src="/fit/assets/img/empty.png" id="footerLogo" alt="하단 로고">
+            </a>
+        </div>
+    </nav>
+</div>
+</div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"><div class="topArea">
+    <div class="left">
+        <!-- 공장이 여러개일 경우 셀렉트박스 보이기 -->
+        <select name="" id="firmSelect" class="firmSelect"></select>
+        <i class="bi bi-person-circle" onclick="vio.getProf()"></i>
+        <div class="goodbad">
+            <ul id="currentStatus">
+                <li class="disable">
+                    <a href="#">
+                        <span class="state badbad">주의요함&nbsp;&nbsp;이번주는 피크관리에 각별한 관심이 필요합니다!</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state bad">관심필요&nbsp;&nbsp;이번주 피크 횟수가 평균을 초과하였습니다.</span>
+
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state normal">보통&nbsp;&nbsp;이번주 피크현황이 안정적입니다.</span>
+
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state good">좋아요!&nbsp;&nbsp; 이번주 에너지 사용이 원활합니다.</span>
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="day">
+            <i class="bi bi-clock"></i>
+            <span class="ymd" id="ymd"></span>
+            <span class="dtime" id="dtime"></span>
+        </div>
+    </div>
+
+    <div class="mobileIcon">
+        <div class="line"></div>
+    </div>
+</div>
+<div class="topRightArea">
+
+    <ul class="topBtn">
+
+        <li class="tb-refresh">
+            <a href="javascript:void(0)" onclick="location.reload(true)">
+                <i class="bi bi-arrow-clockwise" role="img" aria-label="새로고침"></i>
+                <span class="text">새로고침</span>
+            </a>
+        </li>
+        <li class="tb-set">
+            <a href="#" class="bluebtn">
+                <i class="bi bi-gear" role="img" aria-label="환경설정"></i>
+                <span class="text">환경설정</span>
+            </a>
+            <div class="tbSetNav">
+                <ul>
+                    <li><a href="../user.html">사용자관리</a></li>
+                    <li><a href="../notify.html">알람설정</a></li>
+                    <li><a href="../gateNode.html">게이트웨이 관리</a></li>
+                    <li><a href="../gateway.html">복합제어기 관리</a></li>
+                    <li><a href="../sequence.html">시퀀스제어</a></li>
+                    <li><a href="../gateRTU.html">RTU관리</a></li>
+                    <li><a href="../device.html">모드버스 계측</a></li>
+                    <li><a href="../net.html">실시간데이터</a></li>
+                    <li><a href="../bad.html">통신상태 불량</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="tb-logout" id="appLogout">
+            <a href="javascript:void(0)">
+                <i class="bi bi-door-open" role="img" aria-label="로그아웃"></i>
+                <span class="text">로그아웃</span>
+            </a>
+        </li>
+    </ul>
+</div></div>
+        <main class="contents" id="contentsArea">
+            <h1 class="deskTitle">업체관리</h1>
+            <div class="sheetArea">
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskLimit">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskTool" id="deskTool">
+                        <span class="deskAct act" data-act="add">추가</span>
+                        <span class="deskAct act" data-act="excel">엑셀</span>
+                        <span class="deskAct act" data-act="print">프린트</span>
+                        <a href="power.html" target="_blank" class="deskAct act" id="chargeLink">요금표</a>
+                        <a href="research.html" target="_blank" class="deskAct act" id="researchLink">한전수집</a>
+                    </div>
+                    <div class="deskPages">
+                        <select class="eSelect serviceType" id="serviceType" style="width:auto;height:40px">
+                            <option value="0">서비스상태 선택</option>
+                            <option value="1">EMS</option>
+                            <option value="2">피크</option>
+                            <option value="3">저압 완료</option>
+                            <option value="11">EMS 준비</option>
+                            <option value="12">피크 준비</option>
+                            <option value="13">저압 준비</option>
+                            <option value="21">EMS 제안</option>
+                            <option value="22">피크 제안</option>
+                            <option value="23">저압 제안</option>
+                        </select>
+                        <span class="deskSearch">
+                            <input class="deskInput" id="deskInput" maxlength="16"/>
+                            <i class="icon iconSearch"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="deskArea">
+                    <table class="desk" id="deskTable">
+                        <thead>
+                            <tr id="deskSort">
+                                <th class="sort" data-sort="fid">ID</th>
+                                <th class="sort" data-sort="firmName">이름</th>
+                                <th class="sort" data-sort="contract">전력타입</th>
+                                <th class="sort" data-sort="kepcoNo">한전고객번호</th>
+                                <th>EOI</th>
+                                <th>PCT</th>
+                                <th>최근전력</th>
+                                <th>목표전력</th>
+                                <th>운전모드</th>
+                                <th>제어방식</th>
+                                <th>활성</th>
+                                <th>서비스</th>
+                                <th data-sort="registTime">메모</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deskList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="desk disable" id="lowDeskTable">
+                        <thead>
+                            <tr id="lowDeskSort">
+                                <th class="sort" data-sort="fid">ID</th>
+                                <th class="sort" data-sort="firmName">이름</th>
+                                <th class="sort" data-sort="registTime">업체등록일</th>
+                                <th class="sort" data-sort="contract">전력타입</th>
+                                <th class="sort" data-sort="kepcoNo">한전고객번호</th>
+                                <th class="sort" data-sort="frugal">연간절감금액</th>
+                                <th>적용전력</th>
+                                <th>최근 5개년 피크</th>
+                                <th>1차/2차 구분</th>
+                                <th>서비스</th>
+                                <th>메모</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lowDeskList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskPages" id="deskPages">
+                        <span class="deskPage act">prev</span>
+                        <span class="deskPage act active">1</span>
+                        <span class="deskPage act">next</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">업체관리</div>
+                        <div class="editForm">
+                            <input type="hidden" id="edit-mapGeo" maxlength="32"/>
+                            <span>이름</span>
+                            <span>
+                                <input class="eInput" id="edit-firmName" maxlength="32"/>
+                            </span>
+                            <span class="tip" data-tip="냉방도일/난방도일 측정 위치기준">기상청지점</span>
+                            <span>
+                                <select class="eSelect" id="edit-degreeCity">
+                                    <option value="0">선택</option>
+                                    <optgroup label="서울특별시">
+                                        <option value="108">서울</option>
+                                    </optgroup>
+                                    <optgroup label="부산광역시">
+                                        <option value="159">부산</option>
+                                    </optgroup>
+                                    <optgroup label="대구광역시">
+                                        <option value="143">대구</option>
+                                    </optgroup>
+                                    <optgroup label="인천광역시">
+                                        <option value="201">강화</option>
+                                        <option value="102">백령도</option>
+                                        <option value="112">인천</option>
+                                    </optgroup>
+                                    <optgroup label="광주광역시">
+                                        <option value="156">광주</option>
+                                    </optgroup>
+                                    <optgroup label="대전광역시">
+                                        <option value="133">대전</option>
+                                    </optgroup>
+                                    <optgroup label="울산광역시">
+                                        <option value="152">울산</option>
+                                    </optgroup>
+                                    <optgroup label="경기도">
+                                        <option value="98">동두천</option>
+                                        <option value="119">수원</option>
+                                        <option value="202">양평</option>
+                                        <option value="203">이천</option>
+                                        <option value="99">파주</option>
+                                    </optgroup>
+                                    <optgroup label="강원도">
+                                        <option value="105">강릉</option>
+                                        <option value="100">대관령</option>
+                                        <option value="106">동해</option>
+                                        <option value="104">북강릉</option>
+                                        <option value="93">북춘천</option>
+                                        <option value="90">속초</option>
+                                        <option value="121">영월</option>
+                                        <option value="114">원주</option>
+                                        <option value="211">인제</option>
+                                        <option value="217">정선군</option>
+                                        <option value="95">철원</option>
+                                        <option value="101">춘천</option>
+                                        <option value="216">태백</option>
+                                        <option value="212">홍천</option>
+                                    </optgroup>
+                                    <optgroup label="충청북도">
+                                        <option value="226">보은</option>
+                                        <option value="221">제천</option>
+                                        <option value="131">청주</option>
+                                        <option value="135">추풍령</option>
+                                        <option value="127">충주</option>
+                                    </optgroup>
+                                    <optgroup label="충청남도">
+                                        <option value="238">금산</option>
+                                        <option value="235">보령</option>
+                                        <option value="236">부여</option>
+                                        <option value="129">서산</option>
+                                        <option value="232">천안</option>
+                                        <option value="177">홍성</option>
+                                    </optgroup>
+                                    <optgroup label="전라북도">
+                                        <option value="172">고창</option>
+                                        <option value="251">고창군</option>
+                                        <option value="140">군산</option>
+                                        <option value="247">남원</option>
+                                        <option value="243">부안</option>
+                                        <option value="254">순창군</option>
+                                        <option value="244">임실</option>
+                                        <option value="248">장수</option>
+                                        <option value="146">전주</option>
+                                        <option value="245">정읍</option>
+                                    </optgroup>
+                                    <optgroup label="전라남도">
+                                        <option value="259">강진군</option>
+                                        <option value="262">고흥</option>
+                                        <option value="266">광양시</option>
+                                        <option value="165">목포</option>
+                                        <option value="258">보성군</option>
+                                        <option value="174">순천</option>
+                                        <option value="168">여수</option>
+                                        <option value="252">영광군</option>
+                                        <option value="170">완도</option>
+                                        <option value="260">장흥</option>
+                                        <option value="268">진도군</option>
+                                        <option value="261">해남</option>
+                                        <option value="169">흑산도</option>
+                                    </optgroup>
+                                    <optgroup label="경상북도">
+                                        <option value="283">경주시</option>
+                                        <option value="279">구미</option>
+                                        <option value="273">문경</option>
+                                        <option value="271">봉화</option>
+                                        <option value="137">상주</option>
+                                        <option value="136">안동</option>
+                                        <option value="277">영덕</option>
+                                        <option value="272">영주</option>
+                                        <option value="281">영천</option>
+                                        <option value="115">울릉도</option>
+                                        <option value="130">울진</option>
+                                        <option value="278">의성</option>
+                                        <option value="276">청송군</option>
+                                        <option value="138">포항</option>
+                                    </optgroup>
+                                    <optgroup label="경상남도">
+                                        <option value="294">거제</option>
+                                        <option value="284">거창</option>
+                                        <option value="253">김해시</option>
+                                        <option value="295">남해</option>
+                                        <option value="288">밀양</option>
+                                        <option value="255">북창원</option>
+                                        <option value="289">산청</option>
+                                        <option value="257">양산시</option>
+                                        <option value="263">의령군</option>
+                                        <option value="192">진주</option>
+                                        <option value="155">창원</option>
+                                        <option value="162">통영</option>
+                                        <option value="264">함양군</option>
+                                        <option value="285">합천</option>
+                                    </optgroup>
+                                    <optgroup label="제주도">
+                                        <option value="185">고산</option>
+                                        <option value="189">서귀포</option>
+                                        <option value="188">성산</option>
+                                        <option value="184">제주</option>
+                                    </optgroup>
+                                    <optgroup label="세종특별자치시">
+                                        <option value="239">세종</option>
+                                    </optgroup>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="최대전력관리 사용은 필수">전력타입</span>
+                            <span>
+                                <select class="eSelect" id="edit-contract">
+                                    <option value="">전력타입 선택</option>
+                                </select>
+                            </span>
+                            <span>한전고객번호</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-kepcoNo" step="1" min="0" max="4294967295"/>
+                            </span>
+                            <span>EMS 아이디</span>
+                            <span>
+                                <input class="eInput" id="edit-bone" maxlength="16"/>
+                            </span>
+                            <span class="tip" data-tip="한전고객번호와 다를경우 입력">한전 ID</span>
+                            <span>
+                                <input class="eInput" id="edit-kepcoCyber" maxlength="32"/>
+                            </span>
+                            <span>EMS 암호변경</span>
+                            <span>
+                                <input class="eInput" id="edit-passwd" maxlength="16"/>
+                            </span>
+                            <span>한전 비밀번호</span>
+                            <span>
+                                <input class="eInput" id="edit-kepcoPasswd" maxlength="32"/>
+                            </span>
+                            <span>담당자</span>
+                            <span>
+                                <input class="eInput" id="edit-manager" maxlength="16"/>
+                            </span>
+                            <span>연락처</span>
+                            <span>
+                                <input class="eInput" id="edit-phone" maxlength="16"/>
+                            </span>
+                            <span>주소</span>
+                            <span>
+                                <input class="eInput" id="edit-addressText" maxlength="180"/>
+                            </span>
+                            <span>검침일</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-checkDay" step="1" min="1" max="31"/>
+                            </span>
+                            <span>계약전력</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-contractLimit" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>요금적용전력</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-ableLimit" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>요금적용날짜</span>
+                            <span>
+                                <input type="date" class="eInput" id="edit-ableLimitTime"/>
+                            </span>
+                            <span>목표전력</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-powerLimit" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>PCT비</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-pct_ratio" step="1" min="0" max="8388608"/>
+                            </span>
+                            <span>펄스정수</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-pulse_num" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>운전모드</span>
+                            <span>
+                                <select class="eSelect" id="edit-peakRunMode">
+                                    <option value="0">수동</option>
+                                    <option value="1">자동</option>
+                                </select>
+                            </span>
+                            <span>제어방식</span>
+                            <span>
+                                <select class="eSelect" id="edit-peakControlMode">
+                                    <option value="0">우선순위</option>
+                                    <option value="1">순차제어</option>
+                                </select>
+                            </span>
+                            <span>EMS 활성</span>
+                            <span>
+                                <select class="eSelect" id="edit-isDisable">
+                                    <option value="0">활성</option>
+                                    <option value="1">비활성</option>
+                                </select>
+                            </span>
+                            <span>서비스상태</span>
+                            <span>
+                                <select class="eSelect" id="edit-serviceType">
+                                    <option value="0">선택없음</option>
+                                    <option value="1">EMS</option>
+                                    <option value="2">피크</option>
+                                    <option value="3">저압 완료</option>
+                                    <option value="11">EMS 준비</option>
+                                    <option value="12">피크 준비</option>
+                                    <option value="13">저압 준비</option>
+                                    <option value="21">EMS 제안</option>
+                                    <option value="22">피크 제안</option>
+                                    <option value="23">저압 제안</option>
+                                </select>
+                            </span>
+                            <span>절감계산시작일</span>
+                            <span>
+                                <input type="date" class="eInput" id="edit-frugalTime"/>
+                            </span>
+                            <span>투자금액(천원)</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-investGold" step="1" min="0" max="4294967295"/>
+                            </span>
+                            <span class="tip" data-tip="한전수전합리화">이전 전력타입</span>
+                            <span>
+                                <select class="eSelect" id="edit-kepcoContract">
+                                    <option value="">전력타입 선택</option>
+                                </select>
+                            </span>
+                            <span>관리계정</span>
+                            <span>
+                                <input class="eInput" id="edit-boss" maxlength="16"/>
+                            </span>
+                            <span>메모</span>
+                            <span>
+                                <input class="eInput" id="edit-memo" maxlength="32"/>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalActDone">확인</span>
+                        <span class="modalAct" id="modalActCancel">취소</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal disable" id="kakaoMapModal">
+            <div class="modalBox">
+                <i class="modalClose" onclick="document.getElementById('kakaoMapModal').classList.add('disable')"></i>
+                <div class="modalContent">
+                    <div>
+                        <span>주소검색</span>
+                        <span class="editMapGeo tip" id="kakaoMapGeo" data-tip="좌표값을 선택하면 변경됩니다.">0,0</span>
+                    </div>
+                    <div class="editMapSearchArea">
+                        <input class="eInput" id="kakaoMapSearch" maxlength="64" placeholder="검색"/>
+                    </div>
+                    <div class="editMapArea" id="kakaoMapArea"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>
