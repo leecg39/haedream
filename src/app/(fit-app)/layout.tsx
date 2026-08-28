@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Agentation } from "agentation";
+import "leaflet/dist/leaflet.css";
 
 export const metadata: Metadata = {
   title: { default: "피크상태", template: "%s" },

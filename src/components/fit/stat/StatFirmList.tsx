@@ -6,6 +6,8 @@ import { echoNumber } from "./statUtils";
 interface StatFirmListProps {
   readonly rows: readonly (StatFirm | null)[];
   readonly orderBy: StatOrderBy;
+  readonly liveTick: number;
+  readonly autoOrderBy: StatOrderBy;
   readonly selectedFid: number | null;
   readonly onOrderByChange: (orderBy: StatOrderBy) => void;
   readonly onSelect: (fid: number) => void;
@@ -75,10 +77,14 @@ function DataRow({
 export function StatFirmList({
   rows,
   orderBy,
+  liveTick,
+  autoOrderBy,
   selectedFid,
   onOrderByChange,
   onSelect,
 }: StatFirmListProps) {
+  const autoOrderLabel = ORDER_OPTIONS.find((option) => option.value === autoOrderBy)?.label;
+
   return (
     <>
       <div className="listFilter">
@@ -95,6 +101,16 @@ export function StatFirmList({
               </option>
             ))}
           </select>
+          <span
+            className="liveUpdateBadge"
+            role="status"
+            aria-live="polite"
+            title={`5초마다 실시간 갱신${autoOrderLabel ? ` · ${autoOrderLabel}` : ""}`}
+            data-tick={liveTick}
+          >
+            <span className="liveUpdateDot" />
+            LIVE <strong>5s</strong>
+          </span>
         </div>
         <div className="listStatus">
           <span className="statusIcon"></span> 제안 <span className="statusIcon good"></span> 정상{" "}
@@ -130,7 +146,7 @@ export function StatFirmList({
               </div>
             </li>
           </ul>
-          <ul className="listBody" id="firmList">
+          <ul className="listBody" id="firmList" key={liveTick}>
             {rows.map((firm, index) => (
               <DataRow
                 key={firm ? firm.fid : `blank-${index}`}
