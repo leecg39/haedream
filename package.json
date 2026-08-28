@@ -12,6 +12,8 @@
     "db:seed": "node scripts/seed.mjs",
     "db:setup": "npm run db:migrate",
     "db:seed:demo": "ALLOW_DEMO_SEED=true node scripts/seed.mjs",
+    "mockdb": "node scripts/build-mock-db.mjs",
+    "mockdb:fit": "node scripts/build-fit-mock-db.mjs",
     "db:setup:demo": "npm run db:migrate && npm run db:seed:demo",
     "db:setup:e2e": "node scripts/setup-e2e.mjs",
     "test": "vitest run",
@@ -19,6 +21,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "agentation": "^3.0.2",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
     "next": "16.3.3",
