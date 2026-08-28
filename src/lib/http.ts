@@ -132,6 +132,13 @@ export function assertSameOrigin(request: NextRequest) {
   if (origin && origin !== request.nextUrl.origin) {
     throw new AppError(403, "CSRF_REJECTED", "허용되지 않은 요청 출처입니다.");
   }
+  if (!origin && fetchSite !== "same-origin") {
+    throw new AppError(
+      403,
+      "CSRF_REJECTED",
+      "요청 출처를 확인할 수 없습니다.",
+    );
+  }
 }
 
 const rateBuckets = new Map<string, { count: number; resetAt: number }>();

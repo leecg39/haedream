@@ -20,6 +20,7 @@ async function createFacility(
   index: number,
 ) {
   const response = await page.request.post("/api/facilities", {
+    headers: { origin: "http://localhost:3456" },
     data: {
       code,
       name: `페이지 검증 설비 ${index}`,
@@ -45,18 +46,37 @@ async function purgeFacility(
 ) {
   const deletedResponse = await page.request.delete(
     `/api/facilities/${facility.id}`,
-    { data: { version: facility.version } },
+    {
+      headers: { origin: "http://localhost:3456" },
+      data: { version: facility.version },
+    },
   );
   expect(deletedResponse.ok()).toBe(true);
   const deleted = ((await deletedResponse.json()) as { data: ApiFacility }).data;
   const purgedResponse = await page.request.delete(
     `/api/facilities/${facility.id}/purge`,
     {
-      headers: { "x-confirm-purge": facility.code },
+      headers: {
+        origin: "http://localhost:3456",
+        "x-confirm-purge": facility.code,
+      },
       data: { code: facility.code, version: deleted.version },
     },
   );
   expect(purgedResponse.ok()).toBe(true);
+}
+
+async function updateFacilityName(
+  page: import("@playwright/test").Page,
+  facility: ApiFacility,
+  name: string,
+) {
+  const response = await page.request.patch(`/api/facilities/${facility.id}`, {
+    headers: { origin: "http://localhost:3456" },
+    data: { name, version: facility.version },
+  });
+  expect(response.ok()).toBe(true);
+  return ((await response.json()) as { data: ApiFacility }).data;
 }
 
 test.describe.serial("주요설비 CRUD", () => {
@@ -87,6 +107,9 @@ test.describe.serial("주요설비 CRUD", () => {
     await expect(page.locator('[aria-live="polite"]')).toHaveText(
       "새 설비를 등록했습니다.",
     );
+    await expect(
+      page.getByLabel("공정").locator("option", { hasText: "E2E 공정" }),
+    ).toHaveCount(1);
 
     await page.getByRole("textbox", { name: "검색" }).fill(code);
     await page.getByRole("button", { name: "조회" }).click();
@@ -213,6 +236,12 @@ test.describe.serial("주요설비 CRUD", () => {
       await page.goto("/admin/facilities");
       await page.getByRole("textbox", { name: "검색" }).fill(prefix);
       await page.getByLabel("정렬").selectOption("code:asc");
+      await page.getByLabel("페이지당 표시 건수").selectOption("50");
+      await page.getByRole("button", { name: "조회" }).click();
+      await expect(page.getByLabel("페이지당 표시 건수")).toHaveValue("50");
+      await expect(page.locator("tbody tr")).toHaveCount(11);
+
+      await page.getByLabel("페이지당 표시 건수").selectOption("10");
       await page.getByRole("button", { name: "조회" }).click();
       await expect(page.getByText("1 / 2")).toBeVisible();
       await expect(page.locator("tbody tr").first()).toContainText(
@@ -262,6 +291,121 @@ test.describe.serial("주요설비 CRUD", () => {
       "설비 코드는 2자 이상",
     );
     await page.getByRole("button", { name: "취소" }).click();
+  });
+
+  test("상세는 최신 데이터를 조회하고 원복한 변경은 이탈 경고를 만들지 않음", async ({
+    page,
+  }) => {
+    await login(page, "admin");
+    const facility = await createFacility(
+      page,
+      `FRESH-${Date.now()}`,
+      77,
+    );
+    let latest = facility;
+    try {
+      await page.goto("/admin/facilities");
+      await page.getByRole("textbox", { name: "검색" }).fill(facility.code);
+      await page.getByRole("button", { name: "조회" }).click();
+      const row = page.getByRole("row").filter({ hasText: facility.code });
+      await expect(row).toBeVisible();
+
+      latest = await updateFacilityName(page, facility, "외부 최신 설비");
+      await row.getByRole("button", { name: "상세" }).click();
+      await expect(page.getByLabel("설비 이름")).toHaveValue(
+        "외부 최신 설비",
+      );
+      await page.getByRole("button", { name: "닫기", exact: true }).click();
+
+      await row.getByRole("button", { name: "수정" }).click();
+      const nameInput = page.getByLabel("설비 이름");
+      await expect(nameInput).toHaveValue("외부 최신 설비");
+      await nameInput.fill("임시 변경");
+      await nameInput.fill("외부 최신 설비");
+
+      let prompted = false;
+      const dialogHandler = async (
+        dialog: import("@playwright/test").Dialog,
+      ) => {
+        prompted = true;
+        await dialog.dismiss();
+      };
+      page.on("dialog", dialogHandler);
+      await page.getByRole("button", { name: "취소" }).click();
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      page.off("dialog", dialogHandler);
+      expect(prompted).toBe(false);
+    } finally {
+      await purgeFacility(page, latest);
+    }
+  });
+
+  test("목록 오류 시 이전 결과를 제거함", async ({ page }) => {
+    await login(page, "admin");
+    await page.goto("/admin/facilities");
+    await expect(
+      page.getByRole("row").filter({ hasText: "F-DC-01" }),
+    ).toBeVisible();
+    await page.route("**/api/facilities?*", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ok: false,
+          requestId: "e2e-list-error",
+          error: { code: "INTERNAL_ERROR", message: "목록 조회 실패" },
+        }),
+      });
+    });
+
+    await page.getByRole("textbox", { name: "검색" }).fill("실패 조건");
+    await page.getByRole("button", { name: "조회" }).click();
+    await expect(
+      page.getByRole("alert").filter({ hasText: "목록 조회 실패" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("row").filter({ hasText: "F-DC-01" }),
+    ).toHaveCount(0);
+    await expect(page.getByText("조회 결과가 없습니다")).toBeVisible();
+  });
+
+  test("수정 중 세션이 만료되면 로그인 필요 화면으로 전환함", async ({
+    page,
+  }) => {
+    await login(page, "operator");
+    await page.goto("/admin/facilities");
+    await page
+      .getByRole("row")
+      .filter({ hasText: "F-DC-01" })
+      .getByRole("button", { name: "수정" })
+      .click();
+    await expect(page.getByLabel("설비 이름")).toBeVisible();
+
+    const logoutResponse = await page.request.post("/api/auth/logout", {
+      headers: { origin: "http://localhost:3456" },
+      data: {},
+    });
+    expect(logoutResponse.ok()).toBe(true);
+    await page.getByLabel("설비 이름").fill("세션 만료 수정");
+    await page.getByRole("button", { name: "저장" }).click();
+    await expect(
+      page.getByRole("heading", { name: "로그인이 필요합니다" }),
+    ).toBeVisible();
+  });
+
+  test("로그인 검증 오류를 알리고 해당 입력으로 포커스를 이동함", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByPlaceholder("아이디").fill("");
+    await page.getByRole("button", { name: "LOGIN" }).click();
+    await expect(page.getByPlaceholder("아이디")).toBeFocused();
+    await expect(page.locator("#login-error")).toContainText("아이디를 입력");
+
+    await page.getByPlaceholder("아이디").fill("admin");
+    await page.getByRole("button", { name: "LOGIN" }).click();
+    await expect(page.getByPlaceholder("비밀번호")).toBeFocused();
+    await expect(page.locator("#login-error")).toContainText("비밀번호를 입력");
   });
 
   test("두 사용자의 서로 다른 필드 수정이 충돌 후 보존됨", async ({

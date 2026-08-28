@@ -129,12 +129,15 @@ PDF에서 확인한 필드는 다음과 같다.
 - strict Zod 허용 목록으로 알 수 없는 필드와 mass assignment 거부
 - prepared statement와 정렬 컬럼 허용 목록으로 SQL injection 방지
 - React 기본 escaping으로 XSS 방지
-- 변경 요청의 `Origin`/`Sec-Fetch-Site` 검사로 CSRF 방어
+- 변경 요청은 동일 출처 `Origin` 또는 `Sec-Fetch-Site: same-origin`을
+  반드시 요구하며 출처 헤더가 없거나 교차 출처면 차단
 - JSON 변경 요청은 `application/json`만 허용하고 본문을 64KB로 제한
 - 로그인과 CRUD 요청에 인메모리 속도 제한
 - 오류 응답에 스택·SQL·비밀번호·세션 토큰 비노출
 - 예상하지 못한 서버 오류는 요청 ID와 오류 타입만 구조화 로그로 남기고,
   사용자 입력·비밀번호·세션·설비 상세 값은 기록하지 않는다.
+- `/api/tokens`는 정확한 로그인 POST 계약만 허용한다. 레거시 정적
+  화면의 로그아웃도 `/api/auth/logout`으로 통합해 세션을 실제 폐기한다.
 - 영구 삭제 시 설비 코드 입력과 `x-confirm-purge` 서버 재확인
 - 모든 신규 CRUD 응답은 본문과 `X-Request-Id` 헤더에 요청 ID를 반환
 - 사용자별 목록과 상세 응답은 `private, no-store`로 캐시하지 않는다.

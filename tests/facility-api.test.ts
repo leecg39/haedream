@@ -155,6 +155,32 @@ describe("facility API integration", () => {
     expect(loginResponse.cookies.get(SESSION_COOKIE)).toBeUndefined();
   });
 
+  it("fails closed for invalid token methods, paths, and payloads", async () => {
+    const invalidMethod = await tokenPost(
+      request("/api/tokens", "GET"),
+      { params: Promise.resolve({ path: ["tokens"] }) },
+    );
+    expect(invalidMethod.status).toBe(405);
+
+    const missingLoginFields = await tokenPost(
+      request("/api/tokens", "POST", undefined, {}),
+      { params: Promise.resolve({ path: ["tokens"] }) },
+    );
+    expect(missingLoginFields.status).toBe(422);
+
+    const unsupportedExchange = await tokenPost(
+      request("/api/tokens", "POST", undefined, { cf: "platform" }),
+      { params: Promise.resolve({ path: ["tokens"] }) },
+    );
+    expect(unsupportedExchange.status).toBe(422);
+
+    const tokenSubpath = await tokenPost(
+      request("/api/tokens/refresh", "POST", undefined, {}),
+      { params: Promise.resolve({ path: ["tokens", "refresh"] }) },
+    );
+    expect(tokenSubpath.status).toBe(404);
+  });
+
   it("does not expose other tenants in the legacy members payload", async () => {
     const response = await tokenPost(
       request("/api/tokens", "POST", undefined, {
@@ -410,6 +436,21 @@ describe("facility API integration", () => {
           baseTemperature: 1,
           peakControlPercent: 1,
         }),
+      }),
+    );
+    expect(response.status).toBe(403);
+    expect((await json(response)).error?.code).toBe("CSRF_REJECTED");
+  });
+
+  it("rejects mutation requests whose origin cannot be verified", async () => {
+    const response = await facilitiesPost(
+      new NextRequest(`${origin}/api/facilities`, {
+        method: "POST",
+        headers: {
+          cookie: `${SESSION_COOKIE}=${adminCookie}`,
+          "content-type": "application/json",
+        },
+        body: "{}",
       }),
     );
     expect(response.status).toBe(403);

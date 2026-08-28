@@ -27,6 +27,10 @@ paths:
                 $ref: "#/components/schemas/LoginResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: 요청 출처 검증 실패
+        "405":
+          description: POST 이외의 요청 방식
         "422":
           $ref: "#/components/responses/ValidationError"
         "429":

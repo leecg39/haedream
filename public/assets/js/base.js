@@ -92,9 +92,10 @@ const vio = {
     logout: async function() { // 로그아웃
         const cp = localStorage.getItem('cp');
 
-        const res = await fetch('api/tokens', {
-            method: 'DELETE',
-            headers: {'Authorization': `x-auth ${vio._accessToken}`}
+        const res = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: '{}'
         });
 
         if (!res.ok) {

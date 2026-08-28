@@ -55,6 +55,13 @@ interface FormState {
   version?: number;
 }
 
+type ApiFailure = Error & {
+  status?: number;
+  code?: string;
+  fieldErrors?: Record<string, string[]>;
+  requestId?: string;
+};
+
 const emptyForm: FormState = {
   code: "",
   name: "",
@@ -94,6 +101,10 @@ function dateTime(value: string | null) {
   }).format(new Date(value));
 }
 
+function roleLabel(role: SessionUser["role"]) {
+  return { ADMIN: "관리자", OPERATOR: "운영자", VIEWER: "조회자" }[role];
+}
+
 function formFromFacility(facility: Facility): FormState {
   return {
     code: facility.code,
@@ -128,6 +139,16 @@ function facilityPayload(form: FormState) {
     controlMode: form.controlMode,
     status: form.status,
   };
+}
+
+function changedFormFields(current: FormState, initial: FormState) {
+  const changed = new Set<keyof FormState>();
+  for (const field of Object.keys(initial) as Array<keyof FormState>) {
+    if (field !== "version" && current[field] !== initial[field]) {
+      changed.add(field);
+    }
+  }
+  return changed;
 }
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
@@ -165,11 +186,13 @@ export function FacilitiesManager() {
   const [loading, setLoading] = useState(true);
   const [authRequired, setAuthRequired] = useState(false);
   const [error, setError] = useState("");
+  const [dialogError, setDialogError] = useState("");
   const [toast, setToast] = useState("");
   const [dialogMode, setDialogMode] = useState<DialogMode>(null);
   const [selected, setSelected] = useState<Facility | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [dialogLoading, setDialogLoading] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [dirtyFields, setDirtyFields] = useState<Set<keyof FormState>>(
     () => new Set(),
@@ -183,7 +206,10 @@ export function FacilitiesManager() {
   const pageTitleRef = useRef<HTMLHeadingElement>(null);
   const dialogTitleRef = useRef<HTMLHeadingElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  const formRef = useRef<FormState>(emptyForm);
+  const initialFormRef = useRef<FormState>(emptyForm);
   const listRequestSequence = useRef(0);
+  const detailRequestSequence = useRef(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const canWrite = session?.role === "ADMIN" || session?.role === "OPERATOR";
@@ -232,8 +258,17 @@ export function FacilitiesManager() {
       }
     } catch (caught) {
       if (sequence !== listRequestSequence.current) return;
-      const apiFailure = caught as Error & { status?: number; requestId?: string };
+      const apiFailure = caught as ApiFailure;
       if (apiFailure.status === 401) setAuthRequired(true);
+      setFacilities({
+        items: [],
+        meta: {
+          page: filters.page,
+          limit: filters.limit,
+          total: 0,
+          totalPages: 0,
+        },
+      });
       setError(
         `${apiFailure.message}${
           apiFailure.requestId ? ` (요청 ${apiFailure.requestId})` : ""
@@ -244,7 +279,29 @@ export function FacilitiesManager() {
         setLoading(false);
       }
     }
-  }, [listUrl]);
+  }, [filters.limit, filters.page, listUrl]);
+
+  const refreshMetadata = useCallback(async () => {
+    try {
+      const meta = await api<{
+        gateways: GatewayOption[];
+        processes: string[];
+      }>("/api/gateways");
+      setGateways(meta.gateways);
+      setProcesses(meta.processes);
+    } catch (caught) {
+      const failure = caught as ApiFailure;
+      if (failure.status === 401) {
+        setAuthRequired(true);
+      } else {
+        setError(
+          `${failure.message}${
+            failure.requestId ? ` (요청 ${failure.requestId})` : ""
+          }`,
+        );
+      }
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -338,30 +395,70 @@ export function FacilitiesManager() {
   }
 
   function openCreate() {
+    detailRequestSequence.current += 1;
     rememberFocus();
+    formRef.current = emptyForm;
+    initialFormRef.current = emptyForm;
     setSelected(null);
     setForm(emptyForm);
     setFieldErrors({});
+    setDialogError("");
+    setDialogLoading(false);
     setDirty(false);
     setDirtyFields(new Set());
     setDialogMode("create");
   }
 
   function openFacility(facility: Facility, mode: "detail" | "edit") {
+    const sequence = ++detailRequestSequence.current;
     rememberFocus();
-    setSelected(facility);
-    setForm(formFromFacility(facility));
+    setSelected(null);
+    setForm(emptyForm);
     setFieldErrors({});
+    setDialogError("");
     setDirty(false);
     setDirtyFields(new Set());
     setDialogMode(mode);
+    setDialogLoading(true);
+
+    const query = facility.deletedAt ? "?includeDeleted=true" : "";
+    void api<Facility>(`/api/facilities/${facility.id}${query}`)
+      .then((latest) => {
+        if (sequence !== detailRequestSequence.current) return;
+        const latestForm = formFromFacility(latest);
+        formRef.current = latestForm;
+        initialFormRef.current = latestForm;
+        setSelected(latest);
+        setForm(latestForm);
+      })
+      .catch((caught: ApiFailure) => {
+        if (sequence !== detailRequestSequence.current) return;
+        setDialogMode(null);
+        if (caught.status === 401) {
+          setAuthRequired(true);
+        } else {
+          setError(
+            `${caught.message}${
+              caught.requestId ? ` (요청 ${caught.requestId})` : ""
+            }`,
+          );
+        }
+        restoreFocus();
+      })
+      .finally(() => {
+        if (sequence === detailRequestSequence.current) {
+          setDialogLoading(false);
+        }
+      });
   }
 
   function closeDialog() {
     if (dirty && !window.confirm("저장하지 않은 변경사항을 버리시겠습니까?")) {
       return;
     }
+    detailRequestSequence.current += 1;
     setDialogMode(null);
+    setDialogError("");
     setDirty(false);
     setDirtyFields(new Set());
     restoreFocus();
@@ -369,6 +466,7 @@ export function FacilitiesManager() {
 
   function openConfirm(action: ConfirmAction, facility: Facility) {
     rememberFocus();
+    setDialogError("");
     setConfirm({ action, facility });
     setConfirmText("");
   }
@@ -376,14 +474,20 @@ export function FacilitiesManager() {
   function closeConfirm() {
     setConfirm(null);
     setConfirmText("");
+    setDialogError("");
     restoreFocus();
   }
 
   function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setForm((current) => ({ ...current, [key]: value }));
+    const next = { ...formRef.current, [key]: value };
+    formRef.current = next;
+    setForm(next);
     setFieldErrors((current) => ({ ...current, [key]: [] }));
-    setDirty(true);
-    setDirtyFields((current) => new Set(current).add(key));
+    setDialogError("");
+
+    const changed = changedFormFields(next, initialFormRef.current);
+    setDirty(changed.size > 0);
+    setDirtyFields(changed);
   }
 
   async function saveFacility(event: FormEvent) {
@@ -403,7 +507,7 @@ export function FacilitiesManager() {
     }
     const isEdit = dialogMode === "edit" && selected;
     if (isEdit && dirtyFields.size === 0) {
-      setError("수정할 항목을 변경해 주세요.");
+      setDialogError("수정할 항목을 변경해 주세요.");
       return;
     }
     const editPayload: Record<string, unknown> = { version: form.version };
@@ -413,6 +517,7 @@ export function FacilitiesManager() {
     }
 
     setSaving(true);
+    setDialogError("");
     setFieldErrors({});
     try {
       await api<Facility>(
@@ -427,13 +532,16 @@ export function FacilitiesManager() {
       setDialogMode(null);
       restoreFocus();
       showToast(isEdit ? "설비 정보를 수정했습니다." : "새 설비를 등록했습니다.");
-      await loadFacilities();
+      await Promise.all([loadFacilities(), refreshMetadata()]);
     } catch (caught) {
-      const failure = caught as Error & {
-        code?: string;
-        fieldErrors?: Record<string, string[]>;
-        requestId?: string;
-      };
+      const failure = caught as ApiFailure;
+      if (failure.status === 401) {
+        setDialogMode(null);
+        setDirty(false);
+        setDirtyFields(new Set());
+        setAuthRequired(true);
+        return;
+      }
       if (failure.fieldErrors) {
         setFieldErrors(failure.fieldErrors);
         const field = Object.keys(failure.fieldErrors)[0];
@@ -448,9 +556,22 @@ export function FacilitiesManager() {
           const latest = await api<Facility>(
             `/api/facilities/${selected.id}`,
           );
+          const latestForm = formFromFacility(latest);
+          const rebased = { ...latestForm };
+          const current = formRef.current;
+          for (const field of dirtyFields) {
+            if (field !== "version") {
+              (rebased as Record<string, unknown>)[field] = current[field];
+            }
+          }
+          const changed = changedFormFields(rebased, latestForm);
+          initialFormRef.current = latestForm;
+          formRef.current = rebased;
           setSelected(latest);
-          setForm((current) => ({ ...current, version: latest.version }));
-          setError(
+          setForm(rebased);
+          setDirty(changed.size > 0);
+          setDirtyFields(changed);
+          setDialogError(
             "다른 사용자의 최신 버전을 불러왔습니다. 입력 내용을 확인한 뒤 다시 저장해 주세요.",
           );
           return;
@@ -458,7 +579,7 @@ export function FacilitiesManager() {
           // Preserve the original conflict error if refresh fails.
         }
       }
-      setError(
+      setDialogError(
         `${failure.message}${
           failure.requestId ? ` (요청 ${failure.requestId})` : ""
         }`,
@@ -473,6 +594,7 @@ export function FacilitiesManager() {
     const { action, facility } = confirm;
     if (action === "purge" && confirmText !== facility.code) return;
     setSaving(true);
+    setDialogError("");
     try {
       if (action === "delete") {
         await api<Facility>(`/api/facilities/${facility.id}`, {
@@ -501,20 +623,28 @@ export function FacilitiesManager() {
         showToast("설비를 영구 삭제했습니다.");
       }
       closeConfirm();
-      await loadFacilities();
+      await Promise.all([loadFacilities(), refreshMetadata()]);
     } catch (caught) {
-      const failure = caught as Error & {
-        code?: string;
-        requestId?: string;
-      };
-      setError(
+      const failure = caught as ApiFailure;
+      if (failure.status === 401) {
+        setConfirm(null);
+        setAuthRequired(true);
+        return;
+      }
+      setDialogError(
         `${failure.message}${
           failure.requestId ? ` (요청 ${failure.requestId})` : ""
         }`,
       );
       if (failure.code === "VERSION_CONFLICT") {
-        closeConfirm();
-        await loadFacilities();
+        try {
+          const latest = await api<Facility>(
+            `/api/facilities/${facility.id}?includeDeleted=true`,
+          );
+          setConfirm({ action, facility: latest });
+        } catch {
+          // Keep the original conflict message if the refresh also fails.
+        }
       }
     } finally {
       setSaving(false);
@@ -579,7 +709,7 @@ export function FacilitiesManager() {
                 <span className="text-white/55">사용자 </span>
                 {session.name}
                 <span className="ml-2 rounded bg-sky-500/20 px-2 py-0.5 text-xs text-sky-200">
-                  {session.role}
+                  {roleLabel(session.role)}
                 </span>
               </div>
             ) : null}
@@ -781,13 +911,15 @@ export function FacilitiesManager() {
             <select
               aria-label="페이지당 표시 건수"
               value={filters.limit}
-              onChange={(event) =>
+              onChange={(event) => {
+                const limit = Number(event.target.value);
                 setFilters((current) => ({
                   ...current,
-                  limit: Number(event.target.value),
+                  limit,
                   page: 1,
-                }))
-              }
+                }));
+                setFilterDraft((current) => ({ ...current, limit, page: 1 }));
+              }}
               className="rounded border border-white/20 bg-[#111332] px-2 py-1 text-sm"
             >
               <option value={10}>10개</option>
@@ -884,6 +1016,8 @@ export function FacilitiesManager() {
           form={form}
           gateways={gateways}
           fieldErrors={fieldErrors}
+          error={dialogError}
+          loading={dialogLoading}
           saving={saving}
           titleRef={dialogTitleRef}
           onChange={updateForm}
@@ -897,6 +1031,7 @@ export function FacilitiesManager() {
           action={confirm.action}
           facility={confirm.facility}
           text={confirmText}
+          error={dialogError}
           saving={saving}
           onText={setConfirmText}
           onCancel={closeConfirm}
@@ -1169,6 +1304,8 @@ function FacilityDialog({
   form,
   gateways,
   fieldErrors,
+  error,
+  loading,
   saving,
   titleRef,
   onChange,
@@ -1180,6 +1317,8 @@ function FacilityDialog({
   form: FormState;
   gateways: GatewayOption[];
   fieldErrors: Record<string, string[]>;
+  error: string;
+  loading: boolean;
   saving: boolean;
   titleRef: React.RefObject<HTMLHeadingElement | null>;
   onChange: <K extends keyof FormState>(key: K, value: FormState[K]) => void;
@@ -1253,11 +1392,24 @@ function FacilityDialog({
           </button>
         </div>
 
+        {loading ? (
+          <div className="flex min-h-72 items-center justify-center text-white/60" role="status">
+            최신 설비 정보를 불러오는 중입니다…
+          </div>
+        ) : null}
         <form
           onSubmit={onSubmit}
           noValidate
-          className="grid gap-4 p-5 sm:grid-cols-2"
+          className={`${loading ? "hidden" : "grid"} gap-4 p-5 sm:grid-cols-2`}
         >
+          {error ? (
+            <div
+              role="alert"
+              className="col-span-full rounded-lg border border-red-400/40 bg-red-500/15 p-3 text-sm text-red-100"
+            >
+              {error}
+            </div>
+          ) : null}
           <FormField
             label="설비 코드"
             name="code"
@@ -1562,6 +1714,7 @@ function ConfirmDialog({
   action,
   facility,
   text,
+  error,
   saving,
   onText,
   onCancel,
@@ -1570,6 +1723,7 @@ function ConfirmDialog({
   action: ConfirmAction;
   facility: Facility;
   text: string;
+  error: string;
   saving: boolean;
   onText: (value: string) => void;
   onCancel: () => void;
@@ -1635,6 +1789,14 @@ function ConfirmDialog({
         <p id="confirm-description" className="mt-3 text-sm text-white/60">
           {labels.body}
         </p>
+        {error ? (
+          <div
+            role="alert"
+            className="mt-4 rounded-lg border border-red-400/40 bg-red-500/15 p-3 text-sm text-red-100"
+          >
+            {error}
+          </div>
+        ) : null}
         {purge ? (
           <label className="mt-5 block text-sm">
             확인을 위해 설비 코드 <strong>{facility.code}</strong>를 입력하세요.

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { buildDemoLoginResponse, buildRealMenu } from "@/lib/watt-demo";
 import peakInfoFixture from "@/lib/fixtures/peak-info-121.json";
 import { loginUser, setSessionCookie } from "@/lib/auth";
+import { AppError } from "@/lib/errors";
 import {
   apiError,
   assertSameOrigin,
@@ -23,7 +24,7 @@ import {
 export const dynamic = "force-dynamic";
 
 const loginSchema = z.strictObject({
-  cf: z.literal("login").optional(),
+  cf: z.literal("login"),
   id: z.string().trim().min(1).max(80),
   pw: z.string().min(1).max(256),
 });
@@ -69,7 +70,6 @@ const demoApiPrefixes = new Set([
   "tech-usages",
   "temperatures",
   "toe-reports",
-  "tokens",
   "tunnels",
   "unit-reports",
   "watt-mains",
@@ -88,56 +88,51 @@ async function handle(req: NextRequest, path: string[]) {
   const url = new URL(req.url);
   const id = requestId(req);
 
-  if (joined === "tokens" || joined.startsWith("tokens/")) {
-    if (method === "POST") {
-      try {
-        const body = (await readJson(req)) as {
-          cf?: string;
-          id?: string;
-          pw?: string;
-        };
-        if (body.cf === "login" || body.id) {
-          assertSameOrigin(req);
-          const login = loginSchema.parse(body);
-          const tenantId = process.env.DEFAULT_TENANT_ID ?? "121";
-          const trustedForwarded =
-            process.env.TRUST_PROXY_HEADERS === "true"
-              ? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-              : null;
-          const clientKey = trustedForwarded || "direct";
-          const accountKey = `${tenantId}:${login.id.toLowerCase()}`;
-          if (trustedForwarded) {
-            enforceRateLimit(`login:ip:${clientKey}`, 30);
-          }
-          enforceRateLimit(`login:account:${accountKey}`, 10);
-          const session = await loginUser(
-            tenantId,
-            login.id,
-            login.pw,
-            id,
-            req.headers.get("user-agent"),
-          );
-          const response = json({
-          ...buildDemoLoginResponse(
-            login.id,
-            session.user.tenantId,
-            session.tenantName,
-          ),
-            authIdn: session.user.id,
-            authName: session.user.name,
-            role: session.user.role,
-          });
-          response.headers.set("X-Request-Id", id);
-          response.headers.set("Cache-Control", "private, no-store");
-          setSessionCookie(response, session.token);
-          return response;
-        }
-        return json({ ok: true, token: "demo-access-token-solarsimz" });
-      } catch (error) {
-        return apiError(error, id);
+  if (joined === "tokens") {
+    try {
+      if (method !== "POST") {
+        throw new AppError(
+          405,
+          "METHOD_NOT_ALLOWED",
+          "지원하지 않는 요청 방식입니다.",
+        );
       }
+      assertSameOrigin(req);
+      const login = loginSchema.parse(await readJson(req));
+      const tenantId = process.env.DEFAULT_TENANT_ID ?? "121";
+      const trustedForwarded =
+        process.env.TRUST_PROXY_HEADERS === "true"
+          ? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+          : null;
+      const accountKey = `${tenantId}:${login.id.toLowerCase()}`;
+      if (trustedForwarded) {
+        enforceRateLimit(`login:ip:${trustedForwarded}`, 30);
+      }
+      enforceRateLimit(`login:account:${accountKey}`, 10);
+      const session = await loginUser(
+        tenantId,
+        login.id,
+        login.pw,
+        id,
+        req.headers.get("user-agent"),
+      );
+      const response = json({
+        ...buildDemoLoginResponse(
+          login.id,
+          session.user.tenantId,
+          session.tenantName,
+        ),
+        authIdn: session.user.id,
+        authName: session.user.name,
+        role: session.user.role,
+      });
+      response.headers.set("X-Request-Id", id);
+      response.headers.set("Cache-Control", "private, no-store");
+      setSessionCookie(response, session.token);
+      return response;
+    } catch (error) {
+      return apiError(error, id);
     }
-    return json({ ok: true });
   }
 
   if (joined.startsWith("navigations/")) {

@@ -1,13 +1,18 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 export function LoginForm() {
-  const [id, setId] = useState("admin");
+  const [id, setId] = useState(
+    process.env.NODE_ENV === "production" ? "" : "admin",
+  );
   const [pw, setPw] = useState("");
   const [remember, setRemember] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [errorField, setErrorField] = useState<"id" | "pw" | null>(null);
   const [loading, setLoading] = useState(false);
+  const idRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("authId");
@@ -21,16 +26,21 @@ export function LoginForm() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!id) {
+    if (!id.trim()) {
       setToast("아이디를 입력해주세요.");
+      setErrorField("id");
+      idRef.current?.focus();
       return;
     }
     if (!pw) {
       setToast("비밀번호를 입력해주세요.");
+      setErrorField("pw");
+      passwordRef.current?.focus();
       return;
     }
     setLoading(true);
     setToast(null);
+    setErrorField(null);
     try {
       const res = await fetch("/api/tokens", {
         method: "POST",
@@ -42,6 +52,8 @@ export function LoginForm() {
         setToast(
           json.error?.message || json.msg || "로그인에 실패했습니다.",
         );
+        setErrorField("pw");
+        passwordRef.current?.focus();
         setLoading(false);
         return;
       }
@@ -64,6 +76,7 @@ export function LoginForm() {
       window.location.href = "/main.html";
     } catch {
       setToast("네트워크 오류가 발생했습니다.");
+      setErrorField(null);
       setLoading(false);
     }
   }
@@ -98,21 +111,33 @@ export function LoginForm() {
               Login
             </div>
             <input
+              ref={idRef}
               type="text"
               placeholder="아이디"
               aria-label="아이디"
               autoComplete="username"
               value={id}
-              onChange={(e) => setId(e.target.value)}
+              onChange={(e) => {
+                setId(e.target.value);
+                if (errorField === "id") setErrorField(null);
+              }}
+              aria-invalid={errorField === "id"}
+              aria-describedby={errorField === "id" ? "login-error" : undefined}
               className="my-3 inline-block h-[50px] w-full rounded-lg border border-[#bbb] bg-[#fafafc] px-[15px] py-2.5 text-base text-black outline-none focus:border-[#739de3] focus:shadow-[0_0_0_1px_#739de3_inset]"
             />
             <input
+              ref={passwordRef}
               type="password"
               placeholder="비밀번호"
               aria-label="비밀번호"
               autoComplete="current-password"
               value={pw}
-              onChange={(e) => setPw(e.target.value)}
+              onChange={(e) => {
+                setPw(e.target.value);
+                if (errorField === "pw") setErrorField(null);
+              }}
+              aria-invalid={errorField === "pw"}
+              aria-describedby={errorField === "pw" ? "login-error" : undefined}
               className="my-3 inline-block h-[50px] w-full rounded-lg border border-[#bbb] bg-[#fafafc] px-[15px] py-2.5 text-base text-black outline-none focus:border-[#739de3] focus:shadow-[0_0_0_1px_#739de3_inset]"
             />
             <div className="add my-2.5 flex items-center justify-start">
@@ -133,21 +158,31 @@ export function LoginForm() {
             >
               {loading ? "..." : "LOGIN"}
             </button>
-            <p className="mt-2 text-center text-xs text-[#667085]">
-              데모 계정: admin · operator · viewer / 비밀번호 demo
-            </p>
+            {process.env.NODE_ENV !== "production" ? (
+              <p className="mt-2 text-center text-xs text-[#667085]">
+                데모 계정: admin · operator · viewer / 비밀번호 demo
+              </p>
+            ) : null}
           </div>
         </form>
       </div>
 
       {toast ? (
         <div className="toastArea absolute top-[50px] right-[30px] z-[3000] w-[300px]">
-          <div className="toast toastBlue fixed flex min-h-[90px] w-[300px] items-center rounded-lg bg-[#1d50e5] px-[33px] py-[23px] pr-[33px] pl-5 text-base leading-[1.5] text-white shadow-[2px_7px_15px_rgba(0,0,0,0.4)]">
+          <div
+            id="login-error"
+            role="alert"
+            aria-live="assertive"
+            className="toast toastBlue fixed flex min-h-[90px] w-[300px] items-center rounded-lg bg-[#1d50e5] px-[33px] py-[23px] pr-[33px] pl-5 text-base leading-[1.5] text-white shadow-[2px_7px_15px_rgba(0,0,0,0.4)]"
+          >
             {toast}
             <button
               type="button"
               className="close absolute top-0 right-0 flex h-10 w-10 items-center justify-center text-xl text-white opacity-80"
-              onClick={() => setToast(null)}
+              onClick={() => {
+                setToast(null);
+                setErrorField(null);
+              }}
               aria-label="닫기"
             >
               ×
