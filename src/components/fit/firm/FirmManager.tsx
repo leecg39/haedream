@@ -138,6 +138,41 @@ export function FirmManager() {
                 ))}
               </tbody>
             </table>
+            {/* 원본은 고압/저압 테이블을 각각 두고 저압 쪽은 기본 .disable 이다. */}
+            <table className="desk disable" id="lowDeskTable">
+              <thead>
+                <tr id="lowDeskSort">
+                  <th className="sort" data-sort="fid">ID</th>
+                  <th className="sort" data-sort="firmName">이름</th>
+                  <th className="sort" data-sort="registTime">업체등록일</th>
+                  <th className="sort" data-sort="contract">전력타입</th>
+                  <th className="sort" data-sort="kepcoNo">한전고객번호</th>
+                  <th className="sort" data-sort="frugal">연간절감금액</th>
+                  <th>적용전력</th>
+                  <th>최근 5개년 피크</th>
+                  <th>1차/2차 구분</th>
+                  <th>서비스</th>
+                  <th>메모</th>
+                </tr>
+              </thead>
+              <tbody id="lowDeskList">
+                {visible.map((row) => (
+                  <tr key={row.fid} onClick={() => setSelected(row)}>
+                    <td>{row.fid}</td>
+                    <td>{row.firmName}</td>
+                    <td>{row.registTime.slice(0, 10)}</td>
+                    <td>{FIRM_CONTRACT_LABELS[row.contract] ?? row.contract}</td>
+                    <td>{row.kepcoNo === 0 ? "-" : row.kepcoNo}</td>
+                    <td>{echoNumber(row.frugal)}</td>
+                    <td>{echoNumber(row.ableLowPower === 0 ? row.contractLimit : row.ableLowPower)}</td>
+                    <td>{echoNumber(row.maxAbleWatt)}</td>
+                    <td>{row.pass}</td>
+                    <td>{FIRM_SERVICE_TYPE_LABELS[row.serviceType] ?? "-"}</td>
+                    <td>{row.memo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
           <div className="deskStat">
             <div className="deskLimit"><span className="deskLabel" id="deskStat">{first} - {last} / {filtered.length}</span></div>
