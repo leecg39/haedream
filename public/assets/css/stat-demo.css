@@ -1,0 +1,185 @@
+/* /stat.html 영상 재현용 보완 스타일 — 기존 Watt 레이아웃은 stat.css를 그대로 사용한다. */
+#contentsArea.statDemoReady { opacity: 1; }
+#contentsArea.statDemoReady .controlCenterGrid { visibility: visible; }
+
+/* Leaflet은 배경 지도에만 머물고, 기존 좌·우 위젯의 z-index를 침범하지 않는다. */
+#map.leaflet-container {
+    background: #152737;
+    font-family: Pretendard, "Noto Sans KR", sans-serif;
+    cursor: grab;
+}
+#map.leaflet-container:active { cursor: grabbing; }
+#map .leaflet-control-container { position: relative; z-index: 3; }
+#map .leaflet-control-zoom {
+    border: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(3, 12, 19, .45);
+}
+#map .leaflet-control-zoom a {
+    width: 28px;
+    height: 28px;
+    line-height: 27px;
+    color: #d8e4ec;
+    background: rgba(14, 31, 43, .92);
+    border-color: #324c5d;
+}
+#map .leaflet-control-attribution {
+    color: #a9bbc8;
+    background: rgba(8, 19, 28, .62);
+    font-size: 9px;
+}
+#map .leaflet-control-attribution a { color: #9dd7ff; }
+#map .leaflet-tile-pane { filter: saturate(.82) contrast(1.05) brightness(.78); }
+
+.wattDemoMarkerHost { background: none !important; border: 0 !important; }
+.wattMapPin {
+    --pin: #18d764;
+    position: relative;
+    width: 15px;
+    height: 20px;
+    border: 2px solid rgba(3, 26, 17, .92);
+    border-radius: 10px 10px 10px 1px;
+    background: var(--pin);
+    box-shadow: 0 0 0 1px var(--pin), 0 2px 5px rgba(0, 0, 0, .75);
+    transform: rotate(-45deg);
+    transform-origin: 8px 14px;
+    transition: transform .15s ease, filter .15s ease;
+}
+.wattMapPin::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #08291a;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .55);
+}
+.wattMapPin.warning { --pin: #ffc928; }
+.wattMapPin.danger { --pin: #ff544d; }
+.wattMapPin.control { --pin: #28b7ff; }
+.wattDemoMarkerHost:hover .wattMapPin,
+.wattDemoMarkerHost:focus .wattMapPin { transform: rotate(-45deg) scale(1.35); filter: brightness(1.25); z-index: 2; }
+
+#map .wattCompanyPopup .leaflet-popup-content-wrapper {
+    min-width: 390px;
+    color: #edf6fb;
+    background: rgba(11, 29, 41, .97);
+    border: 1px solid #28617e;
+    border-radius: 4px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .55);
+}
+#map .wattCompanyPopup .leaflet-popup-content { margin: 0; width: auto !important; }
+#map .wattCompanyPopup .leaflet-popup-tip { background: #183849; }
+#map .wattCompanyPopup .leaflet-popup-close-button { color: #a9c2d1; top: 8px; right: 8px; }
+.mapFirmCard { padding: 14px 15px 13px; }
+.mapFirmCard .title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 22px;
+    margin-bottom: 11px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+}
+.mapFirmCard .title::before { content: ""; width: 3px; height: 15px; background: #20a8ee; }
+.mapFirmCard .state {
+    margin-left: auto;
+    padding: 2px 7px;
+    border-radius: 10px;
+    color: #062016;
+    background: #29df7c;
+    font-size: 10px;
+}
+.mapFirmCard .state.warning { color: #332500; background: #ffd347; }
+.mapFirmCard .state.danger { color: #fff; background: #e95050; }
+.mapFirmGrid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #29495b; }
+.mapFirmGrid > div { padding: 9px 8px; border-right: 1px solid #29495b; }
+.mapFirmGrid > div:last-child { border-right: 0; }
+.mapFirmGrid small { display: block; margin-bottom: 4px; color: #89a6b7; font-size: 10px; }
+.mapFirmGrid strong { display: block; color: #fff; font-size: 13px; font-weight: 600; }
+.mapFirmCard .foot { display: flex; justify-content: space-between; margin-top: 9px; color: #88a4b4; font-size: 10px; }
+
+.firmListDataRow { cursor: pointer; transition: background .16s ease, opacity .16s ease; }
+.firmListDataRow:hover,
+.firmListDataRow.selected { background: rgba(18, 129, 188, .12); }
+.firmListDataRow.selected { box-shadow: inset 3px 0 #1aa6ed; }
+.firmListDataRow.demoRefreshing { animation: statRowPulse .55s ease; }
+@keyframes statRowPulse { 50% { opacity: .64; } }
+
+.demoStatusDot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #25d97a;
+    box-shadow: 0 0 6px rgba(37, 217, 122, .45);
+}
+.demoStatusDot.warning { background: #ffc52e; box-shadow: 0 0 6px rgba(255, 197, 46, .45); }
+.demoStatusDot.danger { background: #f15959; box-shadow: 0 0 6px rgba(241, 89, 89, .45); }
+.demoStatusDot.control { background: #23aef1; box-shadow: 0 0 6px rgba(35, 174, 241, .45); }
+.demoPeakText.good { color: #34d98b; }
+.demoPeakText.warning { color: #f5c33a; }
+.demoPeakText.danger { color: #ff6b6b; }
+.demoMuted { color: #8d9aa3; font-size: 10px; }
+.demoBar {
+    height: 4px;
+    margin-top: 4px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: #e7ecf0;
+}
+.demoBar > span { display: block; height: 100%; border-radius: inherit; background: #17a2e5; }
+.demoBar.time > span { background: #8ac63f; }
+.demoLive {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 7px;
+    color: #20c77a;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+.demoLive::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: statLive 1.7s infinite; }
+@keyframes statLive { 50% { opacity: .28; } }
+
+.demoPageBtn {
+    min-width: 20px;
+    height: 20px;
+    margin: 0 1px;
+    padding: 0 4px;
+    border: 0;
+    color: #85949e;
+    background: transparent;
+    font-size: 10px;
+    cursor: pointer;
+}
+.demoPageBtn.active { color: #fff; border-radius: 2px; background: #128ed2; }
+.demoPageBtn:disabled { opacity: .35; cursor: default; }
+
+#demoMapFallback {
+    position: absolute;
+    inset: 45% auto auto 50%;
+    z-index: 500;
+    transform: translate(-50%, -50%);
+    padding: 7px 11px;
+    color: #dbe8ee;
+    background: rgba(10, 26, 37, .86);
+    border: 1px solid #345267;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+@media (max-width: 1100px) {
+    #map .wattCompanyPopup .leaflet-popup-content-wrapper { min-width: 300px; }
+    .mapFirmGrid { grid-template-columns: repeat(2, 1fr); }
+    .mapFirmGrid > div:nth-child(2) { border-right: 0; }
+    .mapFirmGrid > div:nth-child(-n+2) { border-bottom: 1px solid #29495b; }
+}
+
+/* 환경설정은 hover뿐 아니라 클릭으로도 열 수 있다. */
+.tb-set.on .tbSetNav { display: block; }
