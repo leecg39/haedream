@@ -28,6 +28,10 @@
 /data/*.db
 /data/*.db-*
 
+# 민감정보 수집 결과물 (한전 비밀번호, 업체 상세 등)
+/data/kepco-passwds.*
+/data/firm-details.*
+
 # misc
 .DS_Store
 *.pem
