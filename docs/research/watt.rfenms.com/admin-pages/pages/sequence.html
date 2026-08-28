@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>시퀀스 제어</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/deskLib.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/sequence.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">시퀀스 제어</h1>
+            <div class="sheetArea setSub seq">
+                <div class="deskStat">
+                    <div class="deskTool onlypci" id="deskTool">
+                        <span class="deskAct act" data-act="add">
+                            <i class="bi bi-node-plus"></i>추가
+                        </span>
+                        <span class="deskAct act" data-act="mode">
+                            <i class="bi bi-toggles"></i>모드전환
+                        </span>
+                        <span class="deskAct act" data-act="off">
+                            <i class="bi bi-toggle-off"></i>전체 OFF
+                        </span>
+                        <span class="deskAct act" data-act="on">
+                            <i class="bi bi-toggle-on"></i>전체 ON
+                        </span>
+                        <span class="deskAct act" data-act="excel">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>엑셀로 다운
+                        </span>
+                        <span class="deskAct act" data-act="print">
+                            <i class="bi bi-printer"></i>프린트
+                        </span>
+                    </div>
+                    <div class="deskPages">
+                        <span class="deskSearch">
+                            <input class="deskInput" id="deskInput" maxlength="16" placeholder="검색" />
+                            <i class="icon iconSearch"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="deskArea">
+                    <table class="desk" id="deskTable">
+                        <thead>
+                            <tr id="deskSort">
+                                <th>업체</th>
+                                <th class="sort" data-sort="controlName">제어이름</th>
+                                <th class="sort" data-sort="controlMode">제어모드</th>
+                                <th class="sort" data-sort="controlPriority">우선순위</th>
+                                <th>제어</th>
+                                <th>상태</th>
+                                <th>제어가능여부</th>
+                                <th>전압</th>
+                                <th>전류</th>
+                                <th>메모</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deskList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskPages" id="deskPages">
+                        <span class="deskPage act">prev</span>
+                        <span class="deskPage act active">1</span>
+                        <span class="deskPage act">next</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">시퀀스 제어</div>
+                        <div class="disable editMapPosition" id="edit-mapArea">
+                            <img class="editMapImage" id="edit-mapAreaImage" src="" alt="map" />
+                            <span class="editMapPoint" id="edit-mapAreaPoint" data-point="좌표 0,0" />
+                        </div>
+                        <div class="editForm">
+                            <span>업체</span>
+                            <span>
+                                <select class="eSelect" id="edit-fid">
+                                    <option value="0">업체 선택</option>
+                                </select>
+                            </span>
+                            <span>도면그룹 <i class="icon iconGear" id="actStructure"></i></span>
+                            <span>
+                                <select class="eSelect" id="edit-mapIdn">
+                                    <option value="0">도면 선택</option>
+                                </select>
+                            </span>
+                            <span>제어그룹 <i class="icon iconGear" id="actGroupStay"></i></span>
+                            <span>
+                                <select class="eSelect" id="edit-stayIdn">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span>도면좌표(x,y)</span>
+                            <span>
+                                <input class="eInput" id="edit-mapXY" maxlength="8"/>
+                            </span>
+                            <span>냉난방</span>
+                            <span>
+                                <select class="eSelect" id="edit-itemType">
+                                    <option value="0">선택</option>
+                                    <option value="1">난방</option>
+                                    <option value="2">냉방</option>
+                                </select>
+                            </span>
+                            <span>제어이름</span>
+                            <span>
+                                <input class="eInput" id="edit-controlName" maxlength="32" />
+                            </span>
+                            <span>제어모드</span>
+                            <span>
+                                <select class="eSelect" id="edit-controlMode">
+                                    <option value="0">수동</option>
+                                    <option value="1">자동</option>
+                                </select>
+                            </span>
+                            <span>전력계측</span>
+                            <span>
+                                <select class="eSelect" id="edit-pid">
+                                    <option value="0" data-device="0">계측 선택</option>
+                                </select>
+                            </span>
+                            <span>우선순위</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-controlPriority" step="1" min="0" max="250"/>
+                            </span>
+                            <span>강제복귀시간</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-limitTime" step="1" min="0" max="3600"/>
+                            </span>
+                            <span>제어휴지시간</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-restTime" step="1" min="0" max="3600"/>
+                            </span>
+                            <span>메모</span>
+                            <span>
+                                <input class="eInput" id="edit-memo" maxlength="32" />
+                            </span>
+                            <span>제어기</span>
+                            <span class="editFormExtend">
+                                <select class="eSelect" id="edit-cidAdd">
+                                    <option value="0">제어기선택 추가</option>
+                                </select>
+                                <span class="editFormSequence">
+                                    <span class="editTab">제어기</span>
+                                    <span class="editTab">On 순서</span>
+                                    <span class="editTab">On 딜레이</span>
+                                    <span class="editTab">Off 순서</span>
+                                    <span class="editTab">Off 딜레이</span>
+                                    <span class="editTab">고정</span>
+                                    <span></span>
+                                </span>
+                            </span>
+                            <span>설정</span>
+                            <span class="editFormExtend">
+                                <span class="editFormSequence" id="edit-controllList"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalActDone">확인</span>
+                        <span class="modalAct" id="modalActCancel">취소</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modalMap">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalMapActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">설비도면 관리</div>
+                        <div class="editForm">
+                            <span>도면이름</span>
+                            <span class="editFormExtend">
+                                <input class="eInput" id="edit-floorName" maxlength="16" placeholder="도면이름" />
+                            </span>
+                            <span>도면첨부</span>
+                            <span>
+                                <input type="file" id="edit-mapFile" accept="image/png" />
+                            </span>
+                            <span class="act" id="modalMapAct">등록</span>
+                            <span></span>
+                            <span></span>
+                            <span><a href="#" id="edit-mapLink" target="_blank"></a></span>
+                        </div>
+                        <div class="editExtend editExtendGroup" id="editExtendItem"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modalItem">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalItemActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">그룹설정</div>
+                        <div class="editForm">
+                            <span>그룹</span>
+                            <span>
+                                <input class="eInput" id="edit-whatever" maxlength="16" placeholder="이름" />
+                            </span>
+                            <span class="act" id="modalItemAct">등록</span>
+                        </div>
+                        <div class="editExtend editExtendGroup" id="editExtendItem"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>RTU 관리</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/deskLib.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/gateRTU.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">RTU 관리</h1>
+            <div class="sheetArea setSub">
+                <div class="deskStat">
+                    <div class="deskTool" id="deskTool">
+                        <span class="deskAct act" data-act="add">
+                            <i class="bi bi-file-plus"></i>추가
+                        </span>
+                        <span class="deskAct act" data-act="excel">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>엑셀로 다운
+                        </span>
+                        <span class="deskAct act" data-act="print">
+                            <i class="bi bi-printer"></i>프린트
+                        </span>
+                    </div>
+                    <div class="deskPages">
+                        <span class="deskSearch">
+                            <input class="deskInput" id="deskInput" maxlength="16" placeholder="검색" />
+                            <i class="icon iconSearch"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="deskArea">
+                    <table class="desk" id="deskTable">
+                        <thead>
+                            <tr id="deskSort">
+                                <th class="sort" data-sort="gid">RTU</th>
+                                <th>업체</th>
+                                <th class="sort" data-sort="gateName">이름</th>
+                                <th class="sort" data-sort="ip">IP Address</th>
+                                <th class="sort" data-sort="portNo">PORT</th>
+                                <th class="sort" data-sort="ip">IP AToN</th>
+                                <th class="sort" data-sort="rTime">마지막수신</th>
+                                <th>메모</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deskList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskPages" id="deskPages">
+                        <span class="deskPage act">prev</span>
+                        <span class="deskPage act active">1</span>
+                        <span class="deskPage act">next</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">RTU</div>
+                        <div class="editForm">
+                            <span>업체</span>
+                            <span>
+                                <select class="eSelect" id="edit-fid">
+                                    <option value="0">업체 선택</option>
+                                </select>
+                            </span>
+                            <span>이름</span>
+                            <span>
+                                <input class="eInput" id="edit-gateName" maxlength="32"/>
+                            </span>
+                            <span class="tip" data-tip="고유번호, 저압 G-Type: 2100~2199">RTU</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-gid" step="1" min="0" max="65535"/>
+                            </span>
+                            <span class="tip" data-tip="자동갱신">IP</span>
+                            <span>
+                                <input class="eInput" id="edit-ip" maxlength="15" readonly="readonly"/>
+                            </span>
+                            <span class="tip" data-tip="자동갱신">PORT</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-portNo" step="1" min="0" max="99999" readonly="readonly"/>
+                            </span>
+                            <span class="tip" data-tip="자동갱신">연결서버</span>
+                            <span>
+                                <input class="eInput" id="edit-gateIndex" maxlength="16" readonly="readonly"/>
+                            </span>
+                            <span>메모</span>
+                            <span>
+                                <input class="eInput" id="edit-memo" maxlength="32"/>
+                            </span>
+                        </div>
+                        <p class="textMemo">RTU에 설비연결이 4개 미만일 경우 CZI설정에서 더미설비를 추가 부탁합니다.</p>
+                        <p class="textMemo">RTU 고유번호는 협의 후 결정하도록 협조 부탁합니다.</p>
+                        <div class="editExtend" id="editExtend"></div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalActDone">확인</span>
+                        <span class="modalAct" id="modalActCancel">취소</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

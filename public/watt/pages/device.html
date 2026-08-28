@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>모드버스 계측</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/deskLib.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/device.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">모드버스 계측</h1>
+            <div class="sheetArea setSub">
+                <div class="deskStat">
+                    <div class="deskTool" id="deskTool">
+                        <span class="deskAct act" data-act="add">
+                            <i class="bi bi-file-plus"></i>추가
+                        </span>
+                        <span class="deskAct act" data-act="excel">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>엑셀로 다운
+                        </span>
+                        <span class="deskAct act" data-act="print">
+                            <i class="bi bi-printer"></i>프린트
+                        </span>
+                    </div>
+                    <div class="dayCk disable" id="dayCk">
+                        <label>
+                            <span>전체 보기</span>
+                            <input type="checkbox" id="isAll" role="switch">
+                        </label>
+                    </div>
+                    <div class="deskPages">
+                        <span class="deskSearch">
+                            <input class="deskInput" id="deskInput" maxlength="16" placeholder="검색" />
+                            <i class="icon iconSearch"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="deskArea">
+                    <table class="desk" id="deskTable">
+                        <thead>
+                            <tr id="deskSort">
+                                <th class="sort" data-sort="pid">LoadID</th>
+                                <th>업체</th>
+                                <th class="sort" data-sort="gid">RTU</th>
+                                <th class="sort" data-sort="vid">vpn</th>
+                                <th class="sort" data-sort="lp_name">이름</th>
+                                <th>LoadNumber</th>
+                                <th class="sort" data-sort="md_id">device</th>
+                                <th>전압</th>
+                                <th class="tip" data-tip="자원사용중일때 mA">전류</th>
+                                <th>전력</th>
+                                <th class="tip" data-tip="전류 x 전압 x 역률 x √3">전력비교</th>
+                                <th class="tip" data-tip="전기는 역률표시 이 외는 해당수치">정보</th>
+                                <th class="sort" data-sort="lp_last">마지막수신</th>
+                                <th>자원</th>
+                                <th>자원ID</th>
+                                <th>자원범위</th>
+                                <th class="sort" data-sort="memo">메모</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deskList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskPages" id="deskPages">
+                        <span class="deskPage act">prev</span>
+                        <span class="deskPage act active">1</span>
+                        <span class="deskPage act">next</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">모드버스 계측</div>
+                        <div class="disable editMapPosition" id="edit-mapArea">
+                            <img class="editMapImage" id="edit-mapAreaImage" src="" alt="map"/>
+                            <span class="editMapPoint" id="edit-mapAreaPoint" data-point="좌표 0,0"/>
+                        </div>
+                        <div class="editForm">
+                            <span>업체</span>
+                            <span>
+                                <select class="eSelect" id="edit-fid">
+                                    <option value="0">업체 선택</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="계측기 고유아이디">LoadID</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-pid" step="1" min="0" max="16777215" readonly/>
+                            </span>
+                            <span class="tip" data-tip="게이트웨이 RTU의 GATE 번호">RTU</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-gid" step="1" min="0" max="65535"/>
+                            </span>
+                            <span class="tip" data-tip="솔내시스템 사용">VPN</span>
+                            <span>
+                                <select class="eSelect" id="edit-vid">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span>LoadNumber</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-lpNumber" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>도면그룹 <i class="icon iconGear" id="actStructure" title="도면관리"></i></span>
+                            <span>
+                                <select class="eSelect" id="edit-mapIdn">
+                                    <option value="0">도면 선택</option>
+                                </select>
+                            </span>
+                            <span>이름</span>
+                            <span>
+                                <input class="eInput" id="edit-lpName" maxlength="32"/>
+                            </span>
+                            <span>도면좌표(x,y)</span>
+                            <span>
+                                <input class="eInput" id="edit-mapXY" maxlength="8"/>
+                            </span>
+                            <span>device</span>
+                            <span>
+                                <select class="eSelect" id="edit-md">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span>사용여부</span>
+                            <span>
+                                <select class="eSelect" id="edit-lp_able">
+                                    <option value="1">사용</option>
+                                    <option value="0">사용안함</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="전력량에 영향 없음">전압 보정치</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-voltage"/>
+                            </span>
+                            <span class="tip" data-tip="※주의: 보정 시점에 전력량 계산에 큰오차값이 1회 발생 되며 전력량에 영향을 줌">전력 보정치</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-power"/>
+                            </span>
+                            <span class="tip" data-tip="전력량에 영향 없음">전류 보정치</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-ampere"/>
+                            </span>
+                            <span class="tip" data-tip="노드릴레이의 채널">서포트 분류</span>
+                            <span>
+                                <select class="eSelect" id="edit-supportType">
+                                    <option value="0">선택</option>
+                                    <option value="31">ch1in</option>
+                                    <option value="32">ch2in</option>
+                                    <option value="102">태양광</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="노드릴레이의 고유아이디">서포트 ID</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-supportDevice"/>
+                            </span>
+                            <span class="tip" data-tip="노드릴레이의 4mA 일때 최저값">서포트 MIN</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-supportMin"/>
+                            </span>
+                            <span class="tip" data-tip="노드릴레이의 20mA 일때 최대값">서포트 MAX</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-supportMax"/>
+                            </span>
+                            <span class="tip" data-tip="계측된 전력량값을 무시하고 전류x전압x역률x√3 계산(전류/전압 보정치포함)되어 데이터가 기록됨(남전사,지맥)">ONLY 전류</span>
+                            <span>
+                                <select class="eSelect" id="edit-isOnlyAmpere">
+                                    <option value="0">선택</option>
+                                    <option value="1">사용</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="전력량계 영향없음">PT</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-ptrans"/>
+                            </span>
+                            <span class="tip" data-tip="전력량계 영향없음">CT</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-ctrans"/>
+                            </span>
+                            <span class="tip" data-tip="TR로 지정되면 대시보드 설비별TOP 사용량, 이용률, 부하율에서 제외된다">변압기</span>
+                            <span>
+                                <select class="eSelect" id="edit-isTransformer">
+                                    <option value="0">아니요</option>
+                                    <option value="1">예</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="전력량 기록 제한">정격전력 kW</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-wattRated"/>
+                            </span>
+                            <span>메모</span>
+                            <span>
+                                <input class="eInput" id="edit-memo" maxlength="64"/>
+                            </span>
+                        </div>
+                        <p class="textMemo">전력계측 단말기 LoadNumber는 가능한 중복되지 않게 설정합니다.</p>
+                        <div class="editExtend" id="editExtend"></div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalActDone">확인</span>
+                        <span class="modalAct" id="modalActCancel">취소</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modalMap">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalMapActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">설비도면 관리</div>
+                        <div class="editForm">
+                            <span>도면이름</span>
+                            <span class="editFormExtend">
+                                <input class="eInput" id="edit-floorName" maxlength="16" placeholder="도면이름"/>
+                            </span>
+                            <span>도면첨부</span>
+                            <span>
+                                <input type="file" id="edit-mapFile" accept="image/png"/>
+                            </span>
+                            <span class="act" id="modalMapAct">등록</span>
+                            <span></span>
+                            <span></span>
+                            <span><a href="#" id="edit-mapLink" target="_blank"></a></span>
+                        </div>
+                        <div class="editExtend editExtendGroup" id="editExtendItem"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>실시간 데이터</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/xlsx.full.min.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/net.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/net.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">실시간 데이터</h1>
+            <div class="sheetArea">
+                <div class="deskTool">
+                    <span class="deskLabel">필터 </span>
+                    <input class="input" id="filterGate" maxlength="8" placeholder="gate"/>
+                    <span class="act space" id="togglePause"><i class="bi bi-stop-circle"></i>업데이트 멈춤</span>
+                </div>
+                <div class="noteTwin">
+                    <div class="note" id="itemListRTU">
+                        <span>LoadID</span>
+                        <span>Name</span>
+                        <span>Gate</span>
+                        <span>LoadNo</span>
+                        <span>Len</span>
+                        <span>Data</span>
+                    </div>
+                    <div class="note" id="itemListNODE">
+                        <span>Type</span>
+                        <span>Name</span>
+                        <span>Gate</span>
+                        <span>Node</span>
+                        <span>Len</span>
+                        <span>Data</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

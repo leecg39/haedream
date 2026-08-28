@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ABC</title>
+    <link rel="shortcut icon" href="./assets/img/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/lib/tui-date-picker.css">
+    <script src="./assets/js/lib/tui-date-picker.js"></script>
+    <script src="./assets/js/lib/amcharts/core.js"></script>
+    <script src="./assets/js/lib/amcharts/charts.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/dark.js"></script>
+    <script src="./assets/js/lib/amcharts/themes/animated.js"></script>
+    <link href="./assets/css/lib/select2.min.css" rel="stylesheet">
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/lib/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="./assets/css/widgetSet.css?v=0.0.1">
+    <script type="text/javascript" src="./assets/js/base.js?v=0.0.1"></script>
+    <script type="text/javascript" src="./assets/js/widgetSet.js?v=0.0.2"></script>
+</head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"></div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"></div>
+        <main class="contents disable" id="contentsArea">
+            <h1 class="deskTitle">대시보드 화면설정</h1>
+            <div class="sheetArea">
+                <div class="col1">
+                    <div class="subtitle"><span class="colorBar blue"></span>1줄에 보여질 위젯 갯수</div>
+                    <select id="displayNumber" class="select">
+                        <option value="5">5개</option>
+                        <option value="4">4개</option>
+                        <option value="3">3개</option>
+                    </select>
+                </div>
+                <div class="subtitle"><span class="colorBar blue"></span>에너지사용</div>
+                <div class="col2">
+                    <div class="col2Left">
+                        <table class="sheet">
+                            <thead>
+                                <tr>
+                                    <th>보이기</th>
+                                    <th>순서</th>
+                                    <th>항목</th>
+                                    <th>미리보기</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="widgetRow" id="widget1">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="1"></td>
+                                    <td>실시간 피크 전력</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set1"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget2">
+                                    <td><input type="checkbox" ></td>
+                                    <td><input class="input" type="number" value="2"></td>
+                                    <td>실시간 전력 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set2"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget3">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="3"></td>
+                                    <td>오늘의 전력 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set3"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget4">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="4"></td>
+                                    <td>생산량 대비 전력 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set4"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget5">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="5"></td>
+                                    <td>주간 전력 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set5"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget6">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="6"></td>
+                                    <td>오늘의 피크전력</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set6"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget7">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="7"></td>
+                                    <td>에너지 절감효과</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set7"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget8">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="8"></td>
+                                    <td>월별 최대수요</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set8"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget9">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="9"></td>
+                                    <td>설비제어</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set9"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget35">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="35"></td>
+                                    <td>현재 요금제</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col2Rt">
+                        <table class="sheet">
+                            <thead>
+                                <tr>
+                                    <th>보이기</th>
+                                    <th>순서</th>
+                                    <th>항목</th>
+                                    <th>미리보기</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="widgetRow" id="widget10">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="10"></td>
+                                    <td>현재 상태</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set10"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget11">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="11"></td>
+                                    <td>오늘의 누적 전력 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set11"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget12">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="12"></td>
+                                    <td>오늘의 누적 전력 사용요금</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set12"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget13">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="13"></td>
+                                    <td>누적 전력 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set13"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget14">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="14"></td>
+                                    <td>설비별 사용량 TOP</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set14"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget15">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="15"></td>
+                                    <td>요금제정보 및 통신상태</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set15"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget31">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="31"></td>
+                                    <td>공정별 에너지 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set15"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget32">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="32"></td>
+                                    <td>분야별 에너지 사용량</td>
+                                    <td></td>
+                                </tr>
+                                <tr class="widgetRow" id="widget33">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="33"></td>
+                                    <td>오늘의 가스 사용량</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col2">
+                    <div class="col2Left">
+                        <div class="subtitle"><span class="colorBar green"></span>생산현황</div>
+                        <table class="sheet">
+                            <thead>
+                                <tr>
+                                    <th>보이기</th>
+                                    <th>순서</th>
+                                    <th>항목</th>
+                                    <th>미리보기</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="widgetRow" id="widget16">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="16"></td>
+                                    <td>이달의 생산현황</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set16"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget17">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="17"></td>
+                                    <td>이달의 생산목표 달성률</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set17"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget18">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="18"></td>
+                                    <td>월별 생산량대비 전력 사용량</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set18"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget19">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="19"></td>
+                                    <td>누적 에너지 절감률</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set19"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget20">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="20"></td>
+                                    <td>공정별 에너지 원단위</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set20"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget34">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="34"></td>
+                                    <td>공정별 에너지</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set16"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col2Rt">
+                        <div class="subtitle"><span class="colorBar purple"></span>RE100 이행</div>
+                        <table class="sheet">
+                            <thead>
+                                <tr>
+                                    <th>보이기</th>
+                                    <th>순서</th>
+                                    <th>항목</th>
+                                    <th>미리보기</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="widgetRow" id="widget21">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="21"></td>
+                                    <td>RE100 이행 현황</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set21"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget22">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="22"></td>
+                                    <td>태양광 발전량 그래프</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set22"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget23">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="23"></td>
+                                    <td>SMP<i class="bi bi-dot"></i>REC 그래프</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set23"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget24">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="24"></td>
+                                    <td>RE100 이행 가격 동향</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set24"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget25">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="25"></td>
+                                    <td>신재생에너지 사용비율</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set25"></span>
+                                    </td>
+                                </tr>
+                            </tbody> 
+                        </table>
+                    </div>
+                </div>
+                <div class="col2">
+                    <div class="col2Left">
+                        <div class="subtitle"><span class="colorBar blue"></span>ESG 경영</div>
+                        <table class="sheet">
+                            <thead>
+                                <tr>
+                                    <th>보이기</th>
+                                    <th>순서</th>
+                                    <th>항목</th>
+                                    <th>미리보기</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="widgetRow" id="widget26">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="26"></td>
+                                    <td>ESG - 환경 1</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set26"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget27">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="27"></td>
+                                    <td>ESG - 환경 2</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set27"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget28">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="28"></td>
+                                    <td>ESG - 사회 1</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set28"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget29">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="29"></td>
+                                    <td>ESG - 사회 2</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set29"></span>
+                                    </td>
+                                </tr>
+                                <tr class="widgetRow" id="widget30">
+                                    <td><input type="checkbox"></td>
+                                    <td><input class="input" type="number" value="30"></td>
+                                    <td>ESG - 지배구조</td>
+                                    <td>
+                                        <i class="bi bi-image"></i>
+                                        <span class="set30"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="actArea">
+                    <span class="act" id="actSave">설정 저장</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

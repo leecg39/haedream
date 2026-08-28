@@ -657,12 +657,17 @@ const vio = {
             footerLogo.src = platformConfig.lowLogo;
         }
         if (footerLink) {
-            const targetPage = isEggOn ? 'https://fit.eggbz.com/peak.html' : 'https://fit.rfenms.com/peak.html',
-                targetUrl = new URL(targetPage);
-            targetUrl.searchParams.set('accessToken', this._accessToken ?? '');
-            targetUrl.searchParams.set('fid', this._fid ?? '');
+            // 로컬 클론(localhost)에서는 로컬 에그핏 앱으로 전환
+            if (this.isLocal()) {
+                footerLink.href = '/fit/peak';
+            } else {
+                const targetPage = isEggOn ? 'https://fit.eggbz.com/peak.html' : 'https://fit.rfenms.com/peak.html',
+                    targetUrl = new URL(targetPage);
+                targetUrl.searchParams.set('accessToken', this._accessToken ?? '');
+                targetUrl.searchParams.set('fid', this._fid ?? '');
 
-            footerLink.href = targetUrl.toString();
+                footerLink.href = targetUrl.toString();
+            }
         }
 
         if (this.isService()) {
@@ -728,6 +733,9 @@ const vio = {
     },
     isEggOn: function () {
         return window.location.hostname === 'watt.eggbz.com';
+    },
+    isLocal: function () {
+        return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     },
     isGroup: function(fid) {
         return [
@@ -956,8 +964,8 @@ const vio = {
             }
         }
 
-        // SaaS 제공이 아닐때
-        if(!this.isService()){
+        // SaaS 제공이 아닐때 (로컬 클론에서는 에그핏 전환 로고를 항상 표시)
+        if(!this.isService() && !this.isLocal()){
             const eggFit = document.getElementById('eggFitLogo');
             if(eggFit){
                 eggFit.classList.add('disable');

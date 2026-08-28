@@ -1,0 +1,126 @@
+{
+  "source": "https://watt.rfenms.com",
+  "fetchedAt": "2026-08-28T07:49:51.603Z",
+  "pages": [
+    {
+      "page": "widgetSet.html",
+      "url": "https://watt.rfenms.com/widgetSet.html",
+      "finalUrl": "https://watt.rfenms.com/widgetSet.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 24931,
+      "title": "ABC"
+    },
+    {
+      "page": "user.html",
+      "url": "https://watt.rfenms.com/user.html",
+      "finalUrl": "https://watt.rfenms.com/user.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8621,
+      "title": "사용자관리"
+    },
+    {
+      "page": "notify.html",
+      "url": "https://watt.rfenms.com/notify.html",
+      "finalUrl": "https://watt.rfenms.com/notify.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 3966,
+      "title": "피크관리 - 피크상태"
+    },
+    {
+      "page": "gateNode.html",
+      "url": "https://watt.rfenms.com/gateNode.html",
+      "finalUrl": "https://watt.rfenms.com/gateNode.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 10898,
+      "title": "게이트웨이 관리"
+    },
+    {
+      "page": "gateway.html",
+      "url": "https://watt.rfenms.com/gateway.html",
+      "finalUrl": "https://watt.rfenms.com/gateway.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19065,
+      "title": "복합제어기 관리"
+    },
+    {
+      "page": "sequence.html",
+      "url": "https://watt.rfenms.com/sequence.html",
+      "finalUrl": "https://watt.rfenms.com/sequence.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 13133,
+      "title": "시퀀스 제어"
+    },
+    {
+      "page": "gateRTU.html",
+      "url": "https://watt.rfenms.com/gateRTU.html",
+      "finalUrl": "https://watt.rfenms.com/gateRTU.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 7377,
+      "title": "RTU 관리"
+    },
+    {
+      "page": "device.html",
+      "url": "https://watt.rfenms.com/device.html",
+      "finalUrl": "https://watt.rfenms.com/device.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 15677,
+      "title": "모드버스 계측"
+    },
+    {
+      "page": "net.html",
+      "url": "https://watt.rfenms.com/net.html",
+      "finalUrl": "https://watt.rfenms.com/net.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 2763,
+      "title": "실시간 데이터"
+    },
+    {
+      "page": "bad.html",
+      "url": "https://watt.rfenms.com/bad.html",
+      "finalUrl": "https://watt.rfenms.com/bad.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 2250,
+      "title": "통신상태 불량"
+    }
+  ],
+  "assets": [
+    "https://watt.rfenms.com/assets/css/bad.css",
+    "https://watt.rfenms.com/assets/css/common.css",
+    "https://watt.rfenms.com/assets/css/deskLib.css",
+    "https://watt.rfenms.com/assets/css/lib/bootstrap-icons.css",
+    "https://watt.rfenms.com/assets/css/lib/select2.min.css",
+    "https://watt.rfenms.com/assets/css/lib/tui-date-picker.css",
+    "https://watt.rfenms.com/assets/css/net.css",
+    "https://watt.rfenms.com/assets/css/notify.css",
+    "https://watt.rfenms.com/assets/css/widgetSet.css",
+    "https://watt.rfenms.com/assets/fonts/OpenSans-Bold.woff2",
+    "https://watt.rfenms.com/assets/fonts/OpenSans-Regular.woff2",
+    "https://watt.rfenms.com/assets/fonts/OpenSans-Semibold.woff2",
+    "https://watt.rfenms.com/assets/fonts/PretendardVariable.woff2",
+    "https://watt.rfenms.com/assets/fonts/bootstrap-icons.woff",
+    "https://watt.rfenms.com/assets/fonts/bootstrap-icons.woff2",
+    "https://watt.rfenms.com/assets/img/favicon.ico",
+    "https://watt.rfenms.com/assets/img/icons.png",
+    "https://watt.rfenms.com/assets/img/select_arr.png",
+    "https://watt.rfenms.com/assets/img/set.png",
+    "https://watt.rfenms.com/assets/js/bad.js",
+    "https://watt.rfenms.com/assets/js/base.js",
+    "https://watt.rfenms.com/assets/js/device.js",
+    "https://watt.rfenms.com/assets/js/gateNode.js",
+    "https://watt.rfenms.com/assets/js/gateRTU.js",
+    "https://watt.rfenms.com/assets/js/gateway.js",
+    "https://watt.rfenms.com/assets/js/jquery.min.js",
+    "https://watt.rfenms.com/assets/js/lib/amcharts/charts.js",
+    "https://watt.rfenms.com/assets/js/lib/amcharts/core.js",
+    "https://watt.rfenms.com/assets/js/lib/amcharts/themes/animated.js",
+    "https://watt.rfenms.com/assets/js/lib/amcharts/themes/dark.js",
+    "https://watt.rfenms.com/assets/js/lib/select2.min.js",
+    "https://watt.rfenms.com/assets/js/lib/tui-date-picker.js",
+    "https://watt.rfenms.com/assets/js/lib/xlsx.full.min.js",
+    "https://watt.rfenms.com/assets/js/net.js",
+    "https://watt.rfenms.com/assets/js/notify.js",
+    "https://watt.rfenms.com/assets/js/sequence.js",
+    "https://watt.rfenms.com/assets/js/user.js",
+    "https://watt.rfenms.com/assets/js/widgetSet.js"
+  ]
+}
