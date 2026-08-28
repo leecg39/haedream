@@ -1,2 +1,9 @@
 iteration	commit	metric	status	description
 0	caa545d	68.89	baseline	인터랙션 커버리지 베이스라인 31/45
+1	3b4ebcc	75.56	keep	acp 피크제어설정 모달 원본 마크업 구현 (#modal #modalActClose #acpStatPeak)
+2	db6c8b0	80.00	keep	acp 에어컨 온도설정 모달 구현 (#modalFan #modalFanActClose)
+3	901cb0a	86.67	keep	firm 업체관리 편집 모달 구현 (#modal #modalActClose #edit-serviceType)
+4	e77334e	88.89	keep	firm 주소검색 지도 모달 구현 (#kakaoMapSearch)
+5	c7ffe52	91.11	keep	control-his 표 헤더 #deskSort 부여
+6	74442cb	93.33	keep	firm 저압 업체 테이블 추가 (#lowDeskSort)
+7	3530ca4	100.00	keep	report 제안서 B/C + 2차 사업타당성 버튼 (#print2 #print3 #truth2) — 목표 달성
