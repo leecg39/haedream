@@ -75,6 +75,7 @@ function FieldControl({
 interface FirmEditModalProps {
   readonly row: FirmRow | null;
   readonly onClose: () => void;
+  readonly onOpenMap: () => void;
 }
 
 /**
@@ -83,7 +84,7 @@ interface FirmEditModalProps {
  * 원본과 동일하게 `<main>` 밖에 두고 `.disable` 로 토글한다.
  * 필드 정의는 firmEditFields.ts 에 분리해 원본 마크업과 1:1 로 대응시켰다.
  */
-export function FirmEditModal({ row, onClose }: FirmEditModalProps) {
+export function FirmEditModal({ row, onClose, onOpenMap }: FirmEditModalProps) {
   const [values, setValues] = useState<FormValues>({});
 
   useEffect(() => {
@@ -119,6 +120,9 @@ export function FirmEditModal({ row, onClose }: FirmEditModalProps) {
             </div>
           </div>
           <div className="modalTool">
+            <span className="modalAct" role="button" onClick={onOpenMap}>
+              주소검색
+            </span>
             <span className="modalAct" id="modalActDone" role="button" onClick={onClose}>
               확인
             </span>

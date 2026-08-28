@@ -287,3 +287,6 @@ export const FIRM_ROWS: readonly FirmRow[] = Object.freeze([
     boss: "admin", mapGeo: "129.334120, 35.512430",
   },
 ]);
+
+/** 원본 vio.kakaoMap 의 기본 좌표(청주 인근). 데모 지도 모달 표시용. */
+export const FIRM_DEFAULT_GEO = "127.4888, 36.6426";

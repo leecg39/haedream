@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_ROWS, FIRM_SERVICE_TYPE_LABELS, type FirmRow, type FirmSortKey } from "@/lib/fit-mocks/firm";
+import { FIRM_DEFAULT_GEO, FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_ROWS, FIRM_SERVICE_TYPE_LABELS, type FirmRow, type FirmSortKey } from "@/lib/fit-mocks/firm";
 import { FirmEditModal } from "@/components/fit/firm/FirmEditModal";
+import { FirmMapModal } from "@/components/fit/firm/FirmMapModal";
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { Pagination } from "@/components/fit/shared/Pagination";
 import { echoNumber } from "@/components/fit/reduce/format";
@@ -24,6 +25,7 @@ export function FirmManager() {
   const [descending, setDescending] = useState(false);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<FirmRow | null>(null);
+  const [mapOpen, setMapOpen] = useState(false);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("ko");
@@ -144,7 +146,8 @@ export function FirmManager() {
         </div>
 
       </main>
-      <FirmEditModal row={selected} onClose={() => setSelected(null)} />
+      <FirmEditModal row={selected} onClose={() => setSelected(null)} onOpenMap={() => setMapOpen(true)} />
+      <FirmMapModal open={mapOpen} geo={FIRM_DEFAULT_GEO} onClose={() => setMapOpen(false)} />
     </>
   );
 }
