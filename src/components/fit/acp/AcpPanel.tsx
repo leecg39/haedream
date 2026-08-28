@@ -1,6 +1,7 @@
 "use client";
 
 import { ACP_CONN_COLORS, ACP_DEFAULT_IDN, ACP_GAUGE_OFF_COLOR, ACP_UNITS, driveModeLabel, fanSpeedLabel, findAcpConfig, findAcpStat, statusLabel, type AcpFacility } from "@/lib/fit-mocks/acp";
+import { AcpConfigModal } from "@/components/fit/acp/AcpConfigModal";
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { useState } from "react";
 
@@ -61,9 +62,7 @@ export function AcpPanel() {
         {selected ? (
           <div className="modal" role="dialog" aria-modal="true" aria-label="에어컨 상세"><div className="modalBox"><button className="modalClose" aria-label="닫기" onClick={() => setSelected(null)} /><div className="modalContent" style={{ padding: 36, minWidth: 340 }}><h2 className="editTitle">{selected.airName}</h2><p>운전모드: {driveModeLabel(selected.driveMode)}</p><p>동작상태: {statusLabel(selected.status)}</p><p>현재온도: {selected.temperature}℃ / 설정온도: {selected.setTemperature}℃</p><p>풍량: {fanSpeedLabel(selected.fanspeed)}</p></div></div></div>
         ) : null}
-        {configOpen ? (
-          <div className="modal" role="dialog" aria-modal="true" aria-label="ACP 설정"><div className="modalBox"><button className="modalClose" aria-label="닫기" onClick={() => setConfigOpen(false)} /><div className="modalContent" style={{ padding: 36, minWidth: 380 }}><h2 className="editTitle">ACP 설정</h2><div className="setArea"><span>서버</span><strong>{config.ip}:{config.portNo}</strong><span>운전율</span><strong>{config.ratePeak}%</strong><span>제어모드</span><strong>{config.controlMode === "1" ? "자동" : "수동"}</strong><span>연결방식</span><strong>{config.isLocal ? "로컬" : "원격"}</strong></div></div></div></div>
-        ) : null}
+        <AcpConfigModal open={configOpen} config={config} onClose={() => setConfigOpen(false)} />
       </main>
     </>
   );
