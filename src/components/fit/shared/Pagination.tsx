@@ -2,51 +2,72 @@
 
 import { buildPageItems } from "@/components/fit/stat/statUtils";
 
+/**
+ * 원본은 페이지마다 페이지네이션 마크업이 다르다. 전부 JS 가 innerHTML 로 그린다.
+ *
+ * | 페이지 | 래퍼 | 항목 | prev/next |
+ * |---|---|---|---|
+ * | stat.html | `.pagination` | `<div class="deskPage">` | 없음 |
+ * | firm.html / controlHis.html | `.deskPages` | `<span class="deskPage act">` | 있음 |
+ *
+ * 두 경우 모두 `<button>` 이 아니다. 원본 CSS 가 `.deskPage` 에만 스타일을 주고
+ * 버튼 UA 기본 배경/보더를 지우지 않으므로, button 으로 만들면 흰 상자로 보인다.
+ */
+interface PaginationProps {
+  readonly page: number;
+  readonly pages: number;
+  readonly onChange: (page: number) => void;
+  /** 래퍼 클래스 — stat 은 "pagination", 나머지는 "deskPages" */
+  readonly className?: string;
+  /** 항목 태그 — stat 은 div, 나머지는 span */
+  readonly itemTag?: "div" | "span";
+  /** 항목 기본 클래스 — stat 은 "deskPage", 나머지는 "deskPage act" */
+  readonly itemClass?: string;
+  /** prev/next 노출 여부 — stat 은 없음 */
+  readonly showPrevNext?: boolean;
+}
+
 export function Pagination({
   page,
   pages,
   onChange,
   className = "deskPages",
-}: {
-  readonly page: number;
-  readonly pages: number;
-  readonly onChange: (page: number) => void;
-  readonly className?: string;
-}) {
+  itemTag = "span",
+  itemClass = "deskPage act",
+  showPrevNext = true,
+}: PaginationProps) {
+  const Item = itemTag;
+
   return (
     <div className={className} id="deskPages">
-      <button
-        type="button"
-        className="deskPage act"
-        disabled={page <= 1}
-        onClick={() => onChange(page - 1)}
-      >
-        prev
-      </button>
+      {showPrevNext ? (
+        <Item className={itemClass} role="button" onClick={() => onChange(Math.max(1, page - 1))}>
+          prev
+        </Item>
+      ) : null}
+
       {buildPageItems(page, pages).map((item, index) =>
         item === "…" ? (
-          <span className="deskPage" key={`ellipsis-${index}`}>
+          <Item className={itemClass.replace(" act", "")} key={`ellipsis-${index}`}>
             …
-          </span>
+          </Item>
         ) : (
-          <button
-            type="button"
-            className={item === page ? "deskPage act active" : "deskPage act"}
+          <Item
+            className={item === page ? `${itemClass} active` : itemClass}
             key={item}
+            role="button"
             onClick={() => onChange(item)}
           >
             {item}
-          </button>
+          </Item>
         ),
       )}
-      <button
-        type="button"
-        className="deskPage act"
-        disabled={page >= pages}
-        onClick={() => onChange(page + 1)}
-      >
-        next
-      </button>
+
+      {showPrevNext ? (
+        <Item className={itemClass} role="button" onClick={() => onChange(Math.min(pages, page + 1))}>
+          next
+        </Item>
+      ) : null}
     </div>
   );
 }

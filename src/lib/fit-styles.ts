@@ -12,7 +12,7 @@ export const LIB_STYLES = [
   "/fit/assets/css/lib/tui-date-picker.css",
 ] as const;
 
-export const FIT_CSS_PREFIX = "/fit/assets/css/";
+export const FIT_CSS_PREFIX = "/fit/";
 
 /** 모든 페이지가 공유하므로 절대 비활성화하지 않는다. */
-export const ALWAYS_ENABLED_CSS = `${FIT_CSS_PREFIX}common.css`;
+export const ALWAYS_ENABLED_CSS = "/fit/assets/css/common.css";

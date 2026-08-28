@@ -1,0 +1,65 @@
+/*
+ * 클론 전용 보조 스타일 — 원본에는 없는 클래스만 담는다.
+ *
+ * 원본은 #rankingChart 를 ECharts(dark) 로, #map 을 Kakao Maps SDK 로 그린다.
+ * 클론은 외부 라이브러리를 로드하지 않으므로 컨테이너와 id 는 원본대로 두고
+ * 그 안쪽만 CSS 로 근사한다. 여기 있는 클래스는 전부 클론이 추가한 것이며
+ * 원본 마크업의 클래스는 하나도 재정의하지 않는다.
+ *
+ * public/fit/assets/css/ 는 원본 무변환 미러이므로 이 파일을 그쪽에 두지 않는다.
+ */
+
+/* 절감금액 랭킹 TOP 5 — ECharts 가로 막대 근사 */
+.rankingChart {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.rankingRow {
+    display: grid;
+    grid-template-columns: 38% 1fr auto;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    line-height: 1;
+}
+
+.rankingName {
+    overflow: hidden;
+    color: #b8faff;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rankingBar {
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgba(3, 3, 5, 0.5);
+}
+
+.rankingBarFill {
+    display: block;
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(0.25turn, #0041ff, #00ffff);
+}
+
+.rankingValue {
+    color: #ffec7d;
+    white-space: nowrap;
+}
+
+/* 지도 플레이스홀더 — 원본은 Kakao Maps SDK 가 채운다 */
+.mapPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: rgba(238, 238, 238, 0.35);
+    font-size: 0.875rem;
+}

@@ -31,7 +31,8 @@ export function PageStyles({ files }: { readonly files: readonly string[] }) {
     for (const link of document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')) {
       const path = new URL(link.href, window.location.origin).pathname;
 
-      if (!path.startsWith(FIT_CSS_PREFIX) || path === ALWAYS_ENABLED_CSS) continue;
+      if (!path.startsWith(FIT_CSS_PREFIX) || !path.endsWith(".css")) continue;
+      if (path === ALWAYS_ENABLED_CSS) continue;
 
       link.disabled = !wanted.has(path);
     }
