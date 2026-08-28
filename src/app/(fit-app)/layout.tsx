@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Agentation } from "agentation";
 
 export const metadata: Metadata = {
   title: { default: "피크상태", template: "%s" },
@@ -21,7 +22,10 @@ export default function FitAppRootLayout({ children }: { children: React.ReactNo
       <head>
         <link rel="stylesheet" href="/fit/assets/css/common.css" precedence="high" />
       </head>
-      <body id="dashboard">{children}</body>
+      <body id="dashboard" className="darkmode">
+        {children}
+        {process.env.NODE_ENV === "development" && <Agentation />}
+      </body>
     </html>
   );
 }

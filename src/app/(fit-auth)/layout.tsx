@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Agentation } from "agentation";
 
 export const metadata: Metadata = {
   title: "한국미래에너지",
@@ -18,7 +19,10 @@ export default function FitAuthRootLayout({ children }: { children: React.ReactN
         <link rel="stylesheet" href="/fit/assets/css/common.css" precedence="high" />
         <link rel="stylesheet" href="/fit/assets/css/login.css" precedence="default" />
       </head>
-      <body className="logBody">{children}</body>
+      <body className="logBody">
+        {children}
+        {process.env.NODE_ENV === "development" && <Agentation />}
+      </body>
     </html>
   );
 }
