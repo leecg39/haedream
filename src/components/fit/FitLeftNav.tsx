@@ -235,7 +235,7 @@ export function FitLeftNav({ permissions = FIT_DEMO_PERMISSIONS }: FitLeftNavPro
           </li>
         </ul>
         <div className="eggOnLogo">
-          <a href="https://watt.rfenms.com/main.html" id="eggOnLink">
+          <a href="/main.html" id="eggOnLink">
             <img src="/fit/assets/img/logo_abc.png" id="footerLogo" alt="하단 로고" />
           </a>
         </div>
