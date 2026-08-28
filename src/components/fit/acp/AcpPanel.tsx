@@ -2,6 +2,7 @@
 
 import { ACP_CONN_COLORS, ACP_DEFAULT_IDN, ACP_GAUGE_OFF_COLOR, ACP_UNITS, driveModeLabel, fanSpeedLabel, findAcpConfig, findAcpStat, statusLabel, type AcpFacility } from "@/lib/fit-mocks/acp";
 import { AcpConfigModal } from "@/components/fit/acp/AcpConfigModal";
+import { AcpFanModal } from "@/components/fit/acp/AcpFanModal";
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { useState } from "react";
 
@@ -59,9 +60,7 @@ export function AcpPanel() {
             </div>
           </div>
         </div>
-        {selected ? (
-          <div className="modal" role="dialog" aria-modal="true" aria-label="에어컨 상세"><div className="modalBox"><button className="modalClose" aria-label="닫기" onClick={() => setSelected(null)} /><div className="modalContent" style={{ padding: 36, minWidth: 340 }}><h2 className="editTitle">{selected.airName}</h2><p>운전모드: {driveModeLabel(selected.driveMode)}</p><p>동작상태: {statusLabel(selected.status)}</p><p>현재온도: {selected.temperature}℃ / 설정온도: {selected.setTemperature}℃</p><p>풍량: {fanSpeedLabel(selected.fanspeed)}</p></div></div></div>
-        ) : null}
+        <AcpFanModal facility={selected} onClose={() => setSelected(null)} />
         <AcpConfigModal open={configOpen} config={config} onClose={() => setConfigOpen(false)} />
       </main>
     </>
