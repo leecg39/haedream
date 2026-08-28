@@ -1,0 +1,23 @@
+.ellipsis{display:inline-block;overflow:hidden;width:100%;white-space:nowrap;text-overflow:ellipsis;-o-text-overflow:ellipsis}
+
+.deskTool{margin-top:1rem}
+.deskLabel{color:#72bce3;margin-right:0.5rem}
+.deskSelect{padding:.4rem .4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;vertical-align:middle;font-size:1rem}
+.deskSelect option{background-color:#000}
+.input{width:4rem;padding:.4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.deskSelect+.deskLabel{margin-left:2rem}
+.noteTwin{display:flex;gap:2rem}
+.note{flex:1;display:grid;grid-template-columns:1fr 4fr 1fr 1fr 1fr 8fr;gap:.4rem;margin-top:1rem}
+.noteText{font-size:.86rem;color:#c0c0c0}
+.act{display:inline-block;height:40px;padding:.52rem 1.5rem;border-radius:4px;border:0;background-color:#2062bf;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+.space{margin-left:0.5rem}
+
+@media screen and (max-width:640px){
+.deskSelect{padding:.2rem .4rem;font-size:1rem}
+.input{padding:.2rem .4rem;font-size:1rem}
+
+.noteTwin{display:block}
+}

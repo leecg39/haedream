@@ -1,0 +1,78 @@
+.actArea{text-align:center}
+.act{display:inline-block;padding:.52rem 2rem;border-radius:.4rem;background-color:#2062bf;font-size:1rem;text-align:center;cursor:pointer}
+.act:hover{background-color:#307eeb;color:#fff}
+.input{width:8rem;padding:.2rem .4rem;border:1px solid #5190a5;background-color:transparent;font-size:1rem}
+.select{display:inline-block;width:8rem;padding:.4rem .4rem;border:1px solid #5190a5;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+
+.sheet{clear:both;width:100%;margin:1rem 0 2rem 0;text-align:center;border-collapse:collapse;border-spacing:0}
+.sheet th{padding:.6rem .2rem;background-color:rgba(1,31,104,1);color:rgba(255,255,255,0.8);font-size:1rem;font-weight:400;border-bottom:1px solid rgba(255,255,255,0.2)}
+.sheet input[type="number"]{width:50px;text-align:center}
+.sheet input[type="number"]::-webkit-outer-spin-button,
+.sheet input[type="number"]::-webkit-inner-spin-button{margin:0;-webkit-appearance:none}
+.sheet input[type='checkbox']{display:flex;align-items:center;justify-content:center;width:22px;height:22px;margin-right:auto;margin-left:auto;padding:0;border:1px solid #5190a5;border-radius:3px;background-color:transparent;appearance:none;cursor:pointer;outline:none}
+.sheet input[type='checkbox']::after{display:none;content:'\F633';color:white;font-size:1rem;font-weight:bold;font-family:"bootstrap-icons"}
+.sheet input[type='checkbox']:checked{background-color:#307eeb}
+.sheet input[type='checkbox']:checked::after{display:block}
+
+.sheet td{padding:.6rem .2rem;background-color:rgba(18,18,30,.0);font-size:1rem;border-bottom:1px solid rgba(255,255,255,0.2)}
+.sheet tbody td:nth-child(3){text-align:left}
+.sheetEm{color:inherit;font-style:italic}
+.sheetSub{color:inherit;font-size:.74rem;font-style:italic}
+
+.subtitle{display:flex;align-items:center;font-size:20px;font-weight:500}
+.colorBar{display:inline-block;width:7px;height:22px;margin-right:12px;border-radius:4px;background-color:#307eeb}
+.colorBar.green{background-color:#00968a}
+.colorBar.purple{background-color:#592ad0}
+.col1{display:flex;align-items:center;gap:2rem;margin-bottom:2rem}
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-bottom:1rem}
+.sheet td i.bi{cursor:pointer}
+.sheet td:last-child{position:relative}
+.sheet td i + span{display:none;position:absolute;overflow:hidden;z-index:1030;top:50%;right:0;width:200px;height:268px;background-image:url('/assets/img/set.png');border:2px solid #739de3;border-radius:12px;box-sizing:content-box;box-shadow:0 0 1rem rgba(0,0,0,0.3);transform:translate(-50%, -50%)}
+.sheet td i:hover + span{display:block}
+
+.set1 {background-position: 0 0}
+.set2 {background-position:-200px 0}
+.set3 {background-position:-400px 0}
+.set4 {background-position:0 -268px}
+.set5 {background-position:-200px -268px}
+.set6 {background-position:-400px -268px}
+.set7 {background-position:-600px 0}
+.set8 {background-position:-600px -268px}
+.set9 {background-position:-800px 0}
+.set10 {background-position:-800px -268px}
+.set11 {background-position:0 -536px}
+.set12 {background-position:-200px -536px}
+.set13 {background-position:-400px -536px}
+.set14 {background-position:-600px -536px}
+.set15 {background-position:-800px -536px}
+.set16 {background-position:0 -804px}
+.set17 {background-position:-600px -804px}
+.set18 {background-position:-1000px -804px}
+.set19 {background-position:-800px -804px}
+.set20 {background-position:-400px -804px}
+.set21 {background-position:-1000px 0}
+.set22 {background-position:-200px -804px}
+.set23 {background-position:-1000px -268px}
+.set24 {background-position:-1000px -536px}
+.set25{background-position:-1200px 0}
+.set26 {background-position:0 -1072px}
+.set27 {background-position:-200px -1072px}
+.set28 {background-position:-400px -1072px}
+.set29 {background-position:-600px -1072px}
+.set30 {background-position:-800px -1072px}
+
+@media (max-width:1024px){
+    .col2{grid-template-columns:1fr;gap:10px}
+}
+@media (max-width:768px){
+    .deskArea{overflow:auto;margin:1rem 0}
+    .sheet td i + span{transform:translate(-30%, -50%)}
+    .input{font-size:1rem}
+    .select{font-size:1rem}
+ }
+ @media (max-width:480px){
+    .sheetArea {padding:1rem 0;border:0}
+    .sheetArea > .col1{flex-direction:column;align-items:start;gap:0.5rem}
+ }
+ 

@@ -1,0 +1,34 @@
+.deskLabel{margin:0 .5rem 0 0;color:#72bce3}
+.deskDash{margin:0 .4rem}
+
+.inputDate{padding:.4rem;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.inputDate::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.select{padding:.4rem .4rem;height:40px;border:1px solid #5190a5;border-radius:4px;background-color:transparent;font-size:1rem}
+.select option{background-color:#000}
+
+.act{display:inline-block;height:40px;margin-left:0.5rem;padding:.52rem 1.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+
+.device{display:grid;grid-auto-rows:1fr;grid-template-columns:repeat(5, 1fr);justify-content:center;justify-items:stretch}
+.device p{text-align:center;color:#c0c0c0;margin:0.6rem 0;padding:.6rem 0}
+.device p:nth-child(-n+5){padding:.6rem 0;background-color:rgba(4,56,140,0.4);color:#fff}
+
+.relay{display:grid;grid-auto-rows:1fr;grid-template-columns:repeat(4, 1fr);justify-content:center;justify-items:stretch}
+.relay p{text-align:center;color:#c0c0c0}
+.relay p:nth-child(-n+4){padding:.6rem 0;background-color:rgba(4,56,140,0.4);color:#fff}
+
+@media screen and (max-width:640px){
+.deskTool{margin-top:1rem}
+.select{padding:.2rem .4rem;font-size:1rem}
+
+.sheetArea{margin-top:1rem}
+.device{grid-auto-rows:auto;padding:0}
+
+.act{padding:.4rem 1rem .4rem 2rem}
+.actIcon .icon{top:.5rem}
+}

@@ -1,3 +1,11 @@
+.act{display:inline-block;height:40px;padding:.52rem 1.1rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+.act:hover{background-color:#2b76df;;color:#fff}
+.actIcon{position:relative;padding-left:1.3rem;padding-right:1.3rem}
+.actIcon .icon{position:absolute;left:1.2rem;top:.55rem}
+.iconExcel{background-position:-24px 0}
+.act i{margin-right:5px}
+.act i.excel{color:#41e350}
+
 .act.off{background:#607d8b;cursor:not-allowed}
 .input{padding:.4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
 .input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.8)}
@@ -24,13 +32,14 @@
 
 .deskPages{display:flex;gap:2px;align-items:center;font-size:0}
 .deskPage{padding:.6rem 1rem}
+.deskPage.act{margin:0;background-color:rgba(32, 98, 191, 0.3)}
 .deskPage.active{background-color:#2062bf}
 .setSub .deskTool .act{margin:0 0.25rem 0 0}
 
-.sheetArea{min-height:calc(100vh - 220px);background-color:rgba(3, 3, 5, 0.4);padding:2rem}
+.sheetArea{min-height:calc(100vh - 220px);background-color:rgba(0,0,29,0.4);padding:2rem;border:1px solid rgba(255,255,255,0.15)}
 .deskArea{margin:1.5rem 0 1rem}
 .desk{clear:both;width:100%;border-collapse:collapse;border-spacing:0;text-align:center}
-.desk th{padding:0.6rem .2rem;background-color:rgba(0,0,29,0.6);color:#fff;font-size:1rem;font-weight:400;transition:all 0.2s}
+.desk th{padding:0.6rem .2rem;background-color:rgba(4,56,140,0.4);color:#fff;font-size:1rem;font-weight:400;transition:all 0.2s}
 .desk td{padding:0.6rem .2rem;border-bottom:1px solid #042337;color:#c8c8c8;font-size:1rem}
 .desk .em{margin-left:.2rem;color:#808080;font-size:.86rem}
 .desk .mark{color:#29b6f6}
@@ -113,7 +122,7 @@
 
 @media screen and (max-width:768px){
     .sheetArea{padding:1rem}
-    .deskStat,
+    .deskStat, 
     .deskStatWrap,
     .deskStatCenter{flex-direction:column;gap:.4rem}
     .desk{min-width:1100px}
@@ -126,6 +135,7 @@
     .modal .editForm{display:flex;flex-direction:column;align-items:start}
 }
 @media screen and (max-width:480px){
+    .act{font-size:15px;white-space:nowrap}
     .deskTool{transform:scale(0.9)}
     .deskTool.onlypci{display:grid;grid-template-columns:repeat(3, 1fr);gap:1px;width:90%;}
     .deskTool.onlypci .act{border-radius:0.4rem}

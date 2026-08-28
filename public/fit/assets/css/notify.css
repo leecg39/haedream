@@ -1,0 +1,37 @@
+.sheet{clear:both;width:100%;margin:0;border-collapse:separate;border-spacing:0;text-align:center}
+.sheet th{padding:.6rem .2rem;border:1px solid #202020;background-color:#0b0b16;color:#72bce3;font-size:1rem;font-weight:400}
+.sheet td{padding:.6rem .2rem;border:1px solid #202020;background-color:rgba(18,18,30,.8);color:#c8c8c8;font-size:1rem;font-variant-numeric: tabular-nums}
+.sheet td input[type='checkbox']{width:20px;height:20px}
+tbody .tLabel{position:sticky;left:0}
+tbody tr:hover td{background-color:rgba(63,81,181,.6);color:#fff}
+tbody tr:hover .tLabel{background-color:rgba(63,81,181,.4)}
+.off td{color:rgba(255,255,255,0.4)}
+.off th{color:rgba(255,255,255,0.6)}
+.off .act{color:rgba(255,255,255,0.5)}
+.sheetScroll{height:calc(100vh - 230px);overflow:auto}
+.sheetScroll::-webkit-scrollbar{width:8px;height:8px;background-color:rgba(19,21,24,0.5)}
+.sheetScroll::-webkit-scrollbar-thumb{border-radius:2px;background:#2b59a2;border:1px solid #1c7cc9}
+.sheetScroll::-webkit-scrollbar-track{border-radius:2px}
+.sheetScroll::-webkit-scrollbar-corner{background-color:transparent}
+.sheet .sheetSticky{position:sticky;top:0;z-index:10}
+
+.inputTime{padding:.2rem .4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;font-size:1rem}
+.inputTime::-webkit-calendar-picker-indicator{filter:invert(.8)}
+.input{padding:.2rem .4rem;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;text-align:right;font-size:1rem}
+.input[type=number]{width:4.4rem}
+.input[type=time]{width:8rem}
+.textWave{margin:0 .4rem}
+
+.act{position:relative;cursor:pointer}
+.act:hover{color:#29b6f6}
+.act.checked::after{position:absolute;left:0;top:-8px;width:24px;height:24px;background-image:url("../img/icons.png");background-position:-48px 0;content:""}
+
+@media (max-width:640px){
+    .sheetArea{overflow:auto;padding:10px 0}
+    .sheetScroll{height:inherit}
+    .sheet th{min-width:6rem}
+    .sheet{margin:0}
+    .input{padding:.2rem;font-size:1rem}
+    .inputTime{padding:.2rem;font-size:1rem}
+    .act.checked{background-position:-24px 0;background-size:120px 60px}
+}
