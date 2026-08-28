@@ -67,7 +67,7 @@ export function FirmManager() {
 
   return (
     <>
-      <PageStyles files={[...LIB_STYLES, "/fit/assets/css/deskLib.css"]} />
+      <PageStyles files={[...LIB_STYLES, "/fit/assets/css/deskLib.css", "/fit/clone-css/firm-extras.css"]} />
       <main className="contents" id="contentsArea">
         <h1 className="deskTitle">업체관리</h1>
         <div className="sheetArea">

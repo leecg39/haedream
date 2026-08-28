@@ -13,7 +13,6 @@ interface FitLeftNavProps {
 
 const WATT_ADMIN_PATHS = new Set([
   "/fit/widget-set",
-  "/fit/user",
   "/fit/notify",
   "/fit/gate-node",
   "/fit/gateway",

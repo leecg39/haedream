@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { AdminTablePage } from "@/components/fit/admin/AdminTablePage";
+import { AdminManager } from "@/components/fit/admin/AdminManager";
 
 export const metadata: Metadata = {
   title: "게이트웨이 관리",
 };
 
 export default function GateNodeAdminPage() {
-  return <AdminTablePage page="gate-node" />;
+  return <AdminManager page="gate-node" />;
 }

@@ -1,0 +1,56 @@
+/* /firm.html 영상 재현용 보완 스타일 — 원본 common/deskLib/firm.css를 우선 사용한다. */
+#contentsArea.firmDemoReady { opacity: 1; visibility: visible; }
+#deskList tr { cursor: pointer; transition: background-color .15s ease, color .15s ease; }
+#deskList tr:hover,
+#deskList tr.selected { background-color: rgba(35, 99, 194, .16); color: #fff; }
+#deskList tr.selected { box-shadow: inset 3px 0 #55a8ff; }
+#deskList td:nth-child(7)::after,
+#deskList td:nth-child(8)::after { content: " kW"; color: #87909d; font-size: .75em; font-style: italic; }
+#deskList td.zeroPower::after { color: #87909d; }
+#deskList td:nth-child(13) { max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#deskTable th.sort { cursor: pointer; }
+#deskTable th.sort.asc::after { content: " ▲"; color: #7ec8ff; font-size: .7em; }
+#deskTable th.sort.desc::after { content: " ▼"; color: #7ec8ff; font-size: .7em; }
+.deskPage { user-select: none; }
+.deskPage.active { cursor: default; }
+.tb-set.on .tbSetNav { display: block; }
+
+#modal .modalBox { max-width: calc(100vw - 40px); }
+#modal .modalContent { box-sizing: border-box; }
+#modal .editForm input:focus,
+#modal .editForm select:focus { outline: 1px solid #8bc6ff; box-shadow: 0 0 0 2px rgba(75, 145, 255, .16); }
+#modal .modalAct[aria-busy="true"] { opacity: .55; pointer-events: none; }
+
+.firmDemoToastArea { position: fixed; top: 70px; right: 30px; z-index: 9000; width: 300px; }
+.firmDemoToast {
+    position: relative;
+    box-sizing: border-box;
+    width: 300px;
+    min-height: 78px;
+    margin-bottom: 10px;
+    padding: 23px 38px 23px 20px;
+    border-radius: 8px;
+    color: #fff;
+    background: #1d50e5;
+    box-shadow: 2px 7px 15px rgba(0, 0, 0, .4);
+    font-size: 15px;
+    line-height: 1.5;
+    animation: firmToastIn .2s ease-out;
+}
+.firmDemoToast.error { background: #ee3e3e; }
+.firmDemoToast .close { position: absolute; top: 7px; right: 10px; color: #fff; cursor: pointer; }
+@keyframes firmToastIn { from { opacity: 0; transform: translateY(-8px); } }
+
+@media screen and (max-width: 900px) {
+    #modal .modalContent { width: calc(100vw - 60px); }
+    #modal .editForm { grid-template-columns: 1fr 2fr; }
+}
+
+@media print {
+    #leftnav, #topBar, .deskTool, .deskPages, #serviceType, .deskSearch, #modal { display: none !important; }
+    .contentsArea { width: 100% !important; margin: 0 !important; }
+    #contentsArea { margin: 0 !important; }
+    body.darkmode { color: #111; background: #fff; }
+    .sheetArea { border: 0; background: #fff; }
+    table.desk, table.desk th, table.desk td { color: #111; border-color: #aaa; }
+}

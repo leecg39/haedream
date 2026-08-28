@@ -57,7 +57,8 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
   const [clock, setClock] = useState<{ ymd: string; dtime: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const wattAdmin = SETTINGS_LINKS.some((link) => link.href === pathname);
+  // /fit/user(사용자관리)는 에그핏 셸을 유지한다.
+  const wattAdmin = pathname !== "/fit/user" && SETTINGS_LINKS.some((link) => link.href === pathname);
   const displayedFirms = wattAdmin
     ? [{ fid: 121, name: "대산금속" }]
     : firms;

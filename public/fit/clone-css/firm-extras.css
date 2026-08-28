@@ -1,0 +1,17 @@
+/*
+ * firm 화면 전용 보조 스타일.
+ *
+ * public/fit/assets/css/deskLib.css 는 원본 사이트 무변환 미러이므로
+ * 클론 전용 변경분은 여기에 둔다. FirmManager 가 deskLib.css 뒤에 로드한다.
+ */
+
+/* 변경 — 피드백: 편집 팝업 가로폭을 뷰포트의 1/3 로 축소 */
+#modal .modalBox {width:33.33vw;min-width:26rem}
+/* 변경 — 폭 축소에 맞춰 편집 폼을 필드당 1행(라벨+입력)으로 전환 */
+#modal .editForm {grid-template-columns:1fr}
+#modal .editForm > .contents {display:grid;grid-template-columns:7rem 1fr;gap:0 .6rem;align-items:center}
+#modal .editForm .eInput, #modal .editForm .eSelect {width:100%}
+/* 변경 — 모바일에서는 원본 동작(전체 폭) 유지 */
+@media screen and (max-width:768px){
+  #modal .modalBox {width:calc(100% - 40px);min-width:0}
+}

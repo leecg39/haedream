@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { AdminTablePage } from "@/components/fit/admin/AdminTablePage";
+import { AdminManager } from "@/components/fit/admin/AdminManager";
 
 export const metadata: Metadata = {
   title: "사용자관리",
 };
 
 export default function UserAdminPage() {
-  return <AdminTablePage page="user" />;
+  return <AdminManager page="user" />;
 }
