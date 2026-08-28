@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_ROWS, FIRM_SERVICE_TYPE_LABELS, type FirmRow, type FirmSortKey } from "@/lib/fit-mocks/firm";
+import { FirmEditModal } from "@/components/fit/firm/FirmEditModal";
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { Pagination } from "@/components/fit/shared/Pagination";
 import { echoNumber } from "@/components/fit/reduce/format";
@@ -142,25 +143,8 @@ export function FirmManager() {
           </div>
         </div>
 
-        {selected ? (
-          <div className="modal" role="dialog" aria-modal="true" aria-label="업체 상세">
-            <div className="modalBox" style={{ width: "min(720px, calc(100vw - 40px))" }}>
-              <button type="button" className="modalClose" aria-label="닫기" onClick={() => setSelected(null)} />
-              <div className="modalContent" style={{ padding: 32 }}>
-                <h2 className="editTitle">{selected.firmName}</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 12 }}>
-                  <span>업체 ID</span><strong>{selected.fid}</strong>
-                  <span>담당자</span><strong>{selected.manager}</strong>
-                  <span>연락처</span><strong>{selected.phone}</strong>
-                  <span>주소</span><strong>{selected.addressText}</strong>
-                  <span>계약전력</span><strong>{echoNumber(selected.contractLimit)} kW</strong>
-                  <span>메모</span><strong>{selected.memo || "-"}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
       </main>
+      <FirmEditModal row={selected} onClose={() => setSelected(null)} />
     </>
   );
 }
