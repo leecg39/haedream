@@ -28,7 +28,10 @@ export function ReportDashboard() {
           <ReportSavings totals={totals} />
           <div className="tableBtnBox business">
             <button className="exlBtn" id="print" onClick={() => window.print()}><i className="bi bi-printer-fill" />제안서 A</button>
+            <button className="exlBtn" id="print2" onClick={() => window.print()}><i className="bi bi-printer-fill" />제안서 B<span className="disable factoring">(팩토링 선취)</span></button>
             <button className="exlBtn" id="truth" onClick={() => window.print()}><i className="bi bi-bag-check-fill" />사업 타당성 검토</button>
+            <button className="exlBtn" id="print3" onClick={() => window.print()}><i className="bi bi-printer-fill" />제안서 C<span className="disable factoring">(팩토링 후취)</span></button>
+            <button className="exlBtn" id="truth2" onClick={() => window.print()}><i className="bi bi-bag-check-fill" />사업 타당성 검토</button>
           </div>
         </div>
         <div className="lowBox lowBtmTable">
