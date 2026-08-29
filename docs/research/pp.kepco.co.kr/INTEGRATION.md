@@ -5,6 +5,7 @@
 - 사이트: https://pp.kepco.co.kr/intro.do (한전 파워플래너)
 - 목적: 업체의 전력 사용 데이터를 파워플래너에서 조회해 이 프로젝트와 연동한다.
 - 로그인은 **업체관리(`/fit/firm`)에 저장된 한전고객번호 + 한전비밀번호** 를 사용한다.
+- 원본(watt.rfenms.com)과 같은 방식: 프론트가 아니라 **서버가 업체별 계정으로 로그인해 수집** 한다.
 
 ## 인증 정보 소스
 
@@ -20,13 +21,102 @@
 - 한전고객번호는 26개 키가 중복이라 매칭 키로 쓸 수 없다. 반드시 fid 로 조인하고 고객번호는 검증용으로만 쓴다.
 - 비밀번호가 비어 있는 업체(예: fid=5 서원유리)는 파워플래너 로그인 불가.
 
-## 로그인 흐름 (관찰된 범위)
+## 로그인 흐름 (2026-08-29 실계정 검증 완료)
 
-1. `https://pp.kepco.co.kr/intro.do` 접속 → "서비스 가능여부 확인" 고객번호 입력란.
-2. 고객번호는 전기요금 청구서의 10자리 숫자. 아파트·공동주택 관리비 포함 개별세대는 이용 불가.
-3. `login.do` 등 미인증 경로는 intro.do 로 리다이렉트된다.
-4. 이후 비밀번호 입력 단계는 실계정 로그인이 필요해 아직 자동화/검증하지 않았다. 연동 구현 시 실제 흐름을 확인해 이 문서를 갱신한다.
+고객번호 `1016122623`(삼운실업)으로 실제 로그인해 확인한 흐름이다.
 
-## 기타
+1. `GET /intro.do` — 응답 쿠키로 `cookieSsId`(세션 토큰), `cookieRsa`(RSA 공개키 modulus, 512 hex)가 내려오고, 페이지 내 hidden input `#RSAExponent` 가 지수를 가진다.
+2. 클라이언트에서 RSA(jsbn, PKCS#1 v1.5)로 고객번호·비밀번호를 각각 암호화하고 `cookieSsId + '_'` 접두사를 붙인다.
+3. `POST /intro/chkUser.do` — JSON `{USER_ID, USER_PWD, USER_CI, TYPE}` (개인 고객번호 로그인은 `TYPE:"I"`, `USER_CI:""`) → SSO 여부 반환.
+4. `POST /login` — form 필드 `USER_ID`, `USER_PWD`, `APT_YN`(고객번호 10자리면 `N`), `SSO_ID` → 인증 세션(`JSESSIONID` 쿠키) 확립 후 `/rm/rm0101.do?menu_id=O010101`(스마트뷰)로 리다이렉트.
+5. 이후 모든 데이터 API는 `JSESSIONID` 쿠키 + `content-type: application/json` POST 로 호출한다.
 
-- 파워플래너 이용 문의(마케팅 상담센터): 061-345-4533
+### 서비스 가능여부 확인 (비인증)
+
+- `POST /auth/custno` — JSON `{CUSTNO: "10자리"}`, 응답 `"true"/"false"`. 수집 대상 업체 사전 필터링에 사용 가능.
+
+## 데이터 API 맵 (인증 후, 전부 POST JSON)
+
+| 메뉴 | 페이지 | 데이터 엔드포인트 | 요청 본문 | 응답 요약 |
+| --- | --- | --- | --- | --- |
+| 스마트뷰 | `/rm/rm0101.do` | `/rm/getRM0101.do` | `{}` | 실시간/예상 사용량·요금, 요금적용전력(`JOJ_KW`), 최대수요전력(`MAX_PWR`·발생일), 계약종별(`CNTR_KND_NM`), 기본요금단가, 검침기간(`START_DT`~`END_DT`) |
+| 스마트뷰 차트 | 〃 | `/rm/rm0101_chart.do` | `{menuType: "time"｜"day"｜"month"｜"year"}` | 시간/일/월/년별 사용량(`F_AP_QT`), 전일 대비(`LDAY_F_AP_QT`), 요금(`KWH_BILL`) |
+| 스마트뷰 계약 | 〃 | `/rm/rm0101_contract_info.do` | `{}` | 계약 정보 |
+| 전기사용량 | `/rs/rs0101N.do` | `/rs/rs0101N_total.do` | `{SELECT_DT:"yyyymmdd", ...}` | 기간 합계 |
+| 전기사용량(시간) | 〃 | `/rs/rs0101N_hour.do` | `{SELECT_DT, SEL_METER_ID:"", TIME_TYPE:"15", SEL_REV_USER:"F"}` | 시간대별 `F_AP_QT`(kWh), `MAX_PWR`(최대수요 kW), 유효/무효전력·역률, `CO2`, `NO_DATA_YN` |
+| 전기사용량 차트 | 〃 | `/rs/rs0101N_chart.do` | 〃 | 차트용 시계열 |
+| 전기사용 패턴 | `/rp/rp0101.do` | `/rp/rp01xx_*.do` | — | 사용 패턴 분석 |
+| 전기요금 | `/pr/pr0101.do` | `/pr/pr01xx_*.do` | — | 청구 요금 상세 |
+| 공통 | — | `/auth/usercustno_list.do` | `{}` | 계정에 연결된 고객번호 목록(1계정 N고객번호 가능, `MAIN_CUST_YN`) |
+
+- 응답은 전부 `application/json;charset=UTF-8`.
+- 세션은 `JSESSIONID` 쿠키 기반이며 만료가 있으므로 수집 작업 단위로 재로그인한다.
+
+## 원본(watt.rfenms.com)의 연동 방식
+
+1. 업체관리(firm)에 업체별 `kepcoNo` / `kepcoPasswd` / `kepcoCyber`(한전 ID) 를 저장한다.
+2. 백엔드가 **매일 02:00 배치**로 업체별 파워플래너 로그인 → 데이터 수집 → 자체 DB 적재.
+3. `한전데이터 수집`(research) 화면에 업체별 수집 상태·최근 갱신 시각을 보여주고 수동 수집을 제공한다.
+4. 수집된 데이터는 KPI 화면(kpi.html) 등에서 조회한다.
+
+## SolarSimz 연동 기획
+
+### 아키텍처
+
+```
+┌─────────────┐   매일 02:00 / 수동 트리거   ┌──────────────────┐
+│  수집 스케줄러 │ ────────────────────────▶ │ pp.kepco.co.kr   │
+│  (서버 사이드) │ ◀──────── JSESSIONID ──── │ 로그인 + 데이터 API │
+└──────┬──────┘                             └──────────────────┘
+       │ fid 단위로 FIRM_ROWS(kepcoNo+kepcoPasswd) 순회
+       ▼
+┌─────────────┐    조회 API    ┌──────────────────┐
+│ SQLite 적재  │ ───────────▶ │ /fit/research 등  │
+└─────────────┘               └──────────────────┘
+```
+
+### 구성 요소
+
+1. **로그인 모듈** `src/lib/kepco/login.ts`
+   - `/intro.do` 에서 `cookieSsId`·`cookieRsa`·`RSAExponent` 획득
+   - RSA 암호화: Node `crypto.publicEncrypt`(RSA_PKCS1_PADDING)에 modulus+exponent로 구성한 공개키 사용 (jsbn 결과와 동일 포맷)
+   - `chkUser.do` → `/login` → `JSESSIONID` 반환
+2. **수집기** `src/lib/kepco/collect.ts`
+   - 업체 1곳 로그인 후 `getRM0101`(요약) + `rs0101N_hour`(시간대별) + `rm0101_chart`(일/월) 순차 호출
+   - 실패(로그인 불가·NO_DATA)는 업체 단위로 기록하고 다음 업체 진행
+3. **저장 스키마** (SQLite)
+   - `kepco_summary(fid, select_dt, 실시간/예상 사용량·요금, joj_kw, max_pwr, max_time, 수집시각)`
+   - `kepco_hourly(fid, ymd, hhmi, f_ap_qt, max_pwr, pf, co2)`
+   - `kepco_collect_log(fid, started_at, status, message)`
+4. **스케줄러**: 매일 02:00 (원본과 동일). Next 서버 내 cron 또는 외부 스케줄러에서 `POST /api/kepco/collect` 호출.
+5. **UI**: `/fit/research`(한전데이터 수집)에 업체별 수집 상태·수동 수집 버튼 연동.
+
+### 주의사항
+
+- 비밀번호는 서버 메모리에서만 사용하고 로그에 남기지 않는다.
+- 로그인 연속 실패 시 계정 잠금 가능성 → 업체당 재시도 1회, 전체 수집에 지연(수 초/업체)을 둔다.
+- 파워플래너 데이터는 "단순 참고용"(실제 청구 요금과 상이할 수 있음) 고지를 UI에 유지한다.
+- 비밀번호 없는 업체(약 100곳)는 수집 대상에서 제외하고 상태를 "미등록"으로 표시한다.
+
+## 구현 완료 (2026-08-29)
+
+- `src/lib/kepco/login.ts` — RSA 로그인(쿠키 저장소, chkUser→/login, 세션 검증)
+- `src/lib/kepco/rsa.ts` + `src/lib/kepco/vendor/` — **사이트 원본 jsbn을 node:vm으로 실행**
+- `src/lib/kepco/collect.ts` — 업체별 수집기(요약+시간대별+월별) 및 SQLite 적재
+- `db/migrations/004_kepco.sql` — `kepco_summary`/`kepco_hourly`/`kepco_monthly`/`kepco_collect_log`
+- API: `GET /api/kepco/status`, `GET /api/kepco/firm/{fid}`, `POST /api/kepco/collect` (`{fid}` 생략 시 비밀번호 보유 전 업체 배치)
+- UI: `/fit/research` 가 업체 선택 드롭다운 + 수집 상태 + 수집 요청 버튼 + 요약/월별/시간별 실데이터 표시로 교체됨
+- 검증: `node scripts/kepco-probe.mjs <fid>` 로 실로그인+수집 확인, `tests/kepco-*.test.ts`, `e2e/fit-research.spec.ts`
+
+### RSA 구현 주의사항 (실측으로 확인)
+
+`node:crypto` 의 `publicEncrypt(RSA_PKCS1_PADDING)` 암호문은 서버가 거부한다.
+같은 세션 쿠키로 A/B 검증한 결과 브라우저 jsbn 암호문만 로그인이 성공했다(전송 헤더·쿠키·TLS 무관).
+따라서 사이트가 쓰는 jsbn 라이브러리 자체를 vendor 에 두고 vm 으로 실행한다.
+
+그 외 로그인 구현 시 주의점:
+
+- `cookieSsId` 쿠키 값은 URL 인코딩(`%3D`)되어 내려온다. USER_ID/USER_PWD 접두사에는 **디코딩된 값**을, Cookie 헤더에는 **원본 값**을 써야 한다(브라우저 getCookie 동작과 동일).
+- `cookieSsId` 디코딩 값은 `JSESSIONID` 와 동일하다(세션당 RSA 키 바인딩).
+- `chkUser.do` 응답의 `SSO_ID` 는 `result === "success"` 일 때만 `USER_SSO_YN`, 아니면 `"N"` 을 보낸다(응답 원문을 그대로 넣으면 로그인 실패).
+- `/login` 은 `redirect: "manual"` 로 받아 302 의 Set-Cookie(인증 세션 회전)를 직접 흡수해야 한다. fetch 의 `redirect: "follow"` 는 리다이렉트 중간 쿠키를 버린다.

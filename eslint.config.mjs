@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Mirrored production assets and third-party browser bundles.
     "public/**",
+    // Vendored third-party libraries (원본 사이트 jsbn 등)는 린트하지 않는다.
+    "src/lib/kepco/vendor/**",
+    "scripts/vendor/**",
   ]),
 ]);
 
