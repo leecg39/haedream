@@ -36,3 +36,5 @@ npm run dev -- -p 3456
 - ~~원본 Visual QA~~ (2026-08-29 완료): 관리자 10개 페이지를 라이브 원본과 대조 — widgetSet 위젯 ID/순서 매핑 교정(16~31 → 원본 번호 체계), SMP·REC 아이콘 마크업 반영. 나머지 9개 페이지는 구조 일치 확인
 - ~~`contentsArea` disable 해제~~ (2026-08-29 검증): 41개 정적 페이지 전수 스윕 — 로드 후 `disable` 잔류 0건, `base.js` finally 와 페이지 데모 스크립트가 정상 해제
 - ~~KPI 매핑~~ (2026-08-29 확인): 로컬 kpi.html 테이블 전 컬럼 렌더링 정상(NaN/undefined 없음), 콘솔 오류 없음
+- ~~업체 MockDB → 실데이터 교체~~ (2026-08-29 완료): `data/firm-details.csv`(1,654건)를 `scripts/import-firm-csv.mjs`로 `src/lib/fit-mocks/firm-rows.json`에 변환 — React(/fit/firm)와 정적 EMS(firm.html → `/api/firm`)가 같은 JSON을 사용. kepcoNo 앞자리 0 보존(문자열화), mapGeo `POINT()`→`경도, 위도`, unix 시간→날짜 변환. 합성 생성기(buildFirms) 제거
+- ~~peak.html 로딩 오버레이 잔류~~ (2026-08-29 수정): `mockPeakStats`가 peak.js 기대 스키마(peakPower.startTime/powerLimit, control, extend, firm[0~9])를 못 맞춰 `peakBase`가 중간에 죽고 `netAble(false)` 미호출이던 것을 목 보강으로 해소

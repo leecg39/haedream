@@ -976,3 +976,47 @@ const vio = {
         return !isNaN(parseFloat(value))
     },
 };
+
+// 플랫폼 전환 드롭다운 — leftnav include가 동적 삽입되므로 document 위임으로 처리
+(function bindPlatformSwitch() {
+    function closeMenu(menu, button) {
+        menu.hidden = true;
+        button?.setAttribute('aria-expanded', 'false');
+        const chevron = button?.querySelector('.bi');
+        if (chevron) {
+            chevron.classList.add('bi-chevron-down');
+            chevron.classList.remove('bi-chevron-up');
+        }
+    }
+
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('#platformSwitchButton');
+        const menu = document.getElementById('platformSwitchMenu');
+        if (!menu) return;
+        if (button) {
+            const open = !menu.hidden;
+            if (open) {
+                closeMenu(menu, button);
+            } else {
+                menu.hidden = false;
+                button.setAttribute('aria-expanded', 'true');
+                const chevron = button.querySelector('.bi');
+                if (chevron) {
+                    chevron.classList.remove('bi-chevron-down');
+                    chevron.classList.add('bi-chevron-up');
+                }
+            }
+            return;
+        }
+        if (!menu.hidden && !event.target.closest('.platformSwitch')) {
+            closeMenu(menu, document.getElementById('platformSwitchButton'));
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        const menu = document.getElementById('platformSwitchMenu');
+        if (menu && !menu.hidden) {
+            closeMenu(menu, document.getElementById('platformSwitchButton'));
+        }
+    });
+})();

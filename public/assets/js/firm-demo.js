@@ -20,37 +20,11 @@
         clockTimer: null
     };
 
-    const featuredFirms = [
-        { fid: 1661, firmName: '(주)알앤텍_2', contract: 'IGL1', kepcoNo: '0927031098' },
-        { fid: 1658, firmName: '(주)알앤텍_1', contract: 'IGL1', kepcoNo: '0905540819' },
-        { fid: 1660, firmName: '성신금속', contract: 'IGL1', kepcoNo: '0924111043', bone: 'ID71222570', manager: '김상우지사장님' },
-        { fid: 1659, firmName: '경기산업', contract: 'IGL1', kepcoNo: '0240872604' },
-        { fid: 1657, firmName: '동남스프링', contract: 'IGL1', kepcoNo: '0927497433' },
-        { fid: 1656, firmName: '동남특수강', contract: 'IGL1', kepcoNo: '0923215567' },
-        { fid: 1648, firmName: '케이에프엠', contract: 'IGL1', kepcoNo: '0637481926' },
-        { fid: 1647, firmName: '송산(케이에프엠)', contract: 'IGL1', kepcoNo: '0643628802' },
-        { fid: 1655, firmName: '한산스크류', contract: 'IGL1', kepcoNo: '' },
-        { fid: 1654, firmName: '창원열처리', contract: 'IGL1', kepcoNo: '0917056035' },
-        { fid: 1653, firmName: '쇠똥구리', contract: 'IGL1', kepcoNo: '0928677674' },
-        { fid: 1652, firmName: '태성열처리', contract: 'IGL1', kepcoNo: '0910621394' },
-        { fid: 623, firmName: '디케이메탈.', contract: 'IGL1', kepcoNo: '0928677433' },
-        { fid: 181, firmName: '성진전자 부품 주식회사(산업용)', contract: 'IGL1', kepcoNo: '1020763120', pct_ratio: 1, peakLast: 110, powerLimit: 499, serviceType: 3 },
-        { fid: 1651, firmName: '신성비철산업', contract: 'IGL1', kepcoNo: '0921584421' },
-        { fid: 1650, firmName: '만경도정공장', contract: 'IGL1', kepcoNo: '1216046338', serviceType: 3 },
-        { fid: 1649, firmName: '태광정밀', contract: 'IGL1', kepcoNo: '0912743521' },
-        { fid: 1646, firmName: '대광열처리', contract: 'IGL1', kepcoNo: '0432819082' }
-    ];
-
-    const companyPrefixes = ['한빛', '대성', '동양', '미래', '삼우', '신진', '태성', '세광', '경원', '유성', '대한', '진성', '대림', '금강', '우리'];
-    const companySuffixes = ['산업', '정밀', '금속', '테크', '전기', '열처리', 'ENG', '에너지', '기공', '스프링', '화학', '푸드'];
-    const regions = ['경기 화성시', '경남 창원시', '충북 청주시', '경북 구미시', '전북 익산시', '충남 천안시', '인천 남동구'];
-
     function normalizeFirm(seed, index) {
-        const serviceType = seed.serviceType ?? (index < 13 ? 23 : [1, 2, 3, 11, 12, 13, 21, 22, 23][index % 9]);
         return {
             fid: seed.fid,
             firmName: seed.firmName,
-            contract: seed.contract || CONTRACTS[index % CONTRACTS.length],
+            contract: seed.contract || '',
             kepcoNo: seed.kepcoNo || '',
             eoiTime: seed.eoiTime ?? 0,
             pct_ratio: seed.pct_ratio ?? 0,
@@ -59,7 +33,7 @@
             peakRunMode: seed.peakRunMode ?? 0,
             peakControlMode: seed.peakControlMode ?? 0,
             isDisable: seed.isDisable ?? 0,
-            serviceType,
+            serviceType: seed.serviceType ?? 0,
             memo: seed.memo || '',
             degreeCity: seed.degreeCity || '108',
             bone: seed.bone || '',
@@ -68,45 +42,28 @@
             kepcoPasswd: seed.kepcoPasswd || '',
             manager: seed.manager || '',
             phone: seed.phone || '',
-            addressText: seed.addressText || regions[index % regions.length],
-            checkDay: seed.checkDay || ((index % 28) + 1),
-            contractLimit: seed.contractLimit || (300 + (index * 17) % 1200),
-            ableLimit: seed.ableLimit || (280 + (index * 13) % 1000),
-            ableLimitTime: seed.ableLimitTime || '2025-01-01',
+            addressText: seed.addressText || '',
+            checkDay: seed.checkDay || 0,
+            contractLimit: seed.contractLimit || 0,
+            ableLimit: seed.ableLimit || 0,
+            ableLimitTime: seed.ableLimitTime || '',
             pulse_num: seed.pulse_num ?? 0,
             frugalTime: seed.frugalTime || '',
             investGold: seed.investGold || 0,
             kepcoContract: seed.kepcoContract || '',
             boss: seed.boss || '',
-            mapGeo: seed.mapGeo || '127.0286, 37.2636',
-            registTime: seed.registTime || `2026-08-${String(29 - index % 28).padStart(2, '0')}`,
+            mapGeo: seed.mapGeo || '',
+            registTime: seed.registTime || '',
             sourceOrder: index
         };
     }
 
-    function buildFirms() {
-        const rows = featuredFirms.map(normalizeFirm);
-        const used = new Set(rows.map((row) => row.fid));
-        let candidate = 1645;
-        let overflow = 2000;
-        while (rows.length < 1654) {
-            while (candidate > 0 && used.has(candidate)) candidate -= 1;
-            const fid = candidate > 0 ? candidate-- : overflow++;
-            if (used.has(fid)) continue;
-            used.add(fid);
-            const index = rows.length;
-            rows.push(normalizeFirm({
-                fid,
-                firmName: `${companyPrefixes[index % companyPrefixes.length]}${companySuffixes[(index * 5) % companySuffixes.length]} ${String(index + 1).padStart(4, '0')}`,
-                contract: CONTRACTS[(index * 3) % CONTRACTS.length],
-                kepcoNo: String(100000000 + ((index * 7919) % 899999999)).padStart(10, '0'),
-                peakLast: index % 9 === 0 ? 80 + (index % 430) : 0,
-                powerLimit: index % 9 === 0 ? 300 + (index % 900) : 0,
-                pct_ratio: index % 7,
-                memo: index % 17 === 0 ? '확인필요' : ''
-            }, index));
-        }
-        return rows;
+    // 업체 목록은 실제 운영 DB 덤프(firm-details.csv)를 변환한 /api/firm 응답을 쓴다.
+    async function loadFirms() {
+        const response = await fetch('/api/firm');
+        if (!response.ok) throw new Error(`/api/firm ${response.status}`);
+        const body = await response.json();
+        return (body.data ?? []).map((row, index) => normalizeFirm(row, index));
     }
 
     async function injectShell() {
@@ -434,7 +391,12 @@
 
     async function init() {
         if (!sessionStorage.getItem('accessToken')) sessionStorage.setItem('accessToken', 'firm-demo-local');
-        state.firms = buildFirms();
+        try {
+            state.firms = await loadFirms();
+        } catch (error) {
+            console.error('업체 목록 로드 실패', error);
+            state.firms = [];
+        }
         state.filtered = [...state.firms];
         window.vio = {
             setFirm: () => {},
@@ -458,6 +420,50 @@
         document.body.dataset.firmDemoReady = 'true';
         document.body.dataset.modalOpen = 'false';
     }
+
+    // 플랫폼 전환 드롭다운 — leftnav include가 동적 삽입되므로 document 위임으로 처리
+    (function bindPlatformSwitch() {
+        function closeMenu(menu, button) {
+            menu.hidden = true;
+            button?.setAttribute('aria-expanded', 'false');
+            const chevron = button?.querySelector('.bi');
+            if (chevron) {
+                chevron.classList.add('bi-chevron-down');
+                chevron.classList.remove('bi-chevron-up');
+            }
+        }
+
+        document.addEventListener('click', (event) => {
+            const button = event.target.closest('#platformSwitchButton');
+            const menu = document.getElementById('platformSwitchMenu');
+            if (!menu) return;
+            if (button) {
+                const open = !menu.hidden;
+                if (open) {
+                    closeMenu(menu, button);
+                } else {
+                    menu.hidden = false;
+                    button.setAttribute('aria-expanded', 'true');
+                    const chevron = button.querySelector('.bi');
+                    if (chevron) {
+                        chevron.classList.remove('bi-chevron-down');
+                        chevron.classList.add('bi-chevron-up');
+                    }
+                }
+                return;
+            }
+            if (!menu.hidden && !event.target.closest('.platformSwitch')) {
+                closeMenu(menu, document.getElementById('platformSwitchButton'));
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape') return;
+            const menu = document.getElementById('platformSwitchMenu');
+            if (menu && !menu.hidden) {
+                closeMenu(menu, document.getElementById('platformSwitchButton'));
+            }
+        });
+    })();
 
     window.addEventListener('DOMContentLoaded', init, { once: true });
     window.addEventListener('beforeunload', () => window.clearInterval(state.clockTimer), { once: true });

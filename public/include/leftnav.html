@@ -1,8 +1,26 @@
 <div class="leftNav">
     <div class="leftLogo">
-        <a href="/main.html">
-            <img src="/assets/img/empty.png" id="platformLogo" alt="home">
-        </a>
+        <div class="platformSwitch">
+            <button type="button" class="platformSwitchButton" id="platformSwitchButton" aria-expanded="false" aria-haspopup="true" aria-label="플랫폼 선택">
+                <img src="/assets/img/empty.png" id="platformLogo" alt="home">
+                <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </button>
+            <ul class="platformSwitchMenu" id="platformSwitchMenu" aria-label="플랫폼 목록" hidden>
+                <li>
+                    <a href="/main.html" aria-current="page">
+                        <img src="/assets/img/logo_abc.png" alt="" aria-hidden="true">
+                        <span>ABC EMS PLATFORM</span>
+                        <i class="bi bi-check2" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="/fit/peak">
+                        <img src="/assets/img/egfit_top_logo.svg" alt="" aria-hidden="true">
+                        <span>에그핏</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
     <nav id="navigation">
         <ul class="d1">
@@ -130,10 +148,5 @@
                 </div>
             </li>
         </ul>
-        <div class="eggFitLogo" id="eggFitLogo">
-            <a href="#" id="footerLink">
-                <img src="/assets/img/empty.png" id="footerLogo" alt="푸터 로고">
-            </a>
-        </div>
     </nav>
 </div>

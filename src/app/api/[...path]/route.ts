@@ -20,6 +20,7 @@ import {
   mockWattMain,
   mockWidgets,
 } from "@/lib/watt-mocks";
+import { FIRM_ROWS } from "@/lib/fit-mocks/firm";
 
 export const dynamic = "force-dynamic";
 
@@ -137,6 +138,11 @@ async function handle(req: NextRequest, path: string[]) {
 
   if (joined.startsWith("navigations/")) {
     return json({ cat: 1, data: buildRealMenu() });
+  }
+
+  // 업체관리 목록 — React(/fit/firm)와 정적 EMS 페이지(firm.html)가 같은 데이터를 쓴다.
+  if (joined === "firm" || joined.startsWith("firm/")) {
+    return json({ cat: 1, data: FIRM_ROWS });
   }
 
   if (joined.startsWith("peak-info/")) {

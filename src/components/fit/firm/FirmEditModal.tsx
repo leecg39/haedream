@@ -12,12 +12,35 @@ function toFormValues(row: FirmRow | null): FormValues {
   if (!row) return {};
 
   return {
-    "edit-firmName": row.firmName ?? "",
-    "edit-kepcoNo": String(row.kepcoNo ?? ""),
-    "edit-contractLimit": String(row.contractLimit ?? ""),
-    "edit-powerLimit": String(row.powerLimit ?? ""),
-    "edit-serviceType": String(row.serviceType ?? "0"),
-    "edit-memo": row.memo ?? "",
+    "edit-firmName": row.firmName,
+    "edit-degreeCity": String(row.degreeCity),
+    "edit-contract": row.contract,
+    "edit-kepcoNo": row.kepcoNo,
+    "edit-bone": row.bone,
+    "edit-kepcoCyber": row.kepcoCyber,
+    // EMS 암호는 변경 시에만 입력하는 필드라 기존 값을 채우지 않는다.
+    "edit-passwd": "",
+    "edit-kepcoPasswd": row.kepcoPasswd,
+    "edit-manager": row.manager,
+    "edit-phone": row.phone,
+    "edit-addressText": row.addressText,
+    "edit-checkDay": row.checkDay > 0 ? String(row.checkDay) : "",
+    "edit-contractLimit": String(row.contractLimit),
+    "edit-ableLimit": String(row.ableLimit),
+    "edit-ableLimitTime": row.ableLimitTime,
+    "edit-powerLimit": String(row.powerLimit),
+    "edit-pct_ratio": String(row.pct_ratio),
+    "edit-pulse_num": String(row.pulse_num),
+    "edit-peakRunMode": String(row.peakRunMode),
+    "edit-peakControlMode": String(row.peakControlMode),
+    "edit-isDisable": String(row.isDisable),
+    "edit-serviceType": String(row.serviceType),
+    "edit-frugalTime": row.frugalTime,
+    "edit-investGold": String(row.investGold),
+    "edit-kepcoContract": row.kepcoContract,
+    "edit-boss": row.boss,
+    "edit-memo": row.memo,
+    "edit-mapGeo": row.mapGeo,
   };
 }
 

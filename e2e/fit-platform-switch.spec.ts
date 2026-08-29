@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { stubMapTiles } from "./map-stub";
 
 test.describe("플랫폼 전환 드롭다운", () => {
   // 1340px 이하에서는 leftNav가 숨겨지므로 데스크톱 뷰포트를 사용한다.
@@ -58,5 +59,57 @@ test.describe("플랫폼 전환 드롭다운", () => {
     await menu.getByRole("link", { name: "에그핏" }).click();
     await expect(page).toHaveURL(/\/fit\/peak$/);
     await expect(page.locator("#platformLogo")).toBeVisible();
+  });
+
+  test("ABC 정적 페이지(stat.html)에서도 같은 드롭다운으로 에그핏 전환됨", async ({ page }) => {
+    await stubMapTiles(page);
+    await page.goto("/stat.html");
+    await expect(page.locator("body")).toHaveAttribute("data-stat-demo-ready", "true");
+
+    const button = page.locator("#platformSwitchButton");
+    await expect(button).toBeVisible();
+    await expect(button.locator("#platformLogo")).toHaveAttribute(
+      "src",
+      "/assets/img/logo_abc.png",
+    );
+
+    await button.click();
+    const menu = page.locator("#platformSwitchMenu");
+    await expect(menu).toBeVisible();
+    await expect(
+      menu.getByRole("link", { name: "ABC EMS PLATFORM" }),
+    ).toHaveAttribute("aria-current", "page");
+
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+
+    await button.click();
+    await menu.getByRole("link", { name: "에그핏" }).click();
+    await expect(page).toHaveURL(/\/fit\/peak$/);
+    await expect(page.locator("#platformLogo")).toBeVisible();
+  });
+
+  test("base.js 정적 페이지(peak.html)에서도 드롭다운이 동작함", async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem("accessToken", "e2e-demo");
+      // base.js 는 vio._fid 를 localStorage 에서 읽는다 (sessionStorage 아님).
+      localStorage.setItem("fid", "121");
+      localStorage.setItem("authIdn", "121");
+    });
+    await page.goto("/peak.html");
+
+    const button = page.locator("#platformSwitchButton");
+    await expect(button).toBeVisible();
+    await button.click();
+    const menu = page.locator("#platformSwitchMenu");
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole("link", { name: "ABC EMS PLATFORM" })).toHaveAttribute(
+      "href",
+      "/main.html",
+    );
+    await expect(menu.getByRole("link", { name: "에그핏" })).toHaveAttribute(
+      "href",
+      "/fit/peak",
+    );
   });
 });

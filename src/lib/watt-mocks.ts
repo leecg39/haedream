@@ -59,19 +59,52 @@ export function mockPeakStats() {
   const data = quarters(96, 620, 180);
   const currentPower = quarters(96, 580, 150);
   const now = Math.floor(Date.now() / 1000);
+  // peak.js dataTrans 는 startTime 이 _peakStartTime(0) 보다 커야 차트를 초기화한다.
+  const todayStart = Math.floor(new Date().setHours(0, 0, 0, 0) / 1000);
   const maxMonth = Array.from({ length: 12 }, (_, i) => [
     now - (11 - i) * 30 * 86400,
     700 + i * 15,
   ]);
+  // [오늘, 이번달, 지난1년, 총누적] 순이 아니라 task 키별 [횟수 4개, 절감kW, 절감금액] 모양이다.
+  const taskBucket = (seed: number) => [12 + seed, 8 + seed, 5 + seed, 3 + seed, 320 + seed * 10, 41000 + seed * 1000];
+  const baseRateYears = Array.from({ length: 12 }, (_, i) => {
+    const monthDate = new Date();
+    monthDate.setMonth(monthDate.getMonth() - (11 - i));
+    const yyyymm = `${monthDate.getFullYear()}${String(monthDate.getMonth() + 1).padStart(2, "0")}`;
+    return [yyyymm, 0, 8200000 + i * 45000];
+  });
   return {
-    firm: [0, 0, 1, 1, 1000], // [?, timeDiff, pct, pulse, powerLimit]
-    peakPower: { data, currentPower },
+    // [?, timeDiff, pctRatio, pulseNum, powerLimit, 데이터정확도, ?, ?, runMode, controlMode]
+    firm: [0, 0, 240, 1200, 1000, 98, 0, 0, 1, 0],
+    peakPower: { startTime: todayStart, powerLimit: 1000, data, currentPower },
     maxMonth,
     peakTask: {
-      year: [12, 8, 5, 3],
-      today: [2, 1, 0, 0],
-      total: [40, 22, 11, 6],
-      month: [5, 3, 2, 1],
+      year: taskBucket(0),
+      today: taskBucket(1),
+      total: taskBucket(2),
+      month: taskBucket(3),
+    },
+    // [idn, 제어ON, 요청시각, 설비명, 절감률, 제어타입]
+    control: [
+      [1, 1, now - 30, "냉동기 1호", 15, 1],
+      [2, 0, now - 320, "공조기 2호", 0, 1],
+      [3, 0, now - 610, "압축기 1호", 0, 2],
+    ],
+    extend: {
+      meterDate: 15,
+      thisWatt: 812,
+      thisWattTime: now - 3600,
+      wattMax: 845,
+      wattMaxTime: now - 5400,
+      monthWattMax: 902,
+      monthWattMaxTime: now - 86400 * 3,
+      peakTimes: 2,
+      peakTimesYear: 12,
+      peakMoney: 184000,
+      peakMoneyYear: 2140000,
+      baseRate: 8650000,
+      lastRate: 8420000,
+      baseRateYears,
     },
   };
 }

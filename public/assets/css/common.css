@@ -179,6 +179,16 @@ body.darkmode{display:flex;width:100%;height:max-content;min-height:100vh;backgr
 .leftNav{display:flex;flex-direction:column;z-index:1031;width:200px;min-height:100vh}
 .leftNav .leftLogo{display:flex;align-items:center;justify-content:center;height:60px;border-bottom:1px solid var(--color-line)}
 .leftNav .leftLogo img{width:140px}
+.leftLogo .platformSwitch{position:relative;display:flex;align-items:center;justify-content:center;width:100%}
+.leftLogo .platformSwitchButton{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0;border:0;background:transparent;cursor:pointer}
+.leftLogo .platformSwitchButton>i{color:#c6c6c6;font-size:12px}
+.leftLogo .platformSwitchButton:hover>i{color:#97b1ff}
+.leftLogo .platformSwitchMenu{position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:1200;min-width:190px;margin:2px 0 0;padding:6px;list-style:none;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:#14143c;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.leftLogo .platformSwitchMenu li a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:#e8e8f2;font-size:13px;text-decoration:none;white-space:nowrap}
+.leftLogo .platformSwitchMenu li a:hover{background:rgba(48,126,235,.25);color:#fff}
+.leftLogo .platformSwitchMenu li a[aria-current="page"]{background:rgba(48,126,235,.18)}
+.leftLogo .platformSwitchMenu li a img{width:22px;height:22px;object-fit:contain}
+.leftLogo .platformSwitchMenu li a i{margin-left:auto;color:#7ec8ff}
 .leftNav nav{overflow-y:auto;height:calc(100vh - 60px);padding-bottom:60px}
 .leftNav nav::-webkit-scrollbar{display:none}
 .leftNav nav::-moz-scrollbar{display:none}

@@ -178,7 +178,7 @@ export function FirmManager() {
                     <td>{row.firmName}</td>
                     <td>{row.registTime.slice(0, 10)}</td>
                     <td>{FIRM_CONTRACT_LABELS[row.contract] ?? row.contract}</td>
-                    <td>{row.kepcoNo === 0 ? "-" : row.kepcoNo}</td>
+                    <td>{row.kepcoNo || "-"}</td>
                     <td>{echoNumber(row.frugal)}</td>
                     <td>{echoNumber(row.ableLowPower === 0 ? row.contractLimit : row.ableLowPower)}</td>
                     <td>{echoNumber(row.maxAbleWatt)}</td>
