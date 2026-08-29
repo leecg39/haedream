@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ABC_SETTINGS_LINKS } from "@/lib/abc/settings-nav";
+import { FirmSelect } from "@/components/fit/FirmSelect";
 import { useAbcShell } from "./AbcShellContext";
 
-const DEMO_FIRMS = [
-  { fid: 1, name: "대산금속 본사" },
-  { fid: 121, name: "제1공장" },
-];
+/** ABC 상단 바 업체 선택 옵션(데이터베이스 고객 정보에서 파생). */
+export interface AbcFirmOption {
+  readonly fid: number;
+  readonly name: string;
+}
 
 function padZero(v: number): string {
   return v < 10 ? `0${v}` : String(v);
@@ -24,11 +26,16 @@ function formatNow(now: Date): { ymd: string; dtime: string } {
   };
 }
 
+interface AbcTopBarProps {
+  readonly firms?: readonly AbcFirmOption[];
+}
+
 /** 원본 watt include/top.html 재현 — ABC EMS 상단바. */
-export function AbcTopBar() {
+export function AbcTopBar({ firms = [] }: AbcTopBarProps) {
   const { mobileOpen, toggleMobile } = useAbcShell();
   const [clock, setClock] = useState<{ ymd: string; dtime: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [currentFid, setCurrentFid] = useState<number | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -42,6 +49,31 @@ export function AbcTopBar() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
   }, []);
 
+  // 현재 선택 업체는 localStorage.fid 기준(에그핏과 동일). 마운트 후 읽는다.
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const stored = Number(window.localStorage.getItem("fid"));
+      if (stored && firms.some((firm) => firm.fid === stored)) {
+        setCurrentFid(stored);
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+    // firms 는 레이아웃에서 고정된다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const changeFirm = (fid: number) => {
+    setCurrentFid(fid);
+    try {
+      window.localStorage.setItem("fid", String(fid));
+      window.localStorage.setItem("authIdn", String(fid));
+    } catch {
+      // 로컬 스토리지 접근 실패 시에도 화면 갱신은 진행한다.
+    }
+    // 업체 변경 시 각 화면이 fid 기준으로 다시 그려지도록 새로고침한다.
+    window.location.reload();
+  };
+
   const openSettings = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setSettingsOpen(true);
@@ -54,11 +86,11 @@ export function AbcTopBar() {
     <>
       <div className="topArea">
         <div className="left">
-          <select name="" id="firmSelect" className="firmSelect" defaultValue={DEMO_FIRMS[0].fid}>
-            {DEMO_FIRMS.map((f) => (
-              <option key={f.fid} value={f.fid}>{f.name}</option>
-            ))}
-          </select>
+          <FirmSelect
+            firms={firms}
+            value={currentFid ?? firms[0]?.fid ?? ""}
+            onChange={changeFirm}
+          />
           <i className="bi bi-person-circle" role="button" aria-label="프로필" />
           <div className="day">
             <i className="bi bi-clock" />

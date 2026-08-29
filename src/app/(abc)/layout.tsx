@@ -27,6 +27,7 @@ export default function AbcRootLayout({ children }: { children: React.ReactNode 
         <link rel="stylesheet" href="/abc/assets/css/bad.css" precedence="default" />
         <link rel="stylesheet" href="/abc/assets/css/net.css" precedence="default" />
         <link rel="stylesheet" href="/abc/assets/css/widgetSet.css" precedence="default" />
+        <link rel="stylesheet" href="/abc/assets/css/research.css" precedence="default" />
         <link rel="stylesheet" href="/abc/assets/css/lib/tui-date-picker.css" precedence="default" />
         <link rel="stylesheet" href="/abc/clone-css/abc-extras.css" precedence="default" />
       </head>

@@ -12,6 +12,7 @@ export interface AbcSettingsLink {
 
 export const ABC_SETTINGS_LINKS: readonly AbcSettingsLink[] = [
   { href: "/abc/widget-set", label: "대시보드 화면설정", cloned: true },
+  { href: "/abc/research", label: "한전 파워플래너 연동", cloned: true },
   { href: "/abc/user", label: "사용자관리", cloned: true },
   { href: "/abc/notify", label: "알람설정", cloned: true },
   { href: "/abc/gate-node", label: "게이트웨이 관리", cloned: true },

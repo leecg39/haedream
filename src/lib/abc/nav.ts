@@ -114,12 +114,17 @@ export const ABC_NAV: readonly AbcNavGroup[] = [
     ]
   },
   {
+    "id": "kepco",
+    "icon": "bi bi-lightning-charge",
+    "label": "한전 파워플래너",
+    "href": "/abc/research"
+  },
+  {
     "id": "enpi",
     "icon": "bi bi-graph-down",
     "label": "절감효과",
     "href": "/enpi.html"
-  },
-  {
+  },  {
     "id": "monit",
     "icon": "bi bi-diagram-3",
     "label": "계통감시",

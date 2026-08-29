@@ -2,9 +2,14 @@
 
 import { AbcLeftNav } from "./AbcLeftNav";
 import { AbcShellProvider, useAbcShell } from "./AbcShellContext";
-import { AbcTopBar } from "./AbcTopBar";
+import { AbcTopBar, type AbcFirmOption } from "./AbcTopBar";
 
-function AbcShellInner({ children }: { children: React.ReactNode }) {
+interface AbcShellProps {
+  readonly children: React.ReactNode;
+  readonly firms?: readonly AbcFirmOption[];
+}
+
+function AbcShellInner({ children, firms }: AbcShellProps) {
   const { mobileOpen, closeMobile } = useAbcShell();
   return (
     <>
@@ -18,7 +23,7 @@ function AbcShellInner({ children }: { children: React.ReactNode }) {
         </div>
         <div className="contentsArea">
           <div className="topBar" id="topBar">
-            <AbcTopBar />
+            <AbcTopBar firms={firms} />
           </div>
           {children}
         </div>
@@ -27,10 +32,10 @@ function AbcShellInner({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function AbcShell({ children }: { children: React.ReactNode }) {
+export function AbcShell({ children, firms }: AbcShellProps) {
   return (
     <AbcShellProvider>
-      <AbcShellInner>{children}</AbcShellInner>
+      <AbcShellInner firms={firms}>{children}</AbcShellInner>
     </AbcShellProvider>
   );
 }
