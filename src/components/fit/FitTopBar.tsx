@@ -14,8 +14,12 @@ const STATUS_TEXT: Record<FitStatusBadge["level"], string> = {
   good: "좋아요!   이번주 에너지 사용이 원활합니다.",
 };
 
+const DASHBOARD_SETTINGS_LINK = {
+  href: "/widget-set",
+  label: "대시보드 화면설정",
+} as const;
+
 const SETTINGS_LINKS: ReadonlyArray<{ href: string; label: string }> = [
-  { href: "/fit/widget-set", label: "대시보드 화면설정" },
   { href: "/fit/user", label: "사용자관리" },
   { href: "/fit/notify", label: "알람설정" },
   { href: "/fit/gate-node", label: "게이트웨이 관리" },
@@ -57,8 +61,10 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
   const [clock, setClock] = useState<{ ymd: string; dtime: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // /fit/user(사용자관리)는 에그핏 셸을 유지한다.
-  const wattAdmin = pathname !== "/fit/user" && SETTINGS_LINKS.some((link) => link.href === pathname);
+  const wattAdmin = pathname === "/widget-set";
+  const settingsLinks = wattAdmin
+    ? [DASHBOARD_SETTINGS_LINK, ...SETTINGS_LINKS]
+    : SETTINGS_LINKS;
   const displayedFirms = wattAdmin
     ? [{ fid: 121, name: "대산금속" }]
     : firms;
@@ -198,7 +204,7 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
             </a>
             <div className="tbSetNav" style={{ display: settingsOpen ? "block" : "none" }} onMouseEnter={openSettings}>
               <ul>
-                {SETTINGS_LINKS.map((link) => (
+                {settingsLinks.map((link) => (
                   <li key={link.href}>
                     <a href={link.href}>{link.label}</a>
                   </li>

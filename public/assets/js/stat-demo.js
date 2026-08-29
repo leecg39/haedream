@@ -127,8 +127,8 @@
             });
         });
         const settings = document.querySelector('.tb-set > a');
-        const widgetSettingsLink = document.querySelector('.tbSetNav a[href="../widgetSet.html"]');
-        if (widgetSettingsLink) widgetSettingsLink.setAttribute('href', '/fit/widget-set');
+        const widgetSettingsLink = document.querySelector('.tbSetNav a[href="../widgetSet.html"], .tbSetNav a[href="/fit/widget-set"], .tbSetNav a[href="/widget-set"]');
+        if (widgetSettingsLink) widgetSettingsLink.setAttribute('href', '/widget-set');
         settings?.addEventListener('click', (event) => {
             event.preventDefault();
             settings.parentElement?.classList.toggle('on');
@@ -402,7 +402,7 @@
         mapElement.dataset.mapReady = 'true';
         mapElement.dataset.mapZoom = String(state.map.getZoom());
         state.map.on('zoomend', () => { mapElement.dataset.mapZoom = String(state.map.getZoom()); });
-        state.map.on('moveend', () => { mapElement.dataset.mapMoved = 'true'; });
+        state.map.on('moveend', () => { mapElement.dataset.mapMoved = String(Number(mapElement.dataset.mapMoved ?? 0) + 1); });
 
         const markerCount = 480;
         for (let index = 0; index < markerCount; index += 1) {

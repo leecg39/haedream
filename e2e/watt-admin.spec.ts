@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const pages = [
-  ["/fit/widget-set", "대시보드 화면설정"],
+  ["/widget-set", "대시보드 화면설정"],
   ["/fit/user", "사용자관리"],
   ["/fit/notify", "알람설정"],
   ["/fit/gate-node", "게이트웨이 관리"],
@@ -35,7 +35,7 @@ test.describe("WATT 관리 화면 클론", () => {
   });
 
   test("위젯 설정을 변경하고 저장함", async ({ page }) => {
-    await page.goto("/fit/widget-set");
+    await page.goto("/widget-set");
     await page.getByLabel("1줄에 보여질 위젯 갯수").selectOption("4");
     const sector = page.getByRole("checkbox", {
       name: /분야별 에너지 사용량/,

@@ -10,6 +10,7 @@ type WidgetDefinition = {
   readonly name: string;
   readonly tone: WidgetTone;
   readonly hasPreview?: boolean;
+  readonly display?: React.ReactNode;
 };
 
 type WidgetSetting = WidgetDefinition & {
@@ -37,34 +38,45 @@ const ENERGY_RIGHT: readonly WidgetDefinition[] = [
   { id: 13, name: "누적 전력 사용량", tone: "blue" },
   { id: 14, name: "설비별 사용량 TOP", tone: "blue" },
   { id: 15, name: "요금제정보 및 통신상태", tone: "blue" },
-  { id: 16, name: "공정별 에너지 사용량", tone: "blue" },
+  { id: 31, name: "공정별 에너지 사용량", tone: "blue" },
   { id: 32, name: "분야별 에너지 사용량", tone: "blue", hasPreview: false },
   { id: 33, name: "오늘의 가스 사용량", tone: "blue", hasPreview: false },
 ];
 
 const PRODUCTION: readonly WidgetDefinition[] = [
-  { id: 17, name: "이달의 생산현황", tone: "green" },
-  { id: 18, name: "이달의 생산목표 달성률", tone: "green" },
-  { id: 19, name: "월별 생산량대비 전력 사용량", tone: "green" },
-  { id: 20, name: "누적 에너지 절감률", tone: "green" },
-  { id: 21, name: "공정별 에너지 원단위", tone: "green" },
+  { id: 16, name: "이달의 생산현황", tone: "green" },
+  { id: 17, name: "이달의 생산목표 달성률", tone: "green" },
+  { id: 18, name: "월별 생산량대비 전력 사용량", tone: "green" },
+  { id: 19, name: "누적 에너지 절감률", tone: "green" },
+  { id: 20, name: "공정별 에너지 원단위", tone: "green" },
   { id: 34, name: "공정별 에너지", tone: "green" },
 ];
 
 const RE100: readonly WidgetDefinition[] = [
-  { id: 22, name: "RE100 이행 현황", tone: "purple" },
-  { id: 23, name: "태양광 발전량 그래프", tone: "purple" },
-  { id: 24, name: "SMP · REC 그래프", tone: "purple" },
-  { id: 25, name: "RE100 이행 가격 동향", tone: "purple" },
-  { id: 26, name: "신재생에너지 사용비율", tone: "purple" },
+  { id: 21, name: "RE100 이행 현황", tone: "purple" },
+  { id: 22, name: "태양광 발전량 그래프", tone: "purple" },
+  {
+    id: 23,
+    name: "SMP·REC 그래프",
+    tone: "purple",
+    display: (
+      <>
+        SMP
+        <i className="bi bi-dot" aria-hidden="true" />
+        REC 그래프
+      </>
+    ),
+  },
+  { id: 24, name: "RE100 이행 가격 동향", tone: "purple" },
+  { id: 25, name: "신재생에너지 사용비율", tone: "purple" },
 ];
 
 const ESG: readonly WidgetDefinition[] = [
-  { id: 27, name: "ESG - 환경 1", tone: "blue" },
-  { id: 28, name: "ESG - 환경 2", tone: "blue" },
-  { id: 29, name: "ESG - 사회 1", tone: "blue" },
-  { id: 30, name: "ESG - 사회 2", tone: "blue" },
-  { id: 31, name: "ESG - 지배구조", tone: "blue" },
+  { id: 26, name: "ESG - 환경 1", tone: "blue" },
+  { id: 27, name: "ESG - 환경 2", tone: "blue" },
+  { id: 28, name: "ESG - 사회 1", tone: "blue" },
+  { id: 29, name: "ESG - 사회 2", tone: "blue" },
+  { id: 30, name: "ESG - 지배구조", tone: "blue" },
 ];
 
 const WIDGETS = [
@@ -161,7 +173,7 @@ function WidgetTable({
                   />
                 </label>
               </td>
-              <td>{widget.name}</td>
+              <td>{widget.display ?? widget.name}</td>
               <td>
                 {widget.hasPreview === false ? (
                   <span className="previewUnavailable" aria-label="미리보기 없음">

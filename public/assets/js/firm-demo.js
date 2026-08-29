@@ -148,8 +148,8 @@
             });
         });
         const settings = document.querySelector('.tb-set > a');
-        const widgetLink = document.querySelector('.tbSetNav a[href="../widgetSet.html"]');
-        if (widgetLink) widgetLink.setAttribute('href', '/fit/widget-set');
+        const widgetLink = document.querySelector('.tbSetNav a[href="../widgetSet.html"], .tbSetNav a[href="/fit/widget-set"], .tbSetNav a[href="/widget-set"]');
+        if (widgetLink) widgetLink.setAttribute('href', '/widget-set');
         settings?.addEventListener('click', (event) => {
             event.preventDefault();
             settings.parentElement?.classList.toggle('on');

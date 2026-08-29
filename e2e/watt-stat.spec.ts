@@ -1,10 +1,14 @@
 import { expect, test } from "@playwright/test";
+import { stubMapTiles } from "./map-stub";
 
 test.describe("Watt 통합관제 /stat.html", () => {
   test.beforeEach(async ({ page }) => {
+    await stubMapTiles(page);
     await page.setViewportSize({ width: 2032, height: 1162 });
     await page.goto("/stat.html");
     await expect(page.locator("body")).toHaveAttribute("data-stat-demo-ready", "true");
+    await expect(page.locator("#map")).toHaveAttribute("data-map-ready", "true");
+    await expect(page.locator("#map .wattDemoMarkerHost").first()).toBeAttached();
   });
 
   test("로그인 리다이렉트 없이 영상의 전체 패널과 고밀도 지도를 렌더링함", async ({ page }) => {
@@ -50,38 +54,48 @@ test.describe("Watt 통합관제 /stat.html", () => {
   });
 
   test("업체 행과 지도 마커 상세, 지도 줌·이동, 환경설정 메뉴가 동작함", async ({ page }) => {
-    const firstRow = page.locator("#dataList .firmListDataRow.active").first();
-    const firstId = await firstRow.getAttribute("data-firm-id");
-    await firstRow.click();
-    await expect(page.locator(".wattCompanyPopup .mapFirmCard")).toBeVisible();
-    await expect(page.locator("#dataList .firmListDataRow.selected")).toHaveAttribute(
-      "data-firm-id",
-      firstId ?? "",
-    );
+    const map = page.locator("#map");
+    const panCount = async () => Number(await map.getAttribute("data-map-moved") ?? 0);
 
-    await page.locator(".leaflet-popup-close-button").click();
+    // 마커 클릭은 지도를 이동시키지 않으므로(moveMap=false) 전국 뷰에서 먼저 검증한다.
+    // 행 클릭의 flyTo 이후에는 일부 마커가 뷰포트 밖으로 밀려날 수 있다.
     await page.locator("#map .wattDemoMarkerHost").nth(20).click({ force: true });
     await expect(page.locator(".wattCompanyPopup .mapFirmCard")).toBeVisible();
+    await page.locator(".leaflet-popup-close-button").click();
 
-    const map = page.locator("#map");
+    // 5초 실시간 갱신으로 행이 다시 그려지는 순간 클릭이 유실될 수 있어 재시도한다.
+    const movedBeforeRow = await panCount();
+    await expect(async () => {
+      await page.locator("#dataList .firmListDataRow.active").first().click();
+      await expect(page.locator("#dataList .firmListDataRow.selected")).toHaveCount(1, {
+        timeout: 1_500,
+      });
+    }).toPass({ timeout: 15_000 });
+    await expect(page.locator(".wattCompanyPopup .mapFirmCard")).toBeVisible();
+
+    // flyTo가 끝나 지도가 멈춘 뒤에 줌·드래그를 진행한다.
+    await expect.poll(panCount).toBeGreaterThan(movedBeforeRow);
+    await page.locator(".leaflet-popup-close-button").click();
+
     const zoomBefore = Number(await map.getAttribute("data-map-zoom"));
     await map.hover({ position: { x: 1150, y: 520 } });
     await page.mouse.wheel(0, -800);
     await expect.poll(async () => Number(await map.getAttribute("data-map-zoom"))).toBeGreaterThan(zoomBefore);
+    const movedBeforeDrag = await panCount();
     await page.mouse.move(1350, 550);
     await page.mouse.down();
     await page.mouse.move(1450, 640, { steps: 8 });
     await page.mouse.up();
-    await expect(map).toHaveAttribute("data-map-moved", "true");
+    await expect.poll(panCount).toBeGreaterThan(movedBeforeDrag);
 
     await page.locator(".tb-set > a").click();
     const settings = page.locator(".tbSetNav");
     await expect(settings).toBeVisible();
     await expect(settings.locator("a")).toHaveCount(11);
     const widgetSettings = settings.locator("a").first();
-    await expect(widgetSettings).toHaveAttribute("href", "/fit/widget-set");
+    await expect(widgetSettings).toHaveAttribute("href", "/widget-set");
     await widgetSettings.click();
-    await expect(page).toHaveURL(/\/fit\/widget-set$/);
+    await expect(page).toHaveURL(/\/widget-set$/);
     await expect(page.getByRole("heading", { name: "대시보드 화면설정" })).toBeVisible();
     await page.goBack();
     await expect(page.locator("body")).toHaveAttribute("data-stat-demo-ready", "true");

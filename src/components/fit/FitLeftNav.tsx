@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FIT_DEMO_PERMISSIONS, FIT_NAV_ITEMS, isNavItemVisible } from "@/lib/fit-nav";
 import type { FitPermissions } from "@/types/fit";
 import { useFitShell } from "./FitShellContext";
@@ -11,17 +11,139 @@ interface FitLeftNavProps {
   readonly permissions?: FitPermissions;
 }
 
-const WATT_ADMIN_PATHS = new Set([
-  "/fit/widget-set",
-  "/fit/notify",
-  "/fit/gate-node",
-  "/fit/gateway",
-  "/fit/sequence",
-  "/fit/gate-rtu",
-  "/fit/device",
-  "/fit/net",
-  "/fit/bad",
-]);
+type PlatformId = "egfit" | "abc";
+
+const PLATFORM_OPTIONS: ReadonlyArray<{
+  readonly id: PlatformId;
+  readonly label: string;
+  readonly href: string;
+  readonly logo: string;
+}> = [
+  {
+    id: "abc",
+    label: "ABC EMS PLATFORM",
+    href: "/main.html",
+    logo: "/fit/assets/img/logo_abc.png",
+  },
+  {
+    id: "egfit",
+    label: "에그핏",
+    href: "/fit/peak",
+    logo: "/fit/assets/img/egfit_top_logo.svg",
+  },
+];
+
+/**
+ * 상단 로고 자리의 플랫폼 전환 드롭다운.
+ * 에그핏 셸에서는 #platformLogo(에그핏 로고)를, ABC 셸에서는 ABC 로고를 현재 값으로 보여준다.
+ */
+function PlatformSwitch({
+  current,
+  closeMobile,
+}: {
+  readonly current: PlatformId;
+  readonly closeMobile: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const currentPlatform = PLATFORM_OPTIONS.find((option) => option.id === current) ?? PLATFORM_OPTIONS[1];
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div className="platformSwitch" ref={containerRef}>
+      <button
+        type="button"
+        className="platformSwitchButton"
+        aria-expanded={open}
+        aria-haspopup="true"
+        aria-label="플랫폼 선택"
+        onClick={() => setOpen((value) => !value)}
+      >
+        {current === "egfit" ? (
+          <img src={currentPlatform.logo} id="platformLogo" alt="home" />
+        ) : (
+          <img src={currentPlatform.logo} alt="ABC EMS Platform" />
+        )}
+        <i className={`bi bi-chevron-${open ? "up" : "down"}`} aria-hidden="true" />
+      </button>
+      {open ? (
+        <ul className="platformSwitchMenu" aria-label="플랫폼 목록">
+          {PLATFORM_OPTIONS.map((option) => {
+            const isCurrent = option.id === current;
+            const content = (
+              <>
+                <img src={option.logo} alt="" aria-hidden="true" />
+                <span>{option.label}</span>
+                {isCurrent ? <i className="bi bi-check2" aria-hidden="true" /> : null}
+              </>
+            );
+            return (
+              <li key={option.id}>
+                {option.id === "egfit" ? (
+                  <Link
+                    href={option.href}
+                    aria-current={isCurrent ? "page" : undefined}
+                    onClick={() => {
+                      setOpen(false);
+                      closeMobile();
+                    }}
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <a
+                    href={option.href}
+                    aria-current={isCurrent ? "page" : undefined}
+                    onClick={() => {
+                      setOpen(false);
+                      closeMobile();
+                    }}
+                  >
+                    {content}
+                  </a>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+const PLATFORM_SWITCH_STYLES = `
+.leftLogo .platformSwitch{position:relative;display:flex;align-items:center;justify-content:center;width:100%}
+.platformSwitchButton{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0;border:0;background:transparent;cursor:pointer}
+.platformSwitchButton img{width:130px;object-fit:scale-down;margin:1vh 0}
+.platformSwitchButton>i{color:#c6c6c6;font-size:12px;transition:transform .2s}
+.platformSwitchButton:hover>i{color:#97b1ff}
+.platformSwitchMenu{position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:1200;min-width:190px;margin:2px 0 0;padding:6px;list-style:none;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:#14143c;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.platformSwitchMenu li a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:#e8e8f2;font-size:13px;text-decoration:none;white-space:nowrap}
+.platformSwitchMenu li a:hover{background:rgba(48,126,235,.25);color:#fff}
+.platformSwitchMenu li a[aria-current="page"]{background:rgba(48,126,235,.18)}
+.platformSwitchMenu li a img{width:22px;height:22px;object-fit:contain}
+.platformSwitchMenu li a i{margin-left:auto;color:#7ec8ff}
+@media (max-width:1024px){.platformSwitchMenu{left:0;transform:none}}
+`;
+
+const WATT_ADMIN_PATHS = new Set(["/widget-set"]);
 
 const WATT_NAV = [
   { id: "stat", label: "통합관제", icon: "bi-globe2", href: "/stat.html" },
@@ -125,10 +247,9 @@ function WattLeftNav({
 
   return (
     <div className={mobileOpen ? "leftNav mobileActive" : "leftNav"}>
+      <style>{PLATFORM_SWITCH_STYLES}</style>
       <div className="leftLogo">
-        <a href="/main.html">
-          <img src="/fit/assets/img/logo_abc.png" alt="ABC EMS Platform" />
-        </a>
+        <PlatformSwitch current="abc" closeMobile={closeMobile} />
       </div>
       <nav aria-label="WATT 주요 메뉴">
         <ul className="d1">
@@ -177,14 +298,6 @@ function WattLeftNav({
             );
           })}
         </ul>
-        <div className="eggFitLogo">
-          <a href="/fit/peak">
-            <img
-              src="/fit/assets/img/egfit_top_logo.svg"
-              alt="에그핏 한국미래에너지 플랫폼"
-            />
-          </a>
-        </div>
       </nav>
     </div>
   );
@@ -207,10 +320,9 @@ export function FitLeftNav({ permissions = FIT_DEMO_PERMISSIONS }: FitLeftNavPro
 
   return (
     <div className={mobileOpen ? "leftNav mobileActive" : "leftNav"}>
+      <style>{PLATFORM_SWITCH_STYLES}</style>
       <div className="leftLogo">
-        <Link href="/fit/peak">
-          <img src="/fit/assets/img/egfit_top_logo.svg" id="platformLogo" alt="home" />
-        </Link>
+        <PlatformSwitch current="egfit" closeMobile={closeMobile} />
       </div>
       <nav id="navigation">
         <ul className="d1">
@@ -233,11 +345,6 @@ export function FitLeftNav({ permissions = FIT_DEMO_PERMISSIONS }: FitLeftNavPro
             </div>
           </li>
         </ul>
-        <div className="eggOnLogo">
-          <a href="/main.html" id="eggOnLink">
-            <img src="/fit/assets/img/logo_abc.png" id="footerLogo" alt="하단 로고" />
-          </a>
-        </div>
       </nav>
     </div>
   );

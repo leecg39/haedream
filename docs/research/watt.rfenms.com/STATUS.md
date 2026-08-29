@@ -33,5 +33,5 @@ npm run dev -- -p 3456
 `docs/design-references/watt.rfenms.com/clone-*.png`
 
 ## 남은 일
-- **원본 Visual QA**: ego-browser task 11에서 watt.rfenms.com 로그인 후 「계속」
+- ~~원본 Visual QA~~ (2026-08-29 완료): 관리자 10개 페이지를 라이브 원본과 대조 — widgetSet 위젯 ID/순서 매핑 교정(16~31 → 원본 번호 체계), SMP·REC 아이콘 마크업 반영. 나머지 9개 페이지는 구조 일치 확인
 - 일부 페이지 `contentsArea` disable 해제 / KPI 매핑 추가 피팅
