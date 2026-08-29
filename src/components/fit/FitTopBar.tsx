@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { FitFirmOption, FitStatusBadge } from "@/types/fit";
+import { FirmSelect } from "./FirmSelect";
 import { useFitShell } from "./FitShellContext";
 
 /** 원본 include/top.html 의 상태 배지 4종. 실제로는 이 중 하나만 노출된다. */
@@ -131,19 +132,11 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
     <>
       <div className="topArea">
         <div className="left">
-          <select
-            name=""
-            id="firmSelect"
-            className="firmSelect"
+          <FirmSelect
+            firms={displayedFirms}
             value={currentFid ?? displayedFirms[0]?.fid ?? ""}
-            onChange={(event) => changeFirm(Number(event.target.value))}
-          >
-            {displayedFirms.map((firm) => (
-              <option key={firm.fid} value={firm.fid}>
-                {firm.name}
-              </option>
-            ))}
-          </select>
+            onChange={changeFirm}
+          />
           <i className="bi bi-person-circle" role="button" aria-label="프로필" />
           <div className="goodbad">
             <ul id="currentStatus">
