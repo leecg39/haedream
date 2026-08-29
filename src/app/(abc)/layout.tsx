@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Agentation } from "agentation";
 
 export const metadata: Metadata = {
   title: { default: "ABC EMS", template: "%s · ABC EMS" },
@@ -29,7 +30,10 @@ export default function AbcRootLayout({ children }: { children: React.ReactNode 
         <link rel="stylesheet" href="/abc/assets/css/lib/tui-date-picker.css" precedence="default" />
         <link rel="stylesheet" href="/abc/clone-css/abc-extras.css" precedence="default" />
       </head>
-      <body id="dashboard" className="darkmode">{children}</body>
+      <body id="dashboard" className="darkmode">
+        {children}
+        {process.env.NODE_ENV === "development" && <Agentation />}
+      </body>
     </html>
   );
 }
