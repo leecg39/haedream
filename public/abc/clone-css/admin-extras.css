@@ -1,0 +1,51 @@
+/*
+ * admin 화면 전용 보조 스타일.
+ *
+ * 이전에 이 규칙들이 public/fit/assets/css/deskLib.css 에 직접 병합되어 있었는데,
+ * 그 파일은 원본 사이트 무변환 미러여야 한다. 원본이 쓰던 .act / .desk th /
+ * .sheetArea 값까지 덮어써서 firm.html 클론의 버튼·표 헤더 색이 원본과 달라졌다.
+ *
+ * deskLib.css 는 원본으로 되돌리고, admin 화면에서만 필요한 추가·변경분을
+ * 여기로 분리했다. admin 컴포넌트가 deskLib.css 뒤에 이 파일을 로드한다.
+ */
+
+/* 추가 */
+.act {display:inline-block;height:40px;padding:.52rem 1.1rem;margin-left:0.5rem;border-radius:4px;border:0;background-color:#2062bf;;text-align:center;font-size:1rem;cursor:pointer}
+/* 추가 */
+.act:hover {background-color:#2b76df;;color:#fff}
+/* 추가 */
+.actIcon {position:relative;padding-left:1.3rem;padding-right:1.3rem}
+/* 추가 */
+.actIcon .icon {position:absolute;left:1.2rem;top:.55rem}
+/* 추가 */
+.iconExcel {background-position:-24px 0}
+/* 추가 */
+.act i {margin-right:5px}
+/* 추가 */
+.act i.excel {color:#41e350}
+/* 변경 */
+.deskInput {width:150px;padding:.2rem;border:none;background-color:transparent;color:#fff;vertical-align:middle;font-size:1rem}
+/* 변경 */
+.deskSelect {padding:.32rem .4rem;height:40px;border:1px solid #5190a5;border-radius:.4rem;background-color:transparent;vertical-align:middle;font-size:1rem}
+/* 변경 */
+.deskAct {width:max-content;border-radius:4px;text-decoration:none}
+/* 변경 */
+.deskPages {display:flex;gap:2px;align-items:center;font-size:0}
+/* 추가 */
+.deskPage.act {margin:0;background-color:rgba(32, 98, 191, 0.3)}
+/* 변경 */
+.sheetArea {min-height:calc(100vh - 220px);background-color:rgba(0,0,29,0.4);padding:2rem;border:1px solid rgba(255,255,255,0.15)}
+/* 변경 */
+.deskArea {margin:1.5rem 0 1rem}
+/* 변경 */
+.desk {clear:both;width:100%;border-collapse:collapse;border-spacing:0;text-align:center}
+/* 변경 */
+.desk th {padding:0.6rem .2rem;background-color:rgba(4,56,140,0.4);color:#fff;font-size:1rem;font-weight:400;transition:all 0.2s}
+/* 변경 */
+.desk .mark {color:#29b6f6}
+/* 변경 */
+.modalContent {min-height:20rem}
+/* 변경 */
+@media screen and (max-width:480px) {.act{font-size:15px;white-space:nowrap}
+/* 변경 */
+.deskTool {transform:scale(0.9)}

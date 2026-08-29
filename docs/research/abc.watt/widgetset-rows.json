@@ -1,0 +1,247 @@
+[
+ {
+  "id": "1",
+  "checked": false,
+  "order": 1,
+  "label": "실시간 피크 전력",
+  "section": "에너지사용"
+ },
+ {
+  "id": "2",
+  "checked": false,
+  "order": 2,
+  "label": "실시간 전력 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "3",
+  "checked": false,
+  "order": 3,
+  "label": "오늘의 전력 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "4",
+  "checked": false,
+  "order": 4,
+  "label": "생산량 대비 전력 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "5",
+  "checked": false,
+  "order": 5,
+  "label": "주간 전력 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "6",
+  "checked": false,
+  "order": 6,
+  "label": "오늘의 피크전력",
+  "section": "에너지사용"
+ },
+ {
+  "id": "7",
+  "checked": false,
+  "order": 7,
+  "label": "에너지 절감효과",
+  "section": "에너지사용"
+ },
+ {
+  "id": "8",
+  "checked": false,
+  "order": 8,
+  "label": "월별 최대수요",
+  "section": "에너지사용"
+ },
+ {
+  "id": "9",
+  "checked": false,
+  "order": 9,
+  "label": "설비제어",
+  "section": "에너지사용"
+ },
+ {
+  "id": "10",
+  "checked": false,
+  "order": 10,
+  "label": "현재 상태",
+  "section": "에너지사용"
+ },
+ {
+  "id": "11",
+  "checked": false,
+  "order": 11,
+  "label": "오늘의 누적 전력 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "12",
+  "checked": false,
+  "order": 12,
+  "label": "오늘의 누적 전력 사용요금",
+  "section": "에너지사용"
+ },
+ {
+  "id": "13",
+  "checked": false,
+  "order": 13,
+  "label": "누적 전력 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "14",
+  "checked": false,
+  "order": 14,
+  "label": "설비별 사용량 TOP",
+  "section": "에너지사용"
+ },
+ {
+  "id": "15",
+  "checked": false,
+  "order": 15,
+  "label": "요금제정보 및 통신상태",
+  "section": "에너지사용"
+ },
+ {
+  "id": "16",
+  "checked": false,
+  "order": 16,
+  "label": "이달의 생산현황",
+  "section": "생산현황"
+ },
+ {
+  "id": "17",
+  "checked": false,
+  "order": 17,
+  "label": "이달의 생산목표 달성률",
+  "section": "생산현황"
+ },
+ {
+  "id": "18",
+  "checked": false,
+  "order": 18,
+  "label": "월별 생산량대비 전력 사용량",
+  "section": "생산현황"
+ },
+ {
+  "id": "19",
+  "checked": false,
+  "order": 19,
+  "label": "누적 에너지 절감률",
+  "section": "생산현황"
+ },
+ {
+  "id": "20",
+  "checked": false,
+  "order": 20,
+  "label": "공정별 에너지 원단위",
+  "section": "생산현황"
+ },
+ {
+  "id": "21",
+  "checked": false,
+  "order": 21,
+  "label": "RE100 이행 현황",
+  "section": "RE100 이행"
+ },
+ {
+  "id": "22",
+  "checked": false,
+  "order": 22,
+  "label": "태양광 발전량 그래프",
+  "section": "RE100 이행"
+ },
+ {
+  "id": "23",
+  "checked": false,
+  "order": 23,
+  "label": "SMP·REC 그래프",
+  "section": "RE100 이행"
+ },
+ {
+  "id": "24",
+  "checked": false,
+  "order": 24,
+  "label": "RE100 이행 가격 동향",
+  "section": "RE100 이행"
+ },
+ {
+  "id": "25",
+  "checked": false,
+  "order": 25,
+  "label": "신재생에너지 사용비율",
+  "section": "RE100 이행"
+ },
+ {
+  "id": "26",
+  "checked": false,
+  "order": 26,
+  "label": "ESG - 환경 1",
+  "section": "ESG 경영"
+ },
+ {
+  "id": "27",
+  "checked": false,
+  "order": 27,
+  "label": "ESG - 환경 2",
+  "section": "ESG 경영"
+ },
+ {
+  "id": "28",
+  "checked": false,
+  "order": 28,
+  "label": "ESG - 사회 1",
+  "section": "ESG 경영"
+ },
+ {
+  "id": "29",
+  "checked": false,
+  "order": 29,
+  "label": "ESG - 사회 2",
+  "section": "ESG 경영"
+ },
+ {
+  "id": "30",
+  "checked": false,
+  "order": 30,
+  "label": "ESG - 지배구조",
+  "section": "ESG 경영"
+ },
+ {
+  "id": "31",
+  "checked": false,
+  "order": 31,
+  "label": "공정별 에너지 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "32",
+  "checked": false,
+  "order": 32,
+  "label": "분야별 에너지 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "33",
+  "checked": false,
+  "order": 33,
+  "label": "오늘의 가스 사용량",
+  "section": "에너지사용"
+ },
+ {
+  "id": "34",
+  "checked": false,
+  "order": 34,
+  "label": "공정별 에너지",
+  "section": "생산현황"
+ },
+ {
+  "id": "35",
+  "checked": false,
+  "order": 35,
+  "label": "현재 요금제",
+  "section": "에너지사용"
+ }
+]
