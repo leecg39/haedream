@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { ABC_NAV } from "@/lib/abc/nav";
+import { ABC_PLATFORM_SWITCH_STYLES, AbcPlatformSwitch } from "./AbcPlatformSwitch";
 import { useAbcShell } from "./AbcShellContext";
 
 /**
@@ -17,10 +18,9 @@ export function AbcLeftNav() {
 
   return (
     <div className={mobileOpen ? "leftNav mobileActive" : "leftNav"}>
+      <style>{ABC_PLATFORM_SWITCH_STYLES}</style>
       <div className="leftLogo">
-        <a href="/abc/main.html">
-          <img src="/abc/assets/img/logo_abc.png" id="platformLogo" alt="home" />
-        </a>
+        <AbcPlatformSwitch closeMobile={closeMobile} />
       </div>
       <nav id="navigation">
         <ul className="d1">
@@ -80,11 +80,7 @@ export function AbcLeftNav() {
             );
           })}
         </ul>
-        <div className="eggOnLogo">
-          <a href="/fit/peak" id="eggOnLink">
-            <img src="/abc/assets/img/egfit_top_logo.svg" id="footerLogo" alt="에그핏" />
-          </a>
-        </div>
+        {/* 하단 에그핏 로고는 상단 플랫폼 전환 드롭다운으로 대체되어 제거함. */}
       </nav>
     </div>
   );
