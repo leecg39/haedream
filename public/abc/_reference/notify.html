@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>피크관리 - 피크상태</title>
+    <link rel="shortcut icon" href="/abc/assets/img/favicon.ico">
+    <link rel="stylesheet" href="/abc/assets/css/lib/tui-date-picker.css">
+    
+    
+    
+    
+    
+    <link href="/abc/assets/css/lib/select2.min.css" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" type="text/css" href="/abc/assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="/abc/assets/css/notify.css?v=0.0.1">
+    
+    
+<style>:root{--color-font:#eeeeee}</style></head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"><div class="leftNav">
+    <div class="leftLogo">
+        <a href="/main.html">
+            <img src="/abc/assets/img/empty.png" id="platformLogo" alt="home">
+        </a>
+    </div>
+    <nav id="navigation">
+        <ul class="d1">
+            <li class="navLi disable" id="stat">
+                <a href="/stat.html">
+                    <i class="bi bi-globe2"></i><span>통합관제</span>
+                </a>
+            </li>
+            <li class="navLi disable" id="firm">
+                <a href="/firm.html">
+                    <i class="bi bi-people-fill"></i><span>업체관리</span>
+                </a>
+            </li>
+            <li class="navLi" id="main">
+                <a href="#">
+                    <i class="bi bi-house-door"></i><span>대시보드</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_main"><a href="/main.html" id="mainMenu">대시보드 위젯</a></li>
+                        <li data-nav="_home"><a href="/wattMain.html" id="wattMainMenu">대시보드 전력메인</a></li>
+                        <li data-nav="_solar"><a href="/solar.html" id="solarMenu">태양광 대시보드</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi disable" id="consulting">
+                <a href="/consulting.html">
+                    <i class="bi bi-person-rolodex"></i><span>컨설팅</span>
+                </a>
+            </li>
+            <li class="navLi" id="peak">
+                <a href="#">
+                    <i class="bi bi-speedometer2"></i><span>피크관리</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_peak"><a href="/peak.html" id="peakMenu">피크상태</a></li>
+                        <li data-nav="_peakPanel"><a href="/peakPanel.html" id="peakPanelMenu">부하상황판</a></li>
+                        <li data-nav="_peakSet"><a href="/peakSet.html" id="peakSetMenu">피크 제어설정</a></li>
+                        <li data-nav="_peakHis"><a href="/peakHis.html" id="peakHisMenu">피크 그래프</a></li>
+                        <li data-nav="_powerUsage"><a href="/powerUsage.html" id="powerUsageMenu">전력 사용 보고서</a></li>
+                        <li data-nav="_peakUsage"><a href="/peakUsage.html" id="peakUsageMenu">피크 15분 전력보고서</a></li>
+                        <li data-nav="_controlHis"><a href="/controlHis.html" id="controlHisMenu">피크제어이력</a></li>
+                        <li data-nav="_acp"><a href="/acp.html" id="acpMenu">시스템에어컨</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="watt">
+                <a href="#">
+                    <i class="bi bi-bar-chart"></i><span>전력사용량</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_powerPage"><a href="/powerPage.html" id="powerPageMenu">전력사용량 보기</a></li>
+                        <li data-nav="_page"><a href="/wattPrediction.html" id="wattPredictionMenu">소비량 예측</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="enpi">
+                <a href="/enpi.html" id="enpiMenu">
+                    <i class="bi bi-graph-down"></i>
+                    <span>절감효과</span>
+                </a>
+            </li>
+            <li class="navLi" id="monit">
+                <a href="#">
+                    <i class="bi bi-diagram-3"></i>
+                    <span>계통감시</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_monit"><a href="/monit.html" id="monitMenu">계통감시</a></li>
+                        <li data-nav="_energyMonit"><a href="/energyMonit.html" id="energyMonitMenu">공정별 에너지 계통</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi facnav" id="tech">
+                <a href="#">
+                    <i class="bi bi-sliders"></i><span>설비관리</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_tech"><a href="/techSettings.html" id="techSettingsMenu">제어설비목록</a></li>
+                        <li data-nav="_techUsage"><a href="/techUsage.html" id="techUsageMenu">주요설비 이용률</a></li>
+                        <li data-nav="_techOver"><a href="/techOver.html" id="techOverMenu">주요설비 부하율</a></li>
+                        <li data-nav="_techTree"><a href="/techTree.html" id="techTreeMenu">설비 제어</a></li>
+                        <li data-nav="_techPlan"><a href="/techPlan.html" id="techPlanMenu">최적화 제어</a></li>
+                        <li data-nav="_techHis"><a href="/techHis.html" id="techHisMenu">최적화 제어이력</a></li>
+                        <li data-nav="_compressor"><a href="/compressor.html" id="compressorMenu">콤프레셔</a></li>
+                        <li data-nav="_thermos"><a href="/thermos.html" id="thermosMenu">온도</a></li>
+                        <li data-nav="_gas"><a href="/gasReports.html" id="gasReportsMenu">가스 사용량</a></li>
+                        <li data-nav="_frozen"><a href="/techFrozen.html" id="techFrozenMenu">냉난방 제어</a></li>
+                        <li data-nav="_plc"><a href="/plc.html" id="plcMenu">PLC 제어 관리</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="analysis">
+                <a href="#">
+                    <i class="bi bi-input-cursor"></i><span>비교분석</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_kpi"><a href="/kpi.html" id="kpiMenu">목표대비 비교분석</a></li>
+                        <li data-nav="_sensor"><a href="/sensor.html" id="sensorMenu">개별계측기관리</a></li>
+                        <li data-nav="_reportFine"><a href="/reportFine.html" id="reportFineMenu">전력사용현황</a></li>
+                        <li data-nav="_loads"><a href="/loads.html" id="loadsMenu">가상부하분산</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="report">
+                <a href="#">
+                    <i class="bi bi-file-earmark-bar-graph"></i><span>보고서</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_report"><a href="/report.html" id="reportMenu">종합보고서</a></li>
+                        <li data-nav="_reportPower"><a href="/reportPower.html" id="reportPowerMenu">전력요금보고서</a></li>
+                        <li><a href="/reportIK.html" class="disable" id="reportIKMenu">전력사용량분석보고서</a></li>
+                        <li data-nav="_reportToe"><a href="/reportToe.html" id="reportToeMenu">온실가스배출보고서</a></li>
+                        <li data-nav="_reportUnit"><a href="/reportUnit.html" id="reportUnitMenu">기간별 전력사용량</a></li>
+                        <li data-nav="_reportFacilities"><a href="/reportFacilities.html" id="reportFacilitiesMenu">설비별 전력상세정보</a></li>
+                        <li data-nav="_reportTotal"><a href="/reportTotal.html" id="reportTotalMenu">공정별 보고서</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+        <div class="eggFitLogo" id="eggFitLogo">
+            <a href="#" id="footerLink">
+                <img src="/abc/assets/img/empty.png" id="footerLogo" alt="푸터 로고">
+            </a>
+        </div>
+    </nav>
+</div>
+</div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"><div class="topArea">
+    <div class="left">
+        <!-- 공장이 여러개일 경우 셀렉트박스 보이기 -->
+        <select name="" id="firmSelect" class="firmSelect" onchange="vio.setFirm()"></select>
+        <i class="bi bi-person-circle" onclick="vio.getProf()"></i>
+        <div class="goodbad">
+            <ul id="currentStatus">
+                <li class="disable">
+                    <a href="#">
+                        <span class="state badbad">주의요함</span>
+                        <span class="text">이번주는 피크관리에 각별한 관심이 필요합니다!</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state bad">관심필요</span>
+                        <span class="text">이번주 피크 횟수가 평균을 초과하였습니다.</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state normal">보통</span>
+                        <span class="text">이번주 피크현황이 안정적입니다.</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state good">좋아요!</span>
+                        <span class="text">이번주 에너지 사용이 원활합니다.</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="mobileIcon">
+        <div class="line"></div>
+    </div>
+</div>
+<div class="topRightArea">
+    <div class="day">
+        <i class="bi bi-clock"></i>
+        <span class="ymd" id="ymd"></span>
+        <span class="dtime" id="dtime"></span>
+    </div>
+    <ul class="topBtn">
+        <li class="tb-set">
+            <a href="#" class="bluebtn">
+                <i class="bi bi-gear"></i>
+                <span class="text">환경설정</span>
+            </a>
+            <div class="tbSetNav">
+                <ul>
+                    <li><a href="../widgetSet.html">대시보드 화면설정</a></li>
+                    <li><a href="../user.html">사용자관리</a></li>
+                    <li><a href="../notify.html">알람설정</a></li>
+                    <li><a href="../gateNode.html">게이트웨이 관리</a></li>
+                    <li><a href="../gateway.html">복합제어기 관리</a></li>
+                    <li><a href="../sequence.html">시퀀스제어</a></li>
+                    <li><a href="../gateRTU.html">RTU관리</a></li>
+                    <li><a href="../device.html">모드버스 계측</a></li>
+                    <li><a href="../net.html">실시간데이터</a></li>
+                    <li><a href="../bad.html">통신상태 불량</a></li>
+                    <li class="disable" id="appUpdate"><a href="../login.html?update=yes">업데이트</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="tb-refresh">
+            <a href="javascript:void(0)" onclick="location.reload(true)">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span class="text">새로고침</span>
+            </a>
+        </li>
+        <li class="tbHelp">
+            <a href="https://rfems.com/abc_manual/index.php" target="_blank">
+                <i class="bi bi-question-circle"></i>
+                <span class="text">도움말</span>
+            </a>
+        </li>
+        <li class="tb-logout" id="appLogout">
+            <a href="javascript:void(0)">
+                <i class="bi bi-door-open"></i>
+                <span class="text">로그아웃</span>
+            </a>
+        </li>
+    </ul>
+</div></div>
+        <main class="contents" id="contentsArea">
+            <h1 class="deskTitle">알람설정</h1>
+            <div class="sheetArea setSub">
+                <div class="sheetScroll">
+                    <table class="sheet">
+                        <thead class="sheetSticky">
+                            <tr>
+                                <th class="tLabel" rowspan="2">설비명</th>
+                                <th rowspan="2">현재전압</th>
+                                <th rowspan="2">현재전류</th>
+                                <th rowspan="2">현재전력</th>
+                                <th colspan="9" title="라인메신저">SMS 알람 설정</th>
+                            </tr>
+                            <tr>
+                                <th>시간</th>
+                                <th title="미만일때 알림">MIN.전압</th>
+                                <th title="초과일때 알림">MAX.전압</th>
+                                <th title="미만일때 알림">MIN.전류</th>
+                                <th title="초과일때 알림">MAX.전류</th>
+                                <th title="미만일때 알림">MIN.전력</th>
+                                <th title="초과일때 알림">MAX.전력</th>
+                                <th>알람</th>
+                                <th>저장</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemList">
+                            <tr>
+                                <th>-</th>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

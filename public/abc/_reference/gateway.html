@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>복합제어기 관리</title>
+    <link rel="shortcut icon" href="/abc/assets/img/favicon.ico">
+    <link rel="stylesheet" href="/abc/assets/css/lib/tui-date-picker.css">
+    
+    
+    <link href="/abc/assets/css/lib/select2.min.css" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" type="text/css" href="/abc/assets/css/common.css?v=0.0.1">
+    <link rel="stylesheet" type="text/css" href="/abc/assets/css/deskLib.css?v=0.0.1">
+    
+    
+<style>:root{--color-font:#eeeeee}</style></head>
+<body id="dashboard" class="darkmode">
+<div class="mobileOverlay">
+    <div class="mobileBg"></div>
+    <div class="mobileNavbg"></div>
+</div>
+<div class="container">
+    <div class="bdRight" id="leftnav"><div class="leftNav">
+    <div class="leftLogo">
+        <a href="/main.html">
+            <img src="/abc/assets/img/empty.png" id="platformLogo" alt="home">
+        </a>
+    </div>
+    <nav id="navigation">
+        <ul class="d1">
+            <li class="navLi disable" id="stat">
+                <a href="/stat.html">
+                    <i class="bi bi-globe2"></i><span>통합관제</span>
+                </a>
+            </li>
+            <li class="navLi disable" id="firm">
+                <a href="/firm.html">
+                    <i class="bi bi-people-fill"></i><span>업체관리</span>
+                </a>
+            </li>
+            <li class="navLi" id="main">
+                <a href="#">
+                    <i class="bi bi-house-door"></i><span>대시보드</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_main"><a href="/main.html" id="mainMenu">대시보드 위젯</a></li>
+                        <li data-nav="_home"><a href="/wattMain.html" id="wattMainMenu">대시보드 전력메인</a></li>
+                        <li data-nav="_solar"><a href="/solar.html" id="solarMenu">태양광 대시보드</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi disable" id="consulting">
+                <a href="/consulting.html">
+                    <i class="bi bi-person-rolodex"></i><span>컨설팅</span>
+                </a>
+            </li>
+            <li class="navLi" id="peak">
+                <a href="#">
+                    <i class="bi bi-speedometer2"></i><span>피크관리</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_peak"><a href="/peak.html" id="peakMenu">피크상태</a></li>
+                        <li data-nav="_peakPanel"><a href="/peakPanel.html" id="peakPanelMenu">부하상황판</a></li>
+                        <li data-nav="_peakSet"><a href="/peakSet.html" id="peakSetMenu">피크 제어설정</a></li>
+                        <li data-nav="_peakHis"><a href="/peakHis.html" id="peakHisMenu">피크 그래프</a></li>
+                        <li data-nav="_powerUsage"><a href="/powerUsage.html" id="powerUsageMenu">전력 사용 보고서</a></li>
+                        <li data-nav="_peakUsage"><a href="/peakUsage.html" id="peakUsageMenu">피크 15분 전력보고서</a></li>
+                        <li data-nav="_controlHis"><a href="/controlHis.html" id="controlHisMenu">피크제어이력</a></li>
+                        <li data-nav="_acp"><a href="/acp.html" id="acpMenu">시스템에어컨</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="watt">
+                <a href="#">
+                    <i class="bi bi-bar-chart"></i><span>전력사용량</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_powerPage"><a href="/powerPage.html" id="powerPageMenu">전력사용량 보기</a></li>
+                        <li data-nav="_page"><a href="/wattPrediction.html" id="wattPredictionMenu">소비량 예측</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="enpi">
+                <a href="/enpi.html" id="enpiMenu">
+                    <i class="bi bi-graph-down"></i>
+                    <span>절감효과</span>
+                </a>
+            </li>
+            <li class="navLi" id="monit">
+                <a href="#">
+                    <i class="bi bi-diagram-3"></i>
+                    <span>계통감시</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_monit"><a href="/monit.html" id="monitMenu">계통감시</a></li>
+                        <li data-nav="_energyMonit"><a href="/energyMonit.html" id="energyMonitMenu">공정별 에너지 계통</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi facnav" id="tech">
+                <a href="#">
+                    <i class="bi bi-sliders"></i><span>설비관리</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_tech"><a href="/techSettings.html" id="techSettingsMenu">제어설비목록</a></li>
+                        <li data-nav="_techUsage"><a href="/techUsage.html" id="techUsageMenu">주요설비 이용률</a></li>
+                        <li data-nav="_techOver"><a href="/techOver.html" id="techOverMenu">주요설비 부하율</a></li>
+                        <li data-nav="_techTree"><a href="/techTree.html" id="techTreeMenu">설비 제어</a></li>
+                        <li data-nav="_techPlan"><a href="/techPlan.html" id="techPlanMenu">최적화 제어</a></li>
+                        <li data-nav="_techHis"><a href="/techHis.html" id="techHisMenu">최적화 제어이력</a></li>
+                        <li data-nav="_compressor"><a href="/compressor.html" id="compressorMenu">콤프레셔</a></li>
+                        <li data-nav="_thermos"><a href="/thermos.html" id="thermosMenu">온도</a></li>
+                        <li data-nav="_gas"><a href="/gasReports.html" id="gasReportsMenu">가스 사용량</a></li>
+                        <li data-nav="_frozen"><a href="/techFrozen.html" id="techFrozenMenu">냉난방 제어</a></li>
+                        <li data-nav="_plc"><a href="/plc.html" id="plcMenu">PLC 제어 관리</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="analysis">
+                <a href="#">
+                    <i class="bi bi-input-cursor"></i><span>비교분석</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_kpi"><a href="/kpi.html" id="kpiMenu">목표대비 비교분석</a></li>
+                        <li data-nav="_sensor"><a href="/sensor.html" id="sensorMenu">개별계측기관리</a></li>
+                        <li data-nav="_reportFine"><a href="/reportFine.html" id="reportFineMenu">전력사용현황</a></li>
+                        <li data-nav="_loads"><a href="/loads.html" id="loadsMenu">가상부하분산</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="navLi" id="report">
+                <a href="#">
+                    <i class="bi bi-file-earmark-bar-graph"></i><span>보고서</span><span class="leftMArr"><i class="bi bi-chevron-down"></i></span>
+                </a>
+                <div class="d2Nav">
+                    <ul class="d2">
+                        <li data-nav="_report"><a href="/report.html" id="reportMenu">종합보고서</a></li>
+                        <li data-nav="_reportPower"><a href="/reportPower.html" id="reportPowerMenu">전력요금보고서</a></li>
+                        <li><a href="/reportIK.html" class="disable" id="reportIKMenu">전력사용량분석보고서</a></li>
+                        <li data-nav="_reportToe"><a href="/reportToe.html" id="reportToeMenu">온실가스배출보고서</a></li>
+                        <li data-nav="_reportUnit"><a href="/reportUnit.html" id="reportUnitMenu">기간별 전력사용량</a></li>
+                        <li data-nav="_reportFacilities"><a href="/reportFacilities.html" id="reportFacilitiesMenu">설비별 전력상세정보</a></li>
+                        <li data-nav="_reportTotal"><a href="/reportTotal.html" id="reportTotalMenu">공정별 보고서</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+        <div class="eggFitLogo" id="eggFitLogo">
+            <a href="#" id="footerLink">
+                <img src="/abc/assets/img/empty.png" id="footerLogo" alt="푸터 로고">
+            </a>
+        </div>
+    </nav>
+</div>
+</div>
+    <div class="contentsArea">
+        <div class="topBar" id="topBar"><div class="topArea">
+    <div class="left">
+        <!-- 공장이 여러개일 경우 셀렉트박스 보이기 -->
+        <select name="" id="firmSelect" class="firmSelect" onchange="vio.setFirm()"></select>
+        <i class="bi bi-person-circle" onclick="vio.getProf()"></i>
+        <div class="goodbad">
+            <ul id="currentStatus">
+                <li class="disable">
+                    <a href="#">
+                        <span class="state badbad">주의요함</span>
+                        <span class="text">이번주는 피크관리에 각별한 관심이 필요합니다!</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state bad">관심필요</span>
+                        <span class="text">이번주 피크 횟수가 평균을 초과하였습니다.</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state normal">보통</span>
+                        <span class="text">이번주 피크현황이 안정적입니다.</span>
+                    </a>
+                </li>
+                <li class="disable">
+                    <a href="#">
+                        <span class="state good">좋아요!</span>
+                        <span class="text">이번주 에너지 사용이 원활합니다.</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="mobileIcon">
+        <div class="line"></div>
+    </div>
+</div>
+<div class="topRightArea">
+    <div class="day">
+        <i class="bi bi-clock"></i>
+        <span class="ymd" id="ymd"></span>
+        <span class="dtime" id="dtime"></span>
+    </div>
+    <ul class="topBtn">
+        <li class="tb-set">
+            <a href="#" class="bluebtn">
+                <i class="bi bi-gear"></i>
+                <span class="text">환경설정</span>
+            </a>
+            <div class="tbSetNav">
+                <ul>
+                    <li><a href="../widgetSet.html">대시보드 화면설정</a></li>
+                    <li><a href="../user.html">사용자관리</a></li>
+                    <li><a href="../notify.html">알람설정</a></li>
+                    <li><a href="../gateNode.html">게이트웨이 관리</a></li>
+                    <li><a href="../gateway.html">복합제어기 관리</a></li>
+                    <li><a href="../sequence.html">시퀀스제어</a></li>
+                    <li><a href="../gateRTU.html">RTU관리</a></li>
+                    <li><a href="../device.html">모드버스 계측</a></li>
+                    <li><a href="../net.html">실시간데이터</a></li>
+                    <li><a href="../bad.html">통신상태 불량</a></li>
+                    <li class="disable" id="appUpdate"><a href="../login.html?update=yes">업데이트</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="tb-refresh">
+            <a href="javascript:void(0)" onclick="location.reload(true)">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span class="text">새로고침</span>
+            </a>
+        </li>
+        <li class="tbHelp">
+            <a href="https://rfems.com/abc_manual/index.php" target="_blank">
+                <i class="bi bi-question-circle"></i>
+                <span class="text">도움말</span>
+            </a>
+        </li>
+        <li class="tb-logout" id="appLogout">
+            <a href="javascript:void(0)">
+                <i class="bi bi-door-open"></i>
+                <span class="text">로그아웃</span>
+            </a>
+        </li>
+    </ul>
+</div></div>
+        <main class="contents" id="contentsArea">
+            <h1 class="deskTitle">복합제어기 관리</h1>
+            <div class="sheetArea setSub">
+                <div class="deskStat">
+                    <div class="deskTool" id="deskTool">
+                        <span class="deskAct act" data-act="add">
+                            <i class="bi bi-node-plus"></i>추가
+                        </span>
+                        <span class="deskAct act" data-act="excel">
+                            <i class="bi bi-file-earmark-excel-fill excel"></i>엑셀로 다운
+                        </span>
+                        <span class="deskAct act" data-act="print">
+                            <i class="bi bi-printer"></i>프린트
+                        </span>
+                        <span class="deskAct act" data-act="switch">
+                            <i class="bi bi-toggles"></i>모드전환
+                        </span>
+                    </div>
+                    <div class="deskPages">
+                        <span class="deskSearch">
+                            <input class="deskInput" id="deskInput" maxlength="16" placeholder="검색" />
+                            <i class="icon iconSearch"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="deskArea">
+                    <table class="desk" id="deskTable">
+                        <thead>
+                            <tr id="deskSort">
+                                <th class="sort" data-sort="gid">GATE</th>
+                                <th class="sort" data-sort="controlName">이름</th>
+                                <th class="sort" data-sort="controlMode" title="제어모드">모드</th>
+                                <th class="sort" data-sort="controlPriority" title="우선순위">순위</th>
+                                <th class="sort" data-sort="nodeIndex">노드</th>
+                                <th class="sort" data-sort="measureType">제어계측</th>
+                                <th class="tip" data-tip="전력계측 요구">전압</th>
+                                <th class="tip" data-tip="전력계측 요구">전류</th>
+                                <th class="tip" data-tip="온도계측 요구">온도</th>
+                                <th class="sort" data-sort="controlStat">상태</th>
+                                <th>제어</th>
+                                <th class="tip" data-tip="단위(mA)">현재값</th>
+                                <th class="tip" data-tip="제어때 적용되는 현재 설정된 출력값(%)">출력</th>
+                                <th class="tip" data-tip="피크제어때 적용될 출력값(%)">피크</th>
+                                <th class="sort" data-sort="rTime">마지막수신</th>
+                                <th class="tip" data-tip="제어 고유아이디">CID</th>
+                                <th>메모</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deskList">
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="deskStat">
+                    <div class="deskLimit">
+                        <span class="deskLabel" id="deskStat">1 - 5 / 5</span>
+                    </div>
+                    <div class="deskPages" id="deskPages">
+                        <span class="deskPage act">prev</span>
+                        <span class="deskPage act active">1</span>
+                        <span class="deskPage act">next</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class="disable" id="modal">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">게이트웨이 제어</div>
+                        <div class="editForm">
+                            <span>업체</span>
+                            <span>
+                                <select class="eSelect" id="edit-fid">
+                                    <option value="0">업체 선택</option>
+                                </select>
+                            </span>
+                            <span>이름</span>
+                            <span>
+                                <input class="eInput" id="edit-controlName" maxlength="32"/>
+                            </span>
+                            <span>제어모드</span>
+                            <span>
+                                <select class="eSelect" id="edit-controlMode">
+                                    <option value="0">수동(피크자동제어동작안함)</option>
+                                    <option value="1">자동</option>
+                                </select>
+                            </span>
+                            <span>우선순위</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-controlPriority" step="1" min="0" max="250"/>
+                            </span>
+                            <span>게이트웨이</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-gid" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>게이트노드</span>
+                            <span><input type="number" class="eInput" id="edit-nodeIndex" step="1" min="0" max="10"/></span>
+                            <span>기본온도</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-setTemp" step="1" min="0" max="1234"/>
+                            </span>
+                            <span>관리그룹 <i class="icon iconGear" id="actGroupPart"></i></span>
+                            <span>
+                                <select class="eSelect" id="edit-partIdn">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span>설비탭명</span>
+                            <span>
+                                <input class="eInput" id="edit-tabName" maxlength="8"/>
+                            </span>
+                            <span>온도계측</span>
+                            <span>
+                                <select class="eSelect" id="edit-pid">
+                                    <option value="0">계측 선택</option>
+                                </select>
+                            </span>
+                            <span>전력계측</span>
+                            <span>
+                                <select class="eSelect" id="edit-pidpw">
+                                    <option value="0" data-device="0">계측 선택</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="제어상태 정보를 얻기 위한 타겟">제어계측</span>
+                            <span>
+                                <select class="eSelect" id="edit-measureType">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="설비세팅을 위한 설정">설정타입</span>
+                            <span>
+                                <select class="eSelect" id="edit-controlType">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="설정타입에 맞춰 설정값을 전송하여 변경한다.">설정값
+                                <i class="icon iconGear" id="actGear"></i>
+                            </span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-controlGain" step="1" min="0" max="250"/>
+                            </span>
+                            <span class="tip" data-tip="설비제어를 하기위해 제어설정타입">제어타입</span>
+                            <span>
+                                <select class="eSelect" id="edit-controlAddress">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span class="tip" data-tip="제어시작후 최대 제어가능 시간(초)">강제복귀시간</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-limitTime" step="1" min="0" max="3600"/>
+                            </span>
+                            <span class="tip" data-tip="제어종료 후 다시 제어하기 위한 대기시간(초)">제어휴지시간</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-restTime" step="1" min="0" max="3600"/>
+                            </span>
+                            <span>제어그룹 <i class="icon iconGear" id="actGroupStay"></i></span>
+                            <span>
+                                <select class="eSelect" id="edit-stayIdn">
+                                    <option value="0">선택</option>
+                                </select>
+                            </span>
+                            <span>기본용량</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-baseWatt" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>설비디자인</span>
+                            <span>
+                                <select class="eSelect" id="edit-techDesign">
+                                    <option value="0">선택</option>
+                                    <option value="1">주조/주물</option>
+                                    <option value="2">용해</option>
+                                    <option value="3">열처리</option>
+                                    <option value="4">연속로</option>
+                                    <option value="5">팬/펌프/벤츄레이터</option>
+                                    <option value="6">압축공기</option>
+                                    <option value="7">공조</option>
+                                </select>
+                            </span>
+                            <span>메모</span>
+                            <span>
+                                <input class="eInput" id="edit-memo" maxlength="32"/>
+                            </span>
+                        </div>
+                        <div class="editExtend" id="editExtend"></div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalActDone">확인</span>
+                        <span class="modalAct" id="modalActCancel">취소</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modalItem">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalItemActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">그룹설정</div>
+                        <div class="editForm">
+                            <span>그룹</span>
+                            <span>
+                                <input class="eInput" id="edit-whatever" maxlength="16" placeholder="이름"/>
+                            </span>
+                            <span class="act" id="modalItemAct">등록</span>
+                        </div>
+                        <div class="editExtend editExtendGroup" id="editExtendItem"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modalCold">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalColdActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">냉난방 설정</div>
+                        <div class="disable editMapPosition" id="edit-mapArea">
+                            <img class="editMapImage" id="edit-mapAreaImage" src="" alt="map"/>
+                            <span class="editMapPoint" id="edit-mapAreaPoint"/>
+                        </div>
+                        <div class="editForm">
+                            <span>냉난방타입</span>
+                            <span>
+                                <select class="eSelect" id="edit-airType">
+                                    <option value="0">선택</option>
+                                    <option value="1">전자식 1 comp</option>
+                                    <option value="2">전자식 1,2 comp</option>
+                                    <option value="3">Remot</option>
+                                    <option value="4">기계식</option>
+                                </select>
+                            </span>
+                            <span>도면그룹 <i class="icon iconGear" id="actStructure"></i></span>
+                            <span>
+                                <select class="eSelect" id="edit-mid">
+                                    <option value="0">도면 선택</option>
+                                </select>
+                            </span>
+                            <span>위치정보</span>
+                            <span>
+                                <input class="eInput" id="edit-mapInfo" maxlength="16"/>
+                            </span>
+                            <span>가동기준(W)</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-setWatt" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>콤프기준(W)</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-setWattEtc" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>좌표 x</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-mapX" step="1" min="0" max="65535"/>
+                            </span>
+                            <span>좌표 y</span>
+                            <span>
+                                <input type="number" class="eInput" id="edit-mapY" step="1" min="0" max="65535"/>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modalTool">
+                        <span class="modalAct" id="modalColdActDone">확인</span>
+                        <span class="modalAct" id="modalColdActCancel">취소</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="disable" id="modalMap">
+            <div class="modal">
+                <div class="modalBox">
+                    <i class="modalClose" id="modalMapActClose"></i>
+                    <div class="modalContent">
+                        <div class="editTitle">설비도면 관리</div>
+                        <div class="editForm">
+                            <span>도면이름</span>
+                            <span class="editFormExtend">
+                                <input class="eInput" id="edit-floorName" maxlength="16" placeholder="도면이름"/>
+                            </span>
+                            <span>도면첨부</span>
+                            <span>
+                                <input type="file" id="edit-mapFile" accept="image/png"/>
+                            </span>
+                            <span class="act" id="modalMapAct">등록</span>
+                            <span></span>
+                            <span></span>
+                            <span><a href="#" id="edit-mapLink" target="_blank"></a></span>
+                        </div>
+                        <div class="editExtend editExtendGroup" id="coldEditExtendItem"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="includeFile" data-include="footer"></div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+/*
+ * ABC EMS 클론 전용 보조 CSS.
+ *
+ * watt common.css 는 body/input/select/a 텍스트 색으로 var(--color-font) 를 쓰지만
+ * 로드되는 어떤 CSS 에도 --color-font 정의가 없다(라이브는 별도 테마가 주입하는 것으로 보임).
+ * dark 대시보드의 표준 밝은 텍스트색 #eeeeee 로 정의해 흰-온-흰/투명 텍스트를 방지한다.
+ * (원본 fit common.css 는 같은 자리에 리터럴 #eeeeee 를 썼다.)
+ */
+:root {
+  --color-font: #eeeeee;
+}
