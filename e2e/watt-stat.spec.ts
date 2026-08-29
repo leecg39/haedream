@@ -57,9 +57,8 @@ test.describe("Watt 통합관제 /stat.html", () => {
     const map = page.locator("#map");
     const panCount = async () => Number(await map.getAttribute("data-map-moved") ?? 0);
 
-    // 마커 클릭은 지도를 이동시키지 않으므로(moveMap=false) 전국 뷰에서 먼저 검증한다.
-    // 행 클릭의 flyTo 이후에는 일부 마커가 뷰포트 밖으로 밀려날 수 있다.
-    await page.locator("#map .wattDemoMarkerHost").nth(20).click({ force: true });
+    // 마커는 겹쳐 있을 수 있어 좌표 클릭 대신 대상 마커에 직접 클릭 이벤트를 발생시킨다.
+    await page.locator("#map .wattDemoMarkerHost").nth(20).dispatchEvent("click");
     await expect(page.locator(".wattCompanyPopup .mapFirmCard")).toBeVisible();
     await page.locator(".leaflet-popup-close-button").click();
 

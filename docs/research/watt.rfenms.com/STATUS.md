@@ -34,4 +34,5 @@ npm run dev -- -p 3456
 
 ## 남은 일
 - ~~원본 Visual QA~~ (2026-08-29 완료): 관리자 10개 페이지를 라이브 원본과 대조 — widgetSet 위젯 ID/순서 매핑 교정(16~31 → 원본 번호 체계), SMP·REC 아이콘 마크업 반영. 나머지 9개 페이지는 구조 일치 확인
-- 일부 페이지 `contentsArea` disable 해제 / KPI 매핑 추가 피팅
+- ~~`contentsArea` disable 해제~~ (2026-08-29 검증): 41개 정적 페이지 전수 스윕 — 로드 후 `disable` 잔류 0건, `base.js` finally 와 페이지 데모 스크립트가 정상 해제
+- ~~KPI 매핑~~ (2026-08-29 확인): 로컬 kpi.html 테이블 전 컬럼 렌더링 정상(NaN/undefined 없음), 콘솔 오류 없음

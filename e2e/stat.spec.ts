@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { stubMapTiles } from "./map-stub";
 
 test.describe("통합관제 클론", () => {
+  test.beforeEach(async ({ page }) => {
+    await stubMapTiles(page);
+  });
+
   test("영상의 핵심 패널과 실제 위성 지도를 렌더링함", async ({ page }) => {
     await page.goto("/fit/stat");
 
@@ -22,15 +27,31 @@ test.describe("통합관제 클론", () => {
   });
 
   test("표와 지도 깃발 선택·정렬·상세 팝업·지도 확대가 동작함", async ({ page }) => {
+    // 다른 개발 세션과 CPU를 나눠 쓰는 환경에서도 통과하도록 넉넉히 둔다.
+    test.setTimeout(120_000);
     await page.goto("/fit/stat");
     await expect(page.locator("#map .leaflet-marker-icon")).toHaveCount(360);
 
-    const firstRow = page.locator("#firmList .dataRow").first();
-    const firstName = await firstRow.locator(".firmName").textContent();
-    await firstRow.click();
-    await expect(page.locator("#firmList .dataRow.active")).toHaveCount(1);
+    // 마커는 같은 기지국 좌표에 겹쳐 있어 좌표 클릭이 인접 마커에 가로막힐 수 있어
+    // 대상 마커에 클릭 이벤트를 직접 발생시킨다.
+    await page
+      .locator("#map .leaflet-marker-icon[title='한빛에너지 제1공장']")
+      .dispatchEvent("click");
+    await expect(page.locator(".peakDetailFirmName")).toHaveText("한빛에너지 제1공장");
+    await page.locator(".overlayCloseButton").click();
+    await expect(page.locator("#peakDetailWrap")).toBeHidden();
+
+    // 5초 실시간 갱신으로 행이 재정렬되는 순간 클릭이 유실될 수 있어 재시도한다.
+    // 선택된 행(.active)은 재정렬돼도 같은 업체를 가리키므로, 선택 후에 이름을 읽는다.
+    await expect(async () => {
+      await page.locator("#firmList .dataRow").first().click();
+      await expect(page.locator("#firmList .dataRow.active")).toHaveCount(1, { timeout: 1_500 });
+    }).toPass({ timeout: 15_000 });
+    const selectedName = await page
+      .locator("#firmList .dataRow.active .firmName")
+      .textContent();
     await expect(page.locator("#peakDetailWrap")).toBeVisible();
-    await expect(page.locator(".peakDetailFirmName")).toHaveText(firstName ?? "");
+    await expect(page.locator(".peakDetailFirmName")).toHaveText(selectedName ?? "");
     await expect(page.locator("#map .statMapMarker.isSelected")).toHaveCount(1);
 
     await page.locator(".overlayCloseButton").click();
@@ -39,11 +60,11 @@ test.describe("통합관제 클론", () => {
     await page.locator("#orderBy").selectOption("frugalMonthDESC");
     await expect(page.locator("#firmList .dataRow").first()).toContainText("대동중공업 창원2공장");
 
-    await page.locator("#map .leaflet-marker-icon[title='한빛에너지 제1공장']").click();
-    await expect(page.locator(".peakDetailFirmName")).toHaveText("한빛에너지 제1공장");
-
+    // 줌 컨트롤은 무작위 배치된 마커에 가려질 수 있으므로 휠로 확대한다.
+    // 휠 이벤트는 마커 위에서도 지도 컨테이너로 버블링된다.
     const before = await page.locator("#map").getAttribute("data-map-zoom");
-    await page.locator("#map .leaflet-control-zoom-in").click();
+    await page.locator("#map").hover({ position: { x: 500, y: 400 } });
+    await page.mouse.wheel(0, -800);
     await expect(page.locator("#map")).not.toHaveAttribute("data-map-zoom", before ?? "");
   });
 

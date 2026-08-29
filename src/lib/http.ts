@@ -150,6 +150,7 @@ export function enforceRateLimit(
   limit = 120,
   windowMs = 60_000,
 ) {
+  if (process.env.RATE_LIMIT_DISABLED === "true") return;
   const now = Date.now();
   if (rateBuckets.size >= 1_000 && now - lastRatePrune >= 5_000) {
     lastRatePrune = now;

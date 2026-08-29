@@ -101,6 +101,12 @@ export function StatMap({ firms, selectedFid, onSelect }: StatMapProps) {
       };
       updateZoomState();
       map.on("zoomend", updateZoomState);
+      map.on("moveend", () => {
+        const host = containerRef.current?.parentElement;
+        if (host) {
+          host.setAttribute("data-map-moved", String(Number(host.getAttribute("data-map-moved") ?? 0) + 1));
+        }
+      });
       L.control.zoom({ position: "bottomleft" }).addTo(map);
 
       const imagery = L.tileLayer(

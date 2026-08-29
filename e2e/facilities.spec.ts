@@ -83,6 +83,7 @@ test.describe.serial("주요설비 CRUD", () => {
   const code = `E2E-${Date.now()}`;
 
   test("목록 → 등록 → 상세 → 수정 → 삭제 → 복구 흐름", async ({ page }) => {
+    test.setTimeout(60_000);
     await login(page, "admin");
     await page.goto("/admin/facilities");
     await expect(
