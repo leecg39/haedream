@@ -14,7 +14,20 @@ const eggfitSettings = [
   ["통신상태 불량", "/fit/bad"],
 ] as const;
 
-const rootSettings = [dashboardSetting, ...eggfitSettings] as const;
+// 정적 ABC 페이지(stat/firm/main.html)의 환경설정 메뉴는 ABC 셸 7개 페이지로
+// 연결하고, ABC 영역에 없는 시퀀스제어·실시간데이터만 /fit 화면을 가리킨다.
+const rootSettings = [
+  dashboardSetting,
+  ["사용자관리", "/abc/user"],
+  ["알람설정", "/abc/notify"],
+  ["게이트웨이 관리", "/abc/gate-node"],
+  ["복합제어기 관리", "/abc/gateway"],
+  ["시퀀스제어", "/fit/sequence"],
+  ["RTU관리", "/abc/gate-rtu"],
+  ["모드버스 계측", "/abc/device"],
+  ["실시간데이터", "/fit/net"],
+  ["통신상태 불량", "/abc/bad"],
+] as const;
 
 // 병렬 실행 중 하이드레이션이 늦어 첫 클릭이 유실될 수 있어,
 // 열릴 때까지 재시도한다. .tb-set 의 onClick 은 openSettings 단방향이라 안전하다.
@@ -64,7 +77,7 @@ test.describe("EggFit 환경설정 셸 유지", () => {
     }
   });
 
-  test("root 대시보드 환경설정 메뉴도 404 없이 /fit 화면으로 이동함", async ({
+  test("root 대시보드 환경설정 메뉴도 404 없이 각 플랫폼 화면으로 이동함", async ({
     page,
     request,
   }) => {
@@ -76,7 +89,9 @@ test.describe("EggFit 환경설정 셸 유지", () => {
       const menu = page.locator("#topBar .tbSetNav");
       await expect(menu.locator('a[href="/widget-set"]')).toBeAttached();
 
-      const settingsLinks = menu.locator('a[href="/widget-set"], a[href^="/fit/"]');
+      const settingsLinks = menu.locator(
+        'a[href="/widget-set"], a[href^="/fit/"], a[href^="/abc/"]',
+      );
       await expect(settingsLinks).toHaveCount(rootSettings.length);
 
       for (const [label, path] of rootSettings) {

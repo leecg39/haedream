@@ -36,6 +36,9 @@
 /data/*.csv
 /data/~$*
 
+# 한전 비밀번호 매칭 결과 (scripts/match-kepco-passwds.mjs 생성, 로컬 전용)
+/src/lib/fit-mocks/kepco-passwds.json
+
 # misc
 .DS_Store
 *.pem
