@@ -60,6 +60,7 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
   const { mobileOpen, toggleMobile } = useFitShell();
   const [clock, setClock] = useState<{ ymd: string; dtime: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [currentFid, setCurrentFid] = useState<number | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wattAdmin = pathname === "/widget-set";
   const settingsLinks = wattAdmin
@@ -89,6 +90,32 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
     };
   }, []);
 
+  // 현재 업체 선택은 localStorage.fid 가 기준이다(원본 base.js 와 동일).
+  // 하이드레이션 불일치를 피하려 마운트 후 읽는다.
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const stored = Number(window.localStorage.getItem("fid"));
+      if (stored && firms.some((firm) => firm.fid === stored)) {
+        setCurrentFid(stored);
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+    // firms 는 레이아웃에서 고정된다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const changeFirm = (fid: number) => {
+    setCurrentFid(fid);
+    try {
+      window.localStorage.setItem("fid", String(fid));
+      window.localStorage.setItem("authIdn", String(fid));
+    } catch {
+      // 로컬 스토리지 접근 실패 시에도 화면 갱신은 진행한다.
+    }
+    // 원본은 업체 변경 시 화면 전체를 새로 불러 각 페이지가 fid 기준으로 갱신된다.
+    window.location.reload();
+  };
+
   const openSettings = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setSettingsOpen(true);
@@ -104,7 +131,13 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
     <>
       <div className="topArea">
         <div className="left">
-          <select name="" id="firmSelect" className="firmSelect" defaultValue={displayedFirms[0]?.fid}>
+          <select
+            name=""
+            id="firmSelect"
+            className="firmSelect"
+            value={currentFid ?? displayedFirms[0]?.fid ?? ""}
+            onChange={(event) => changeFirm(Number(event.target.value))}
+          >
             {displayedFirms.map((firm) => (
               <option key={firm.fid} value={firm.fid}>
                 {firm.name}
