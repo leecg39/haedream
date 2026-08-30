@@ -91,8 +91,29 @@
 
         const select = document.getElementById('firmSelect');
         if (select) {
-            select.innerHTML = '<option value="1">(유)남부종합산업</option><option value="2">만경도정공장</option><option value="3">성신금속</option>';
-            select.value = '1';
+            // 상단 업체 드롭다운을 데이터베이스 업체 목록(state.firms = /api/firm)과 연동한다.
+            // 하드코딩된 3개 대신 실제 DB 업체 전체를 옵션으로 채운다.
+            const firms = state.firms ?? [];
+            if (firms.length > 0) {
+                select.innerHTML = firms
+                    .map((firm) => `<option value="${firm.fid}">${escapeHtml(firm.firmName)}</option>`)
+                    .join('');
+                // localStorage.fid 로 마지막 선택 업체를 복원(없으면 첫 업체).
+                const storedFid = Number(window.localStorage.getItem('fid'));
+                const initial = firms.some((firm) => firm.fid === storedFid) ? storedFid : firms[0].fid;
+                select.value = String(initial);
+            } else {
+                select.innerHTML = '<option value="">업체 없음</option>';
+            }
+            // 업체 변경 시 선택을 저장한다(다른 화면이 fid 기준으로 동작).
+            select.addEventListener('change', () => {
+                try {
+                    window.localStorage.setItem('fid', select.value);
+                    window.localStorage.setItem('authIdn', select.value);
+                } catch (error) {
+                    console.error('업체 선택 저장 실패', error);
+                }
+            });
         }
         const statusItems = document.querySelectorAll('#currentStatus li');
         statusItems.forEach((item) => item.classList.add('disable'));

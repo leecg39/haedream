@@ -54,7 +54,7 @@ export const FIRM_SERVICE_TYPE_LABELS: Readonly<Record<number, string>> = Object
 });
 
 /** 한 페이지에 노출하는 행 수. 원본 `dbListLimit` 대응. */
-export const FIRM_PAGE_LIMIT = 5;
+export const FIRM_PAGE_LIMIT = 10;
 
 /** 정렬 가능한 컬럼 키 (원본 `th[data-sort]`). */
 export type FirmSortKey = "fid" | "firmName" | "contract" | "kepcoNo" | "registTime" | "frugal";
