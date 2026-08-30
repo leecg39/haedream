@@ -13,7 +13,8 @@
         markersByFirm: new Map(),
         refreshTick: 0,
         clockTimer: null,
-        updateTimer: null
+        updateTimer: null,
+        tray: new Map()
     };
 
     const firmNames = [
@@ -86,6 +87,66 @@
         return { key: 'good', text: '안정', color: 'green' };
     }
 
+    // 업체 데이터베이스(/api/firm = FIRM_ROWS)에서 실제 업체 목록을 가져와
+    // 통합관제 화면이 기대하는 형태로 매핑한다. 지도 좌표는 mapGeo(경도,위도)를
+    // 우선 쓰고, 없으면 기존 데모 좌표 테이블로 대체한다. 예측/피크 등 실측이
+    // 없는 지표는 fid 기반 결정적 값으로 채워 데모 시뮬레이션과 호환시킨다.
+    async function loadFirmsFromDb() {
+        const response = await fetch('/api/firm', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`/api/firm ${response.status}`);
+        const body = await response.json();
+        const rows = body.data ?? [];
+        return rows.map((row, index) => {
+            const fid = Number(row.fid);
+            // 계약전력: DB contractLimit 우선, 없으면 결정적 대체값.
+            const contract = Number(row.contractLimit) > 0
+                ? Number(row.contractLimit)
+                : 720 + ((index * 137) % 1480);
+            // 목표전력: DB powerLimit 우선.
+            const target = Number(row.powerLimit) > 0
+                ? Number(row.powerLimit)
+                : Math.round(contract * (0.69 + (index % 5) * 0.035));
+            const ratioSeed = [0.72, 0.84, 0.94, 1.03, 1.13, 0.78, 0.88][index % 7];
+            const current = Number(row.peakLast) > 0
+                ? Number(row.peakLast)
+                : Math.round(target * ratioSeed);
+            // mapGeo 는 "경도, 위도" 순서. leaflet 은 [위도, 경도].
+            let lat, lng, address;
+            const geo = String(row.mapGeo || '').split(',').map((v) => Number(v.trim()));
+            if (geo.length === 2 && Number.isFinite(geo[0]) && Number.isFinite(geo[1])) {
+                lng = geo[0];
+                lat = geo[1];
+                address = row.addressText || '';
+            } else {
+                const loc = locations[index % locations.length];
+                lat = loc[0];
+                lng = loc[1];
+                address = row.addressText || loc[2];
+            }
+            return {
+                id: fid,
+                name: row.firmName,
+                kepcoNo: row.kepcoNo || '',
+                lat,
+                lng,
+                address,
+                contract,
+                target,
+                current,
+                baseCurrent: current,
+                prediction: Math.round(current * (1.02 + (index % 4) * 0.018)),
+                accuracy: 93 + (index * 5) % 7,
+                control: index % 6 === 0 ? '전체' : index % 3 === 0 ? '일부' : '안함',
+                mode: Number(row.peakRunMode) === 1 ? '자동' : (index % 4 === 0 ? '수동' : '자동'),
+                emergency: index % 13 === 0,
+                review: index % 9 === 0,
+                demandSeconds: 65 + (index * 47) % 810,
+                createdThisMonth: index < 4,
+                saving: 238000 + ((index * 183700) % 4900000)
+            };
+        });
+    }
+
     async function injectShell() {
         const [leftResponse, topResponse] = await Promise.all([
             fetch('/include/leftnav.html'),
@@ -127,8 +188,6 @@
             });
         });
         const settings = document.querySelector('.tb-set > a');
-        const widgetSettingsLink = document.querySelector('.tbSetNav a[href="../widgetSet.html"], .tbSetNav a[href="/fit/widget-set"], .tbSetNav a[href="/widget-set"]');
-        if (widgetSettingsLink) widgetSettingsLink.setAttribute('href', '/widget-set');
         settings?.addEventListener('click', (event) => {
             event.preventDefault();
             settings.parentElement?.classList.toggle('on');
@@ -234,6 +293,16 @@
             if (state.refreshTick) row.classList.add('demoRefreshing');
             row.id = `fid-${firm.id}`;
             row.dataset.firmId = String(firm.id);
+
+            // 검색된 업체 항목을 드래그드롭 가능하게 만든다(관심업체 트레이로 끌어놓기).
+            row.setAttribute('draggable', 'true');
+            row.dataset.firmName = firm.name;
+            row.ondragstart = (event) => {
+                event.dataTransfer.effectAllowed = 'copy';
+                event.dataTransfer.setData('text/plain', JSON.stringify({ id: firm.id, name: firm.name }));
+                row.classList.add('demoDragging');
+            };
+            row.ondragend = () => row.classList.remove('demoDragging');
 
             cells[0].className = firm.emergency && firm.review ? 'exclamationCheck' : firm.emergency ? 'exclamation' : firm.review ? 'check' : 'firmListDataValue mobile';
             cells[0].innerHTML = firm.emergency || firm.review ? '' : `<span class="demoStatusDot ${status.key}"></span>`;
@@ -459,6 +528,60 @@
             .openOn(state.map);
     }
 
+    // 관심업체 트레이(드롭 영역) — 검색 결과 행을 끌어다 놓으면 여기에 담긴다.
+    function setupDropZone() {
+        const filterWrap = document.querySelector('.firmList .kfeContent .filterWrap');
+        if (!filterWrap || document.getElementById('firmDropZone')) return;
+        const zone = document.createElement('div');
+        zone.id = 'firmDropZone';
+        zone.className = 'firmDropZone';
+        zone.dataset.count = '0';
+        zone.innerHTML = '<div class="firmDropHint"><i class="bi bi-hand-index"></i> 업체를 여기로 끌어다 놓으면 관심업체로 담깁니다</div><div class="firmDropChips" id="firmDropChips"></div>';
+        filterWrap.insertAdjacentElement('afterend', zone);
+
+        zone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+            zone.classList.add('dragover');
+        });
+        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+        zone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            zone.classList.remove('dragover');
+            let payload;
+            try {
+                payload = JSON.parse(event.dataTransfer.getData('text/plain'));
+            } catch (error) {
+                return;
+            }
+            if (!payload || payload.id == null) return;
+            addToTray(payload.id, payload.name);
+        });
+    }
+
+    function addToTray(id, name) {
+        const chips = document.getElementById('firmDropChips');
+        if (!chips) return;
+        const key = String(id);
+        if (state.tray.has(key)) return;
+        state.tray.set(key, name);
+        const chip = document.createElement('span');
+        chip.className = 'firmDropChip';
+        chip.dataset.firmId = key;
+        chip.innerHTML = '<span class="firmDropChipName"></span><button type="button" class="firmDropChipX" aria-label="삭제">×</button>';
+        chip.querySelector('.firmDropChipName').textContent = name;
+        chip.querySelector('.firmDropChipName').addEventListener('click', () => selectFirm(Number(id)));
+        chip.querySelector('.firmDropChipX').addEventListener('click', () => {
+            state.tray.delete(key);
+            chip.remove();
+            const zone = document.getElementById('firmDropZone');
+            if (zone) zone.dataset.count = String(state.tray.size);
+        });
+        chips.appendChild(chip);
+        const zone = document.getElementById('firmDropZone');
+        if (zone) zone.dataset.count = String(state.tray.size);
+    }
+
     function resetSearch() {
         const input = document.getElementById('inputFirmName');
         if (input) input.value = '';
@@ -491,7 +614,14 @@
         }
         if (!localStorage.getItem('fid')) localStorage.setItem('fid', '1');
         if (!localStorage.getItem('firmName')) localStorage.setItem('firmName', 'ABC EMS 통합관제센터');
-        state.firms = buildFirms();
+        // 업체 데이터베이스에서 실제 목록을 가져온다. 실패하면 데모 목록으로 대체.
+        try {
+            state.firms = await loadFirmsFromDb();
+            if (!state.firms.length) state.firms = buildFirms();
+        } catch (error) {
+            console.error('업체 DB 로드 실패, 데모 목록 사용', error);
+            state.firms = buildFirms();
+        }
         state.filtered = [...state.firms];
         window.vio = {
             setFirm: () => {},
@@ -509,6 +639,7 @@
             console.error(error);
         }
         bindControls();
+        setupDropZone();
         updateCounters();
         applyFilters(true);
         renderHistory();

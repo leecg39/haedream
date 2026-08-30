@@ -183,3 +183,64 @@
 
 /* 환경설정은 hover뿐 아니라 클릭으로도 열 수 있다. */
 .tb-set.on .tbSetNav { display: block; }
+
+/* ── 업체 DB 검색결과 드래그드롭 (관심업체 트레이) ───────────────────── */
+/* 검색된 업체 행을 끌 수 있음을 커서로 표시 */
+#dataList .firmListDataRow[draggable="true"] { cursor: grab; }
+#dataList .firmListDataRow.demoDragging { opacity: .5; }
+
+.firmDropZone {
+    margin: 8px 0 4px;
+    padding: 8px 10px;
+    border: 1px dashed rgba(126, 200, 255, 0.5);
+    border-radius: 8px;
+    background: rgba(20, 40, 66, 0.55);
+    transition: border-color .15s, background-color .15s;
+}
+.firmDropZone.dragover {
+    border-color: #7ec8ff;
+    background: rgba(42, 126, 255, 0.22);
+}
+.firmDropHint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #9fc4e8;
+    font-size: 12px;
+}
+.firmDropChips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+.firmDropChips:empty { margin-top: 0; }
+.firmDropChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px 4px 10px;
+    border: 1px solid rgba(126, 200, 255, 0.45);
+    border-radius: 14px;
+    background: rgba(42, 126, 255, 0.18);
+    color: #e8f2ff;
+    font-size: 12px;
+}
+.firmDropChipName { cursor: pointer; }
+.firmDropChipName:hover { text-decoration: underline; }
+.firmDropChipX {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    color: #cfe4ff;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+}
+.firmDropChipX:hover { background: rgba(255, 90, 90, 0.4); color: #fff; }

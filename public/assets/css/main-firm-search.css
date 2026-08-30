@@ -1,0 +1,123 @@
+/* 대시보드(main.html) 업체 DB 검색 + 드래그드롭 패널 */
+.firmSearchPanel {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    border: 1px solid rgba(126, 200, 255, 0.18);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(0, 0, 29, 0.85), rgba(12, 24, 48, 0.7));
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+}
+.firmSearchBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid rgba(184, 250, 255, 0.16);
+    border-radius: 8px;
+    background: #182431;
+}
+.firmSearchBar > i { color: #7ec8ff; font-size: 16px; }
+.firmSearchBar input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+}
+.firmSearchBar input::placeholder { color: #6e8299; }
+.firmSearchCount { color: #9fc4e8; font-size: 12px; white-space: nowrap; }
+
+.firmSearchGrid {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+@media (max-width: 900px) { .firmSearchGrid { grid-template-columns: 1fr; } }
+
+.firmSearchResults {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid rgba(184, 250, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(4, 11, 24, 0.5);
+}
+.firmSearchResults::-webkit-scrollbar { width: 8px; }
+.firmSearchResults::-webkit-scrollbar-thumb { background: rgba(126, 200, 255, 0.35); border-radius: 4px; }
+.firmSearchItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: #e8f2ff;
+    font-size: 13px;
+    cursor: grab;
+    transition: background-color .12s;
+}
+.firmSearchItem:hover { background: rgba(42, 126, 255, 0.18); }
+.firmSearchItem.dragging { opacity: .5; }
+.firmSearchName { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.firmSearchMeta { color: #8fb3d6; font-size: 11px; white-space: nowrap; }
+
+.firmSearchPanel .firmDropZone {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    border: 1px dashed rgba(126, 200, 255, 0.5);
+    border-radius: 8px;
+    background: rgba(20, 40, 66, 0.55);
+    transition: border-color .15s, background-color .15s;
+}
+.firmSearchPanel .firmDropZone.dragover {
+    border-color: #7ec8ff;
+    background: rgba(42, 126, 255, 0.22);
+}
+.firmSearchPanel .firmDropHint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #9fc4e8;
+    font-size: 12px;
+}
+.firmSearchPanel .firmDropChips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+.firmSearchPanel .firmDropChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px 4px 10px;
+    border: 1px solid rgba(126, 200, 255, 0.45);
+    border-radius: 14px;
+    background: rgba(42, 126, 255, 0.18);
+    color: #e8f2ff;
+    font-size: 12px;
+}
+.firmSearchPanel .firmDropChipName { cursor: pointer; }
+.firmSearchPanel .firmDropChipName:hover { text-decoration: underline; }
+.firmSearchPanel .firmDropChipX {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    color: #cfe4ff;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+}
+.firmSearchPanel .firmDropChipX:hover { background: rgba(255, 90, 90, 0.4); color: #fff; }
