@@ -3,10 +3,46 @@
  *
  * public/fit/assets/css/deskLib.css 는 원본 사이트 무변환 미러이므로
  * 클론 전용 변경분은 여기에 둔다. FirmManager 가 deskLib.css 뒤에 로드한다.
- *
- * 이전에 여기 있던 "편집 팝업 가로폭을 1/3 로 축소 + 1열 전환" 규칙은
- * 이후 피드백(레퍼런스 이미지: 넓은 2열 그리드 폼)으로 대체되어 제거했다.
- * 원본 deskLib.css 의 `.modalBox{width:calc(100% - 40px)}` +
- * `.editForm{grid-template-columns:1fr 2.4fr 1fr 2.4fr}` 가 그대로 적용된다.
- * 현재는 override 할 규칙이 없다.
  */
+
+/* ------------------------------------------------------------
+ * 목록 프레임 — 본문 5행만 보이고 나머지는 내부 스크롤.
+ *
+ * 행 높이는 deskLib.css 의 `.desk th/td{padding:.6rem .2rem;font-size:1rem}`
+ * 에서 나온다: 상하 패딩 1.2rem + 라인박스. 라인박스가 브라우저 기본값이라
+ * 값이 흔들리므로 아래에서 line-height 를 고정해 행 높이를 2.8rem 으로 결정한다.
+ * 헤더 1행 + 본문 5행 = 6행분을 프레임 최대 높이로 잡는다.
+ *
+ * 페이지당 행 수(FIRM_PAGE_LIMIT)는 건드리지 않는다. 프레임 높이만 제한하고
+ * 페이지 안의 나머지 행은 스크롤로 본다.
+ * ------------------------------------------------------------ */
+.desk th,.desk td{line-height:1.6}
+.deskArea{
+    /* th 44.8px = 상하 패딩 1.2rem + 라인박스 1.6rem */
+    --firmHeadHeight:2.8rem;
+    /* td 는 여기에 border-bottom 1px 이 더해져 실측 45.9px. 46px(2.875rem)로
+       올려 잡아 반올림 오차를 흡수한다. */
+    --firmRowHeight:2.875rem;
+    /* 헤더 1행 + 본문 5행 = 274.8px. 5행의 끝(273.6px)은 완전히 들어오고
+       6행은 잘려서, 스크롤이 더 있다는 신호가 남는다. */
+    max-height:calc(var(--firmHeadHeight) + var(--firmRowHeight) * 5);
+    overflow-y:auto;
+}
+
+/* 스크롤 중에도 열 제목이 남아야 한다.
+ * .desk th 에 배경색(rgba(0,0,29,.6))이 이미 있어 본문이 비쳐 보이지 않는다.
+ * 정렬 가능한 th 는 deskLib.css:42 `.desk .sort{position:relative}` 가 (0,2,0)
+ * 명시도로 잡고 있어서, 같은 명시도 이상인 `.desk thead th.sort` 로 덮는다.
+ * sticky 도 절대위치 자식의 컨테이닝 블록이라 `.sort::after` 정렬 화살표는
+ * 그대로 붙는다. */
+.desk thead th,.desk thead th.sort{position:sticky;top:0;z-index:1}
+
+/* ------------------------------------------------------------
+ * 프레임 최상단 검색창 — 원본에 없는 클론 전용 요소.
+ * 목록 툴바의 기존 검색(.deskSearch)과 같은 상태를 공유한다.
+ * ------------------------------------------------------------ */
+.firmSearchBar{display:flex;align-items:center;gap:.6rem;margin:1rem 0 0;padding:.55rem .9rem;border:1px solid rgba(255,255,255,.12);border-radius:.4rem;background:rgba(0,0,29,.45)}
+.firmSearchBar .icon{flex:none}
+.firmSearchInput{flex:1;min-width:0;height:2.2rem;padding:0 .4rem;border:0;border-bottom:1px solid rgba(255,255,255,.18);background:transparent;color:#eee;font-size:1rem}
+.firmSearchInput:focus{outline:none;border-bottom-color:#0041ff}
+.firmSearchInput::placeholder{color:#8a8a9a}

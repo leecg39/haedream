@@ -7,6 +7,19 @@ import type { FirmRow } from "@/lib/fit-mocks/firm";
 
 type FormValues = Record<string, string>;
 
+/**
+ * 모달의 세 가지 상태.
+ *
+ * `row: FirmRow | null` 하나로는 "닫힘"과 "빈 폼으로 신규 등록"을 구분할 수
+ * 없어서(둘 다 null) 판별 유니온으로 나눴다.
+ */
+export type FirmModalState =
+  | { readonly mode: "closed" }
+  | { readonly mode: "create" }
+  | { readonly mode: "edit"; readonly row: FirmRow };
+
+export const FIRM_MODAL_CLOSED: FirmModalState = { mode: "closed" };
+
 /** 원본은 행을 선택하면 해당 업체 값으로 폼을 채운다. */
 function toFormValues(row: FirmRow | null): FormValues {
   if (!row) return {};
@@ -96,7 +109,7 @@ function FieldControl({
 }
 
 interface FirmEditModalProps {
-  readonly row: FirmRow | null;
+  readonly state: FirmModalState;
   readonly onClose: () => void;
   readonly onOpenMap: () => void;
 }
@@ -107,20 +120,22 @@ interface FirmEditModalProps {
  * 원본과 동일하게 `<main>` 밖에 두고 `.disable` 로 토글한다.
  * 필드 정의는 firmEditFields.ts 에 분리해 원본 마크업과 1:1 로 대응시켰다.
  */
-export function FirmEditModal({ row, onClose, onOpenMap }: FirmEditModalProps) {
+export function FirmEditModal({ state, onClose, onOpenMap }: FirmEditModalProps) {
   const [values, setValues] = useState<FormValues>({});
-  const [loadedRow, setLoadedRow] = useState<FirmRow | null>(null);
+  const [loadedState, setLoadedState] = useState<FirmModalState>(FIRM_MODAL_CLOSED);
 
-  if (row !== loadedRow) {
-    setLoadedRow(row);
-    setValues(toFormValues(row));
+  // 상태 객체는 열 때마다 새로 만들어지므로 참조 비교로 전환 시점을 잡는다.
+  // create 는 toFormValues(null) 이 빈 객체를 돌려줘 모든 입력이 비워진다.
+  if (state !== loadedState) {
+    setLoadedState(state);
+    setValues(toFormValues(state.mode === "edit" ? state.row : null));
   }
 
   const update = (id: string, value: string) =>
     setValues((current) => ({ ...current, [id]: value }));
 
   return (
-    <div className={row ? undefined : "disable"} id="modal">
+    <div className={state.mode === "closed" ? "disable" : undefined} id="modal">
       <div className="modal">
         <div className="modalBox">
           <i className="modalClose" id="modalActClose" role="button" aria-label="닫기" onClick={onClose} />

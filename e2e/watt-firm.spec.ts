@@ -120,21 +120,82 @@ test.describe("Watt 업체관리 /firm.html", () => {
 });
 
 test.describe("/fit/firm steering", () => {
-  test("편집 팝업 가로 폭을 1904px 뷰포트의 1/3로 표시함", async ({ page }) => {
+  // 이전에는 편집 팝업을 뷰포트 1/3 폭·1열로 좁히는 override 를 두고 그 값을
+  // 검증했다. 이후 레퍼런스 이미지 피드백으로 원본 deskLib.css 의 넓은 2열
+  // 그리드(`.editForm{grid-template-columns:1fr 2.4fr 1fr 2.4fr}`)로 되돌렸으므로
+  // 기대값도 함께 바꾼다.
+  test("편집 팝업이 원본의 넓은 2열 그리드 폼으로 열림", async ({ page }) => {
     await page.setViewportSize({ width: 1904, height: 913 });
     await page.goto("/fit/firm");
     await page.locator("[data-act='add']").click();
-    const modalBox = await page.locator("#modal .modalBox").boundingBox();
     const modalContent = await page.locator("#modal .modalContent").boundingBox();
-    expect(modalBox).not.toBeNull();
     expect(modalContent).not.toBeNull();
-    expect(modalBox!.width).toBeGreaterThanOrEqual(625);
-    expect(modalBox!.width).toBeLessThanOrEqual(645);
-    expect(modalContent!.width).toBeGreaterThanOrEqual(620);
-    expect(modalContent!.width).toBeLessThanOrEqual(640);
+    // 폭은 그리드 트랙(1fr 2.4fr 1fr 2.4fr) + gap + padding 이 정하는 콘텐츠 기반이다.
+    expect(modalContent!.width).toBeGreaterThanOrEqual(700);
+    expect(modalContent!.width).toBeLessThanOrEqual(900);
+    // 라벨/입력 한 쌍이 두 벌 = 트랙 4개여야 2열 폼이다.
     const gridColumns = await page.locator("#modal .editForm").evaluate((element) =>
-      getComputedStyle(element).gridTemplateColumns.split(/\\s+/).filter(Boolean),
+      getComputedStyle(element).gridTemplateColumns.split(/\s+/).filter(Boolean),
     );
-    expect(gridColumns).toHaveLength(1);
+    expect(gridColumns).toHaveLength(4);
+  });
+
+  test("추가 버튼이 값이 채워지지 않은 빈 폼을 염", async ({ page }) => {
+    await page.setViewportSize({ width: 1904, height: 913 });
+    await page.goto("/fit/firm");
+
+    // 먼저 기존 업체를 편집으로 열어 폼에 값을 채운다.
+    await page.locator("#deskList tr").first().click();
+    await expect(page.locator("#edit-firmName")).not.toHaveValue("");
+    await page.locator("#modalActCancel").click();
+
+    // 그 다음 추가를 누르면 직전 값이 남지 않고 전부 비어 있어야 한다.
+    await page.locator("[data-act='add']").click();
+    await expect(page.locator("#modal")).not.toHaveClass(/disable/);
+    const filled = await page
+      .locator("#modal .editForm input")
+      .evaluateAll((elements) =>
+        elements.filter((element) => (element as HTMLInputElement).value !== "").length,
+      );
+    expect(filled).toBe(0);
+    await expect(page.locator("#edit-contract")).toHaveValue("");
+  });
+
+  test("목록 프레임이 본문 5행만 보이고 헤더를 고정한 채 스크롤됨", async ({ page }) => {
+    await page.setViewportSize({ width: 1904, height: 913 });
+    await page.goto("/fit/firm");
+
+    const frame = page.locator(".deskArea");
+    // 페이지당 10행이 렌더되지만 프레임에는 5행분만 들어온다.
+    await expect(page.locator("#deskList tr")).toHaveCount(10);
+    const fully = await frame.evaluate((area) => {
+      const box = area.getBoundingClientRect();
+      const head = area.querySelector("#deskTable thead th")!.getBoundingClientRect();
+      return [...area.querySelectorAll("#deskList tr")].filter((row) => {
+        const rect = row.getBoundingClientRect();
+        return rect.top >= head.bottom - 0.5 && rect.bottom <= box.top + area.clientHeight + 0.5;
+      }).length;
+    });
+    expect(fully).toBe(5);
+    expect(await frame.evaluate((area) => area.scrollHeight > area.clientHeight + 1)).toBe(true);
+
+    // 스크롤해도 열 제목 행이 프레임 상단에 붙어 있어야 한다.
+    await frame.evaluate((area) => { area.scrollTop = 150; });
+    const headerPinned = await frame.evaluate((area) => {
+      const box = area.getBoundingClientRect();
+      const head = area.querySelector("#deskTable thead th")!.getBoundingClientRect();
+      return Math.abs(head.top - box.top) < 1;
+    });
+    expect(headerPinned).toBe(true);
+  });
+
+  test("프레임 최상단 검색이 목록과 툴바 검색창에 함께 반영됨", async ({ page }) => {
+    await page.setViewportSize({ width: 1904, height: 913 });
+    await page.goto("/fit/firm");
+
+    await page.locator(".firmSearchInput").fill("성신금속");
+    await expect(page.locator("#deskInput")).toHaveValue("성신금속");
+    await expect(page.locator("#deskList tr")).toHaveCount(1);
+    await expect(page.locator("#deskList tr td").nth(1)).toHaveText("성신금속");
   });
 });

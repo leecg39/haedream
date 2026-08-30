@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FIRM_DEFAULT_GEO, FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_ROWS, FIRM_SERVICE_TYPE_LABELS, type FirmRow, type FirmSortKey } from "@/lib/fit-mocks/firm";
-import { FirmEditModal } from "@/components/fit/firm/FirmEditModal";
+import { FIRM_DEFAULT_GEO, FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_ROWS, FIRM_SERVICE_TYPE_LABELS, type FirmSortKey } from "@/lib/fit-mocks/firm";
+import { FIRM_MODAL_CLOSED, FirmEditModal, type FirmModalState } from "@/components/fit/firm/FirmEditModal";
 import { FirmMapModal } from "@/components/fit/firm/FirmMapModal";
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { Pagination } from "@/components/fit/shared/Pagination";
@@ -26,7 +26,7 @@ export function FirmManager() {
   const [descending, setDescending] = useState(true);
   const [sortTouched, setSortTouched] = useState(false);
   const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState<FirmRow | null>(null);
+  const [modal, setModal] = useState<FirmModalState>(FIRM_MODAL_CLOSED);
   const [mapOpen, setMapOpen] = useState(false);
 
   const filtered = useMemo(() => {
@@ -70,13 +70,27 @@ export function FirmManager() {
       <PageStyles files={[...LIB_STYLES, "/fit/assets/css/deskLib.css", "/fit/clone-css/firm-extras.css"]} />
       <main className="contents" id="contentsArea">
         <h1 className="deskTitle">업체관리</h1>
+        {/* 프레임 최상단 검색. 목록 툴바의 기존 검색창과 같은 query 상태를 쓰므로
+            어느 쪽에 입력해도 두 입력값과 목록이 함께 갱신된다. */}
+        <div className="firmSearchBar">
+          <i className="icon iconSearch" aria-hidden="true" />
+          <input
+            className="firmSearchInput"
+            type="search"
+            maxLength={16}
+            placeholder="업체명 · 업체ID · 한전고객번호로 검색"
+            aria-label="업체 검색 (목록 상단)"
+            value={query}
+            onChange={(event) => { setQuery(event.target.value); setPage(1); }}
+          />
+        </div>
         <div className="sheetArea">
           <div className="deskStat">
             <div className="deskLimit"><span className="deskLabel" id="deskLimit">{first} - {last} / {filtered.length}</span></div>
             {/* 원본은 <button> 이 아니라 <span class="deskAct act" data-act="..."> 다.
                 .deskAct 에 배경/보더 리셋이 없어 button 으로 만들면 UA 기본 상자가 보인다. */}
             <div className="deskTool" id="deskTool">
-              <span className="deskAct act" data-act="add" role="button" onClick={() => setSelected(FIRM_ROWS[0])}>추가</span>
+              <span className="deskAct act" data-act="add" role="button" onClick={() => setModal({ mode: "create" })}>추가</span>
               <span className="deskAct act" data-act="excel" role="button" onClick={() => window.print()}>엑셀</span>
               <span className="deskAct act" data-act="print" role="button" onClick={() => window.print()}>프린트</span>
               <Link href="/fit/rate-plan" target="_blank" className="deskAct act" id="chargeLink">요금표</Link>
@@ -136,7 +150,7 @@ export function FirmManager() {
               </thead>
               <tbody id="deskList">
                 {visible.map((row) => (
-                  <tr key={row.fid} onClick={() => setSelected(row)}>
+                  <tr key={row.fid} onClick={() => setModal({ mode: "edit", row })}>
                     <td>{row.fid}</td>
                     <td>{row.firmName}</td>
                     <td title={FIRM_CONTRACT_LABELS[row.contract]}>{FIRM_CONTRACT_LABELS[row.contract] ?? row.contract}</td>
@@ -173,7 +187,7 @@ export function FirmManager() {
               </thead>
               <tbody id="lowDeskList">
                 {visible.map((row) => (
-                  <tr key={row.fid} onClick={() => setSelected(row)}>
+                  <tr key={row.fid} onClick={() => setModal({ mode: "edit", row })}>
                     <td>{row.fid}</td>
                     <td>{row.firmName}</td>
                     <td>{row.registTime.slice(0, 10)}</td>
@@ -197,7 +211,7 @@ export function FirmManager() {
         </div>
 
       </main>
-      <FirmEditModal row={selected} onClose={() => setSelected(null)} onOpenMap={() => setMapOpen(true)} />
+      <FirmEditModal state={modal} onClose={() => setModal(FIRM_MODAL_CLOSED)} onOpenMap={() => setMapOpen(true)} />
       <FirmMapModal open={mapOpen} geo={FIRM_DEFAULT_GEO} onClose={() => setMapOpen(false)} />
     </>
   );
