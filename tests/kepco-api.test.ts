@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { closeDatabasesForTests, getDb } from "@/lib/db";
 import { GET, POST } from "@/app/api/[...path]/route";
+import { GET as firmGET } from "@/app/api/firm/route";
 
 const origin = "http://localhost";
 
@@ -53,7 +54,12 @@ describe("kepco API", () => {
   });
 
   it("GET /api/firm — 업체 목록에 한전 비밀번호 필드를 직렬화하지 않는다", async () => {
-    const res = await GET(request("/api/firm"), routeFor("/api/firm"));
+    // `/api/firm` 은 정적 세그먼트 라우트가 캐치올보다 우선한다. 여기서도 실제로
+    // 응답하는 핸들러를 부른다.
+    getDb()
+      .prepare("INSERT OR IGNORE INTO firms (fid, seq, firm_name) VALUES (?, ?, ?)")
+      .run(1, 0, "비밀번호 검증용 업체");
+    const res = await firmGET(request("/api/firm"));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.data.length).toBeGreaterThan(0);

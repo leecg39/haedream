@@ -22,15 +22,12 @@ import {
 } from "@/lib/watt-mocks";
 import { FIRM_ROWS } from "@/lib/fit-mocks/firm";
 import { getDb } from "@/lib/db";
+import { listFirms } from "@/features/firms/repository";
 import { collectFirms } from "@/lib/kepco/collect.ts";
 import { getKepcoPassword } from "@/lib/kepco/credentials.server";
 import { isKepcoBatchActive } from "@/lib/kepco/batch-lock.server";
 
 export const dynamic = "force-dynamic";
-
-const PUBLIC_FIRM_ROWS = FIRM_ROWS.map((row) =>
-  Object.fromEntries(Object.entries(row).filter(([key]) => key !== "kepcoPasswd")),
-);
 
 const loginSchema = z.strictObject({
   cf: z.literal("login"),
@@ -148,9 +145,10 @@ async function handle(req: NextRequest, path: string[]) {
     return json({ cat: 1, data: buildRealMenu() });
   }
 
-  // 업체관리 목록 — React(/fit/firm)와 정적 EMS 페이지(firm.html)가 같은 데이터를 쓴다.
-  if (joined === "firm" || joined.startsWith("firm/")) {
-    return json({ cat: 1, data: PUBLIC_FIRM_ROWS });
+  // 업체관리 목록 서브경로. `/api/firm` 자체는 src/app/api/firm/route.ts 가
+  // 정적 세그먼트 우선순위로 가져가므로 여기 오지 않는다.
+  if (joined.startsWith("firm/")) {
+    return json({ cat: 1, data: listFirms() });
   }
 
   // 한전 파워플래너 연동 — 업체별 수집 상태

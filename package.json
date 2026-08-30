@@ -16,6 +16,7 @@
     "mockdb:fit": "node scripts/build-fit-mock-db.mjs",
     "db:setup:demo": "npm run db:migrate && npm run db:seed:demo",
     "db:setup:e2e": "node scripts/setup-e2e.mjs",
+    "db:seed:firms": "node scripts/seed-firms.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

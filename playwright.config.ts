@@ -28,7 +28,7 @@ export default defineConfig({
     // dev 모드는 병렬 실행 중 온디맨드 컴파일·HMR이 간섭해 지도 테스트가 간헐적으로
     // 실패했다. 프로덕션 빌드로 고정해 결정적으로 만든다.
     command:
-      "npm run db:setup:e2e && DATABASE_PATH=data/solarsimz-e2e.db NEXT_DIST_DIR=.next-e2e npm run build && DATABASE_PATH=data/solarsimz-e2e.db NEXT_DIST_DIR=.next-e2e RATE_LIMIT_DISABLED=true npm run start -- -p 3456",
+      "npm run db:setup:e2e && node scripts/seed-firms.mjs --db data/solarsimz-e2e.db && DATABASE_PATH=data/solarsimz-e2e.db NEXT_DIST_DIR=.next-e2e npm run build && DATABASE_PATH=data/solarsimz-e2e.db NEXT_DIST_DIR=.next-e2e RATE_LIMIT_DISABLED=true npm run start -- -p 3456",
     url: "http://localhost:3456",
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

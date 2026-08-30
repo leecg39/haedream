@@ -46,3 +46,8 @@
 .firmSearchInput{flex:1;min-width:0;height:2.2rem;padding:0 .4rem;border:0;border-bottom:1px solid rgba(255,255,255,.18);background:transparent;color:#eee;font-size:1rem}
 .firmSearchInput:focus{outline:none;border-bottom-color:#0041ff}
 .firmSearchInput::placeholder{color:#8a8a9a}
+
+/* ------------------------------------------------------------
+ * 편집 모달의 등록 실패 메시지 — 원본에 없는 클론 전용 요소.
+ * ------------------------------------------------------------ */
+.editError{margin:0 2rem .6rem;padding:.5rem .8rem;border:1px solid #e2557a;border-radius:.3rem;background:rgba(226,85,122,.12);color:#ffb3c6;font-size:.95rem}

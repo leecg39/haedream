@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { FIRM_DEFAULT_GEO, FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_ROWS, FIRM_SERVICE_TYPE_LABELS, type FirmSortKey } from "@/lib/fit-mocks/firm";
+import { FIRM_DEFAULT_GEO, FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_SERVICE_TYPE_LABELS, type FirmRow, type FirmSortKey } from "@/lib/fit-mocks/firm";
 import { FIRM_MODAL_CLOSED, FirmEditModal, type FirmModalState } from "@/components/fit/firm/FirmEditModal";
 import { FirmMapModal } from "@/components/fit/firm/FirmMapModal";
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { Pagination } from "@/components/fit/shared/Pagination";
 import { echoNumber } from "@/components/fit/reduce/format";
 import { totalPages } from "@/components/fit/stat/statUtils";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 const FIRM_SORT_OPTIONS: readonly { readonly key: FirmSortKey; readonly label: string }[] = [
@@ -17,7 +18,13 @@ const FIRM_SORT_OPTIONS: readonly { readonly key: FirmSortKey; readonly label: s
   { key: "kepcoNo", label: "한전고객번호" },
 ];
 
-export function FirmManager() {
+/** 목록은 서버 컴포넌트가 DB 에서 읽어 넘긴다. 한전 비밀번호는 포함되지 않는다. */
+interface FirmManagerProps {
+  readonly rows: readonly Omit<FirmRow, "kepcoPasswd">[];
+}
+
+export function FirmManager({ rows }: FirmManagerProps) {
+  const router = useRouter();
   const [serviceType, setServiceType] = useState(0);
   const [query, setQuery] = useState("");
   // 원본 firm.js 는 _sheet.sortTag='registTime', sortAsc=0(내림차순) 으로 시작하되
@@ -31,7 +38,7 @@ export function FirmManager() {
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("ko");
-    const rows = FIRM_ROWS.filter((row) => {
+    const matched = rows.filter((row) => {
       const serviceMatches = serviceType === 0 || row.serviceType === serviceType;
       const queryMatches =
         normalized.length === 0 ||
@@ -40,7 +47,7 @@ export function FirmManager() {
         String(row.kepcoNo).includes(normalized);
       return serviceMatches && queryMatches;
     });
-    return [...rows].sort((a, b) => {
+    return [...matched].sort((a, b) => {
       const left = a[sortKey];
       const right = b[sortKey];
       const result = typeof left === "number" && typeof right === "number"
@@ -48,7 +55,7 @@ export function FirmManager() {
         : String(left).localeCompare(String(right), "ko");
       return descending ? -result : result;
     });
-  }, [descending, query, serviceType, sortKey]);
+  }, [descending, query, rows, serviceType, sortKey]);
 
   const pages = totalPages(filtered.length, FIRM_PAGE_LIMIT);
   const safePage = Math.min(page, pages);
@@ -211,7 +218,12 @@ export function FirmManager() {
         </div>
 
       </main>
-      <FirmEditModal state={modal} onClose={() => setModal(FIRM_MODAL_CLOSED)} onOpenMap={() => setMapOpen(true)} />
+      <FirmEditModal
+        state={modal}
+        onClose={() => setModal(FIRM_MODAL_CLOSED)}
+        onOpenMap={() => setMapOpen(true)}
+        onCreated={() => { setPage(1); router.refresh(); }}
+      />
       <FirmMapModal open={mapOpen} geo={FIRM_DEFAULT_GEO} onClose={() => setMapOpen(false)} />
     </>
   );
