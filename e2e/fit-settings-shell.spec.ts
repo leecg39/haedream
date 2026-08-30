@@ -1,7 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const dashboardSetting = ["대시보드 화면설정", "/widget-set"] as const;
-
 const eggfitSettings = [
   ["사용자관리", "/fit/user"],
   ["알람설정", "/fit/notify"],
@@ -14,18 +12,18 @@ const eggfitSettings = [
   ["통신상태 불량", "/fit/bad"],
 ] as const;
 
-// 정적 ABC 페이지(stat/firm/main.html)의 환경설정 메뉴는 ABC 셸 7개 페이지로
-// 연결하고, ABC 영역에 없는 시퀀스제어·실시간데이터만 /fit 화면을 가리킨다.
+// 정적 ABC 페이지(stat/firm/main.html)의 환경설정 메뉴는 10개 전부 ABC 셸
+// (/abc/*)로만 연결된다 — 에그핏(/fit/*) 페이지와 교차 링크하지 않는다.
 const rootSettings = [
-  dashboardSetting,
+  ["대시보드 화면설정", "/abc/widget-set"],
   ["사용자관리", "/abc/user"],
   ["알람설정", "/abc/notify"],
   ["게이트웨이 관리", "/abc/gate-node"],
   ["복합제어기 관리", "/abc/gateway"],
-  ["시퀀스제어", "/fit/sequence"],
+  ["시퀀스제어", "/abc/sequence"],
   ["RTU관리", "/abc/gate-rtu"],
   ["모드버스 계측", "/abc/device"],
-  ["실시간데이터", "/fit/net"],
+  ["실시간데이터", "/abc/net"],
   ["통신상태 불량", "/abc/bad"],
 ] as const;
 
@@ -87,12 +85,12 @@ test.describe("EggFit 환경설정 셸 유지", () => {
     for (const rootPage of rootPages) {
       await page.goto(rootPage);
       const menu = page.locator("#topBar .tbSetNav");
-      await expect(menu.locator('a[href="/widget-set"]')).toBeAttached();
+      await expect(menu.locator('a[href="/abc/widget-set"]')).toBeAttached();
 
-      const settingsLinks = menu.locator(
-        'a[href="/widget-set"], a[href^="/fit/"], a[href^="/abc/"]',
-      );
+      const settingsLinks = menu.locator('a[href^="/abc/"]');
       await expect(settingsLinks).toHaveCount(rootSettings.length);
+      // ABC 메뉴는 에그핏(/fit/*)으로 연결되는 항목이 하나도 없어야 한다.
+      await expect(menu.locator('a[href^="/fit/"]')).toHaveCount(0);
 
       for (const [label, path] of rootSettings) {
         const link = menu.locator(`a[href="${path}"]`).filter({ hasText: label });

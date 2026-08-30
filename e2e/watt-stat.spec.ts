@@ -70,6 +70,9 @@ test.describe("Watt 통합관제 /stat.html", () => {
         timeout: 1_500,
       });
     }).toPass({ timeout: 15_000 });
+    // Leaflet 은 팝업 닫힘 때 200ms 페이드 후 DOM 을 제거한다(fadeAnimation).
+    // 페이드 중에는 닫힌 팝업도 visible 로 잡히므로 수량이 1개가 될 때까지 기다린다.
+    await expect(page.locator(".wattCompanyPopup .mapFirmCard")).toHaveCount(1);
     await expect(page.locator(".wattCompanyPopup .mapFirmCard")).toBeVisible();
 
     // flyTo가 끝나 지도가 멈춘 뒤에 줌·드래그를 진행한다.
@@ -92,9 +95,9 @@ test.describe("Watt 통합관제 /stat.html", () => {
     await expect(settings).toBeVisible();
     await expect(settings.locator("a")).toHaveCount(11);
     const widgetSettings = settings.locator("a").first();
-    await expect(widgetSettings).toHaveAttribute("href", "/widget-set");
+    await expect(widgetSettings).toHaveAttribute("href", "/abc/widget-set");
     await widgetSettings.click();
-    await expect(page).toHaveURL(/\/widget-set$/);
+    await expect(page).toHaveURL(/\/abc\/widget-set$/);
     await expect(page.getByRole("heading", { name: "대시보드 화면설정" })).toBeVisible();
     await page.goBack();
     await expect(page.locator("body")).toHaveAttribute("data-stat-demo-ready", "true");
