@@ -1,3 +1,5 @@
+import { FIRM_CONTRACT_LABELS } from "@/lib/fit-mocks/firm";
+
 /**
  * 원본 firm.html `#modal` 편집 폼의 필드 정의.
  * 라벨·id·타입·제약(maxLength/min/max)을 원본 마크업에서 그대로 옮겼다.
@@ -49,12 +51,20 @@ const SERVICE_TYPE = [
   { value: "23", label: "저압 제안" },
 ] as const;
 
-const CONTRACT_PLACEHOLDER = [{ value: "", label: "전력타입 선택" }] as const;
+/**
+ * 원본은 `<option value="">전력타입 선택</option>` 하나만 정적으로 두고,
+ * firm.js 가 `vio._contract`(24개 계약종별)를 `insertAdjacentHTML` 로 뒤에 붙인다.
+ * 클론은 정적 데이터라 처음부터 전량을 채운다.
+ */
+const CONTRACT_OPTIONS = [
+  { value: "", label: "전력타입 선택" },
+  ...Object.entries(FIRM_CONTRACT_LABELS).map(([value, label]) => ({ value, label })),
+] as const;
 
 export const FIRM_EDIT_FIELDS: readonly FirmEditField[] = [
   { id: "edit-firmName", label: "이름", kind: "text", maxLength: 32 },
   { id: "edit-degreeCity", label: "기상청지점", kind: "select", tip: "냉방도일/난방도일 측정 위치기준", grouped: true },
-  { id: "edit-contract", label: "전력타입", kind: "select", tip: "최대전력관리 사용은 필수", options: CONTRACT_PLACEHOLDER },
+  { id: "edit-contract", label: "전력타입", kind: "select", tip: "최대전력관리 사용은 필수", options: CONTRACT_OPTIONS },
   { id: "edit-kepcoNo", label: "한전고객번호", kind: "number", step: 1, min: 0, max: 4294967295 },
   { id: "edit-bone", label: "EMS 아이디", kind: "text", maxLength: 16 },
   { id: "edit-kepcoCyber", label: "한전 ID", kind: "text", tip: "한전고객번호와 다를경우 입력", maxLength: 32 },
@@ -76,7 +86,7 @@ export const FIRM_EDIT_FIELDS: readonly FirmEditField[] = [
   { id: "edit-serviceType", label: "서비스상태", kind: "select", options: SERVICE_TYPE },
   { id: "edit-frugalTime", label: "절감계산시작일", kind: "date" },
   { id: "edit-investGold", label: "투자금액(천원)", kind: "number", step: 1, min: 0, max: 4294967295 },
-  { id: "edit-kepcoContract", label: "이전 전력타입", kind: "select", tip: "한전수전합리화", options: CONTRACT_PLACEHOLDER },
+  { id: "edit-kepcoContract", label: "이전 전력타입", kind: "select", tip: "한전수전합리화", options: CONTRACT_OPTIONS },
   { id: "edit-boss", label: "관리계정", kind: "text", maxLength: 16 },
   { id: "edit-memo", label: "메모", kind: "text", maxLength: 32 },
 ];

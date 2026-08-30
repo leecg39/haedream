@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { FIRM_EDIT_FIELDS, type FirmEditField } from "@/components/fit/firm/firmEditFields";
 import { WEATHER_STATION_GROUPS } from "@/lib/fit-mocks/weather-stations";
 import type { FirmRow } from "@/lib/fit-mocks/firm";
@@ -129,7 +129,7 @@ export function FirmEditModal({ row, onClose, onOpenMap }: FirmEditModalProps) {
             <div className="editForm">
               <input type="hidden" id="edit-mapGeo" maxLength={32} value={values["edit-mapGeo"] ?? ""} readOnly />
               {FIRM_EDIT_FIELDS.map((field) => (
-                <span className="contents" key={field.id}>
+                <Fragment key={field.id}>
                   <span className={field.tip ? "tip" : undefined} data-tip={field.tip}>
                     {field.label}
                   </span>
@@ -140,7 +140,7 @@ export function FirmEditModal({ row, onClose, onOpenMap }: FirmEditModalProps) {
                       onChange={(value) => update(field.id, value)}
                     />
                   </span>
-                </span>
+                </Fragment>
               ))}
             </div>
           </div>
