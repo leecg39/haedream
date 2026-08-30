@@ -12,9 +12,9 @@
 | 항목 | 필드 | 저장 위치 | 비고 |
 | --- | --- | --- | --- |
 | 한전고객번호 | `FirmRow.kepcoNo` | `src/lib/fit-mocks/firm-rows.json` | 10자리 숫자, 앞자리 0 보존 문자열 |
-| 한전비밀번호 | `FirmRow.kepcoPasswd` | `src/lib/fit-mocks/kepco-passwds.json` | **gitignore 로컬 전용. 저장소 커밋 금지** |
+| 한전비밀번호 | 서버 전용 `getKepcoPassword(fid)` | `src/lib/fit-mocks/kepco-passwds.json` | **gitignore 로컬 전용. 저장소 커밋·API/클라이언트 직렬화 금지** |
 
-- 비밀번호 맵은 `fid → 비밀번호` 형태이며 `src/lib/fit-mocks/firm.ts` 가 `FIRM_ROWS` 에 병합한다.
+- 비밀번호 맵은 `fid → 비밀번호` 형태이며 `src/lib/kepco/credentials.server.ts`가 런타임에만 읽는다. 공유 `FIRM_ROWS`에는 병합하지 않는다.
 - 갱신 절차:
   1. `node scripts/export-kepco-passwds.mjs` — fit.rfenms.com 에서 업체 비밀번호 수집 → `data/kepco-passwds.{json,md}`
   2. `node scripts/match-kepco-passwds.mjs` — fid 기준 매칭(한전고객번호 교차 검증) → `src/lib/fit-mocks/kepco-passwds.json`
@@ -68,7 +68,7 @@
 │  수집 스케줄러 │ ────────────────────────▶ │ pp.kepco.co.kr   │
 │  (서버 사이드) │ ◀──────── JSESSIONID ──── │ 로그인 + 데이터 API │
 └──────┬──────┘                             └──────────────────┘
-       │ fid 단위로 FIRM_ROWS(kepcoNo+kepcoPasswd) 순회
+       │ fid 단위로 공개 업체정보 + 서버 전용 비밀번호를 결합해 순회
        ▼
 ┌─────────────┐    조회 API    ┌──────────────────┐
 │ SQLite 적재  │ ───────────▶ │ /fit/research 등  │
@@ -79,7 +79,7 @@
 
 1. **로그인 모듈** `src/lib/kepco/login.ts`
    - `/intro.do` 에서 `cookieSsId`·`cookieRsa`·`RSAExponent` 획득
-   - RSA 암호화: Node `crypto.publicEncrypt`(RSA_PKCS1_PADDING)에 modulus+exponent로 구성한 공개키 사용 (jsbn 결과와 동일 포맷)
+   - RSA 암호화: 사이트 원본 jsbn을 `node:vm`에서 실행해 브라우저와 동일한 PKCS#1 v1.5 암호문 생성
    - `chkUser.do` → `/login` → `JSESSIONID` 반환
 2. **수집기** `src/lib/kepco/collect.ts`
    - 업체 1곳 로그인 후 `getRM0101`(요약) + `rs0101N_hour`(시간대별) + `rm0101_chart`(일/월) 순차 호출
@@ -93,7 +93,7 @@
 
 ### 주의사항
 
-- 비밀번호는 서버 메모리에서만 사용하고 로그에 남기지 않는다.
+- 비밀번호는 서버 메모리에서만 사용하고 로그·API·클라이언트 번들·DB 원문에 남기지 않는다.
 - 로그인 연속 실패 시 계정 잠금 가능성 → 업체당 재시도 1회, 전체 수집에 지연(수 초/업체)을 둔다.
 - 파워플래너 데이터는 "단순 참고용"(실제 청구 요금과 상이할 수 있음) 고지를 UI에 유지한다.
 - 비밀번호 없는 업체(약 100곳)는 수집 대상에서 제외하고 상태를 "미등록"으로 표시한다.
@@ -120,3 +120,51 @@
 - `cookieSsId` 디코딩 값은 `JSESSIONID` 와 동일하다(세션당 RSA 키 바인딩).
 - `chkUser.do` 응답의 `SSO_ID` 는 `result === "success"` 일 때만 `USER_SSO_YN`, 아니면 `"N"` 을 보낸다(응답 원문을 그대로 넣으면 로그인 실패).
 - `/login` 은 `redirect: "manual"` 로 받아 302 의 Set-Cookie(인증 세션 회전)를 직접 흡수해야 한다. fetch 의 `redirect: "follow"` 는 리다이렉트 중간 쿠키를 버린다.
+
+## 확장 수집 범위 및 전 업체 배치 (2026-08-30)
+
+원본 `/fit/research` 화면의 11열 월별 청구정보와 선택 월 15분 그리드를 지원하기 위해 수집 범위를 확장했다.
+
+| 데이터 | 파워플래너 원본 | 저장 테이블 |
+| --- | --- | --- |
+| 스마트뷰 요약 | `POST /rm/getRM0101.do` | `kepco_summary` |
+| 계약·요금제 | `POST /rm/rm0101_contract_info.do` | `kepco_contract` |
+| 일 합계 | `POST /rs/rs0101N_total.do` | `kepco_daily_total` |
+| 1시간 집계 24건 | `POST /rs/rs0101N_hour.do` | `kepco_hourly` |
+| 15분 시계열 96건/일 | `POST /rs/rs0101N_chart.do`의 `list1` | `kepco_interval` |
+| 월별 청구 개요 12건 | `POST /cc/cc0102Info.do` | `kepco_billing` |
+| 상세 청구·부하대별 사용량 | `GET /cc/cc0103.do?yymm=YYYY.MM` HTML | `kepco_billing` |
+
+- `db/migrations/005_kepco_detail.sql`이 확장 테이블과 1시간 집계 보강 컬럼을 만든다.
+- `src/lib/kepco/client.ts`는 순차 요청으로 서비스 부하와 쿠키 경쟁을 줄인다.
+- 15분 API가 빈 날짜 또는 일부 슬롯만 반환하면 96개 슬롯을 유지하되 해당 슬롯을 `no_data_yn=Y`로 저장한다. 이는 0 사용량을 조작하지 않고 “요청 성공·계측 없음”을 명시한다.
+- `src/lib/kepco/parse.ts`는 외부 HTML을 실행하지 않고 id 기반 텍스트만 파싱한다.
+- 상세 API는 정규화 필드만 반환하며 `raw_json`은 서버 DB에만 보존한다.
+
+### 장시간 배치
+
+```shell
+# 기본 요약/시간/월별 수집 — 겹치지 않는 fid 범위로 분할 가능
+node scripts/kepco-collect-all.mjs --min-fid 800 --max-fid 2000 --worker high --delay 1200
+node scripts/kepco-collect-all.mjs --min-fid 0 --max-fid 799 --worker low --delay 1200
+
+# 기본 적재 완료 업체의 계약/일합계/15분 당일/청구 상세 보강
+node scripts/kepco-enrich-all.mjs --worker detail --delay 1500
+
+# 선택 월 전체 15분 자료 백필(list1+list2를 함께 저장해 호출 수 절감)
+node scripts/kepco-backfill-interval.mjs --month YYYYMM --request-delay 1200
+
+# 자동 파이프라인은 성공 업체 수가 비슷한 세 비중첩 fid 범위로 백필 후 최종 누락만 순차 재처리
+node scripts/kepco-finish-pipeline.mjs
+
+# 전체 완전성·96슬롯/일·비밀번호 비포함 검증
+node scripts/kepco-verify.mjs
+```
+
+안전 정책:
+
+- `login_failed`는 기본 실행에서 재시도하지 않는다. 전체 배치 후 최초 실패가 정확히 1회이고 미적재인 업체만 단일 작업자·3초 간격으로 한 차례 재확인한다.
+- 네트워크 등 `error`는 명시적 `--retry-failed` 실행에서 한 차례 재시도한다.
+- 상세 보강과 월 백필은 동일 업체 세션 교체를 막기 위해 서로 다른 단계에서 실행한다.
+- coordinator는 `data/kepco-pipeline.lock`에 자신과 worker PID를 기록하며, 이 중 하나라도 실행 중이면 `POST /api/kepco/collect`는 409로 수동 수집을 차단한다.
+- 진행 파일과 로그는 `data/kepco-*.json`, `data/kepco-*.log`에 저장하며 비밀번호를 출력하지 않는다.

@@ -39,6 +39,9 @@
 # 한전 비밀번호 매칭 결과 (scripts/match-kepco-passwds.mjs 생성, 로컬 전용)
 /src/lib/fit-mocks/kepco-passwds.json
 
+# 한전 수집 런타임 로그·진행 체크포인트·완료 리포트 (로컬 전용)
+/data/kepco-*
+
 # misc
 .DS_Store
 *.pem

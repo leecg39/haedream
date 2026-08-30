@@ -4,12 +4,11 @@
  * 원본은 `https://watt.rfenms.com/api/firm` 에서 fetch 한다.
  * 클론은 실제 운영 DB 덤프(`data/firm-details.csv`)를
  * `scripts/import-firm-csv.mjs` 로 변환한 `firm-rows.json` 을 사용한다.
- * 한전 비밀번호(kepcoPasswd)는 gitignore 된 로컬 전용 `kepco-passwds.json`
- * (`scripts/match-kepco-passwds.mjs` 생성)에서 fid 기준으로 병합한다.
+ * 한전 비밀번호는 이 클라이언트 공유 모듈에 병합하지 않는다.
+ * 서버 수집 경로는 `@/lib/kepco/credentials.server`에서만 자격증명을 읽는다.
  * 모든 값은 읽기 전용이며 소비하는 쪽에서 절대 변형하지 않는다.
  */
 import firmRowsJson from "./firm-rows.json";
-import kepcoPasswdsJson from "./kepco-passwds.json";
 
 /** 전력타입 코드 → 한글 설명 (원본 firm.js `vio._contract`). */
 export const FIRM_CONTRACT_LABELS: Readonly<Record<string, string>> = Object.freeze({
@@ -126,17 +125,9 @@ export interface FirmRow {
 
 /**
  * 실제 운영 DB 1,654건. 재생성: node scripts/import-firm-csv.mjs
- * 비밀번호 맵 재생성: node scripts/match-kepco-passwds.mjs
- * (kepco-passwds.json 은 로컬 전용이라 없으면 next.config.ts 가 빈 맵을 만든다)
+ * 비밀번호는 의도적으로 병합하지 않으며 서버 전용 credential loader에서만 읽는다.
  */
-const KEPCO_PASSWDS: Readonly<Record<string, string>> = kepcoPasswdsJson;
-
-export const FIRM_ROWS: readonly FirmRow[] = Object.freeze(
-  (firmRowsJson as FirmRow[]).map((row) => {
-    const kepcoPasswd = KEPCO_PASSWDS[String(row.fid)];
-    return kepcoPasswd ? { ...row, kepcoPasswd } : row;
-  }),
-);
+export const FIRM_ROWS: readonly FirmRow[] = Object.freeze(firmRowsJson as FirmRow[]);
 
 /** 원본 vio.kakaoMap 의 기본 좌표(청주 인근). 데모 지도 모달 표시용. */
 export const FIRM_DEFAULT_GEO = "127.4888, 36.6426";

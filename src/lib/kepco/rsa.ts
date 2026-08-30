@@ -22,7 +22,6 @@ let cached: RsaContext | null = null;
 
 function loadRsaContext(): RsaContext {
   if (cached) return cached;
-  const vendorDir = path.join(/* turbopackIgnore: true */ process.cwd(), "src/lib/kepco/vendor");
   const sandbox: Record<string, unknown> = {
     window: {},
     navigator: { appName: "Netscape", appVersion: "5.0" },
@@ -30,8 +29,14 @@ function loadRsaContext(): RsaContext {
   };
   sandbox.window = sandbox;
   vm.createContext(sandbox);
-  for (const name of ["jsbn.js", "prng4.js", "rng.js", "rsa.js"]) {
-    vm.runInContext(readFileSync(path.join(vendorDir, name), "utf8"), sandbox, { filename: name });
+  const vendorSources: Array<[string, string]> = [
+    ["jsbn.js", readFileSync(path.join(process.cwd(), "src/lib/kepco/vendor/jsbn.js"), "utf8")],
+    ["prng4.js", readFileSync(path.join(process.cwd(), "src/lib/kepco/vendor/prng4.js"), "utf8")],
+    ["rng.js", readFileSync(path.join(process.cwd(), "src/lib/kepco/vendor/rng.js"), "utf8")],
+    ["rsa.js", readFileSync(path.join(process.cwd(), "src/lib/kepco/vendor/rsa.js"), "utf8")],
+  ];
+  for (const [name, source] of vendorSources) {
+    vm.runInContext(source, sandbox, { filename: name });
   }
   cached = sandbox as unknown as RsaContext;
   return cached;

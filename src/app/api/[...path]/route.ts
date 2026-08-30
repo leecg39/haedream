@@ -23,8 +23,14 @@ import {
 import { FIRM_ROWS } from "@/lib/fit-mocks/firm";
 import { getDb } from "@/lib/db";
 import { collectFirms } from "@/lib/kepco/collect.ts";
+import { getKepcoPassword } from "@/lib/kepco/credentials.server";
+import { isKepcoBatchActive } from "@/lib/kepco/batch-lock.server";
 
 export const dynamic = "force-dynamic";
+
+const PUBLIC_FIRM_ROWS = FIRM_ROWS.map((row) =>
+  Object.fromEntries(Object.entries(row).filter(([key]) => key !== "kepcoPasswd")),
+);
 
 const loginSchema = z.strictObject({
   cf: z.literal("login"),
@@ -144,7 +150,7 @@ async function handle(req: NextRequest, path: string[]) {
 
   // 업체관리 목록 — React(/fit/firm)와 정적 EMS 페이지(firm.html)가 같은 데이터를 쓴다.
   if (joined === "firm" || joined.startsWith("firm/")) {
-    return json({ cat: 1, data: FIRM_ROWS });
+    return json({ cat: 1, data: PUBLIC_FIRM_ROWS });
   }
 
   // 한전 파워플래너 연동 — 업체별 수집 상태
@@ -165,7 +171,7 @@ async function handle(req: NextRequest, path: string[]) {
       fid: row.fid,
       firmName: row.firmName,
       kepcoNo: row.kepcoNo,
-      hasPasswd: Boolean(row.kepcoPasswd),
+      hasPasswd: Boolean(getKepcoPassword(row.fid)),
       lastStatus: logByFid.get(row.fid)?.status ?? null,
       lastMessage: logByFid.get(row.fid)?.message ?? null,
       lastCollectedAt: summaryByFid.get(row.fid)?.collected_at ?? null,
@@ -178,15 +184,57 @@ async function handle(req: NextRequest, path: string[]) {
   if (kepcoFirmMatch) {
     const fid = Number(kepcoFirmMatch[1]);
     const db = getDb();
-    const summary = db.prepare("SELECT * FROM kepco_summary WHERE fid = ?").get(fid) ?? null;
-    const ymd = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }).replaceAll("-", "");
+    // raw_json 에는 파워플래너 원문(고객번호 등)이 포함될 수 있어 API로 반환하지 않는다.
+    const summary = db
+      .prepare(
+        `SELECT fid, collected_at, start_dt, end_dt, cntr_knd_nm, f_ap_qt,
+                total_charge, predict_total_charge, joj_kw, max_pwr, max_pwr_time
+         FROM kepco_summary WHERE fid = ?`,
+      )
+      .get(fid) ?? null;
+    const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }).replaceAll("-", "");
+    const requestedMonth = (url.searchParams.get("month") ?? "").replace(/\D/g, "");
+    const month = /^\d{6}$/.test(requestedMonth) ? requestedMonth : today.slice(0, 6);
     const hourly = db
-      .prepare("SELECT ymd, hhmi, f_ap_qt, max_pwr, co2, pf FROM kepco_hourly WHERE fid = ? AND ymd = ? ORDER BY hhmi")
-      .all(fid, ymd);
+      .prepare(
+        `SELECT ymd, hhmi, f_ap_qt, max_pwr, co2, pf, f_larap_qt, f_lerap_qt,
+                f_lerap_pf, no_data_yn
+         FROM kepco_hourly WHERE fid = ? AND ymd = ? ORDER BY hhmi`,
+      )
+      .all(fid, today);
+    const interval = db
+      .prepare(
+        `SELECT ymd, hhmi, f_ap_qt, max_pwr, f_larap_qt, f_lerap_qt,
+                f_larap_pf, f_lerap_pf, co2, no_data_yn
+         FROM kepco_interval
+         WHERE fid = ? AND substr(ymd, 1, 6) = ?
+         ORDER BY ymd, hhmi`,
+      )
+      .all(fid, month);
+    const dailyTotal = db
+      .prepare(
+        `SELECT ymd, collected_at, f_ap_qt, max_pwr, f_larap_qt, f_lerap_qt, co2
+         FROM kepco_daily_total WHERE fid = ? AND substr(ymd, 1, 6) = ? ORDER BY ymd`,
+      )
+      .all(fid, month);
     const monthly = db
       .prepare("SELECT yyyymm, f_ap_qt, kwh_bill FROM kepco_monthly WHERE fid = ? ORDER BY yyyymm")
       .all(fid);
-    return json({ cat: 1, data: { summary, hourly, monthly } });
+    const billing = db
+      .prepare(
+        `SELECT bill_ym, mr_ymd, contract_pwr, bill_aply_pwr, use_kwh, use_days,
+                base_bill, kwh_bill, req_bill, lload_usekwh, mload_usekwh,
+                maxload_usekwh, ji_pwrfact, jn_pwrfact
+         FROM kepco_billing WHERE fid = ? ORDER BY bill_ym`,
+      )
+      .all(fid);
+    const contract = db
+      .prepare("SELECT collected_at, cntr_knd_cd, selbill_cd FROM kepco_contract WHERE fid = ?")
+      .get(fid) ?? null;
+    return json({
+      cat: 1,
+      data: { summary, contract, dailyTotal, hourly, interval, intervalMonth: month, monthly, billing },
+    });
   }
 
   // 한전 파워플래너 연동 — 수동 수집 트리거 (원본의 '수집 요청' 버튼)
@@ -196,15 +244,23 @@ async function handle(req: NextRequest, path: string[]) {
         throw new AppError(405, "METHOD_NOT_ALLOWED", "지원하지 않는 요청 방식입니다.");
       }
       assertSameOrigin(req);
+      if (isKepcoBatchActive()) {
+        throw new AppError(409, "KEPCO_BATCH_ACTIVE", "전체 한전 수집이 진행 중입니다. 완료 후 다시 요청하세요.");
+      }
       const body = (await readJson(req).catch(() => ({}))) as { fid?: number };
-      const targets = body.fid != null
+      const targetRows = body.fid != null
         ? FIRM_ROWS.filter((row) => row.fid === body.fid)
-        : FIRM_ROWS.filter((row) => row.kepcoNo && row.kepcoPasswd);
-      if (targets.length === 0) {
+        : FIRM_ROWS.filter((row) => row.kepcoNo && getKepcoPassword(row.fid));
+      if (targetRows.length === 0) {
         throw new AppError(404, "NOT_FOUND", "수집 대상 업체가 없습니다.");
       }
       const results = await collectFirms(
-        targets.map((row) => ({ fid: row.fid, kepcoNo: row.kepcoNo, kepcoPasswd: row.kepcoPasswd })),
+        targetRows.map((row) => ({
+          fid: row.fid,
+          kepcoNo: row.kepcoNo,
+          kepcoPasswd: getKepcoPassword(row.fid),
+          checkDay: row.checkDay,
+        })),
       );
       return json({ cat: 1, data: results });
     } catch (error) {
