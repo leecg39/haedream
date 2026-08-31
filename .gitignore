@@ -42,6 +42,9 @@
 # 한전 수집 런타임 로그·진행 체크포인트·완료 리포트 (로컬 전용)
 /data/kepco-*
 
+# 정적 페이지용 Agentation 번들 (npm run agentation:build 로 생성)
+/public/assets/js/agentation-standalone.js
+
 # misc
 .DS_Store
 *.pem

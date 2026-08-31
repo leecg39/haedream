@@ -12,6 +12,7 @@
     "db:seed": "node scripts/seed.mjs",
     "db:setup": "npm run db:migrate",
     "db:seed:demo": "ALLOW_DEMO_SEED=true node scripts/seed.mjs",
+    "agentation:build": "node scripts/build-agentation-standalone.mjs",
     "mockdb": "node scripts/build-mock-db.mjs",
     "mockdb:fit": "node scripts/build-fit-mock-db.mjs",
     "db:setup:demo": "npm run db:migrate && npm run db:seed:demo",
