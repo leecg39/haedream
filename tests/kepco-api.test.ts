@@ -132,9 +132,10 @@ describe("kepco API", () => {
     db.prepare(
       "INSERT INTO kepco_daily_total (fid, ymd, collected_at, f_ap_qt, max_pwr, raw_json) VALUES (7, '20260815', '2026-08-29T00:00:00Z', '100', '20', '{}')",
     ).run();
+    const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }).replaceAll("-", "");
     db.prepare(
-      "INSERT INTO kepco_hourly (fid, ymd, hhmi, f_ap_qt, max_pwr, co2, pf) VALUES (7, '20260830', '01', '10.5', '11.2', '0.01', '80.0')",
-    ).run();
+      "INSERT INTO kepco_hourly (fid, ymd, hhmi, f_ap_qt, max_pwr, co2, pf) VALUES (7, ?, '01', '10.5', '11.2', '0.01', '80.0')",
+    ).run(today);
     db.prepare(
       `INSERT INTO kepco_interval
        (fid, ymd, hhmi, collected_at, f_ap_qt, max_pwr, no_data_yn, raw_json)

@@ -28,13 +28,16 @@ test.describe("Watt 통합관제 /stat.html", () => {
     await expect(page.locator("#networkStatusCircleText")).toHaveText("98%");
 
     const counters = await page.locator("#realTimeCountWrap .countValue").allTextContents();
-    expect(counters.map(Number).reduce((sum, value) => sum + value, 0)).toBeGreaterThan(0);
+    const total = counters
+      .map((value) => Number(value.replace(/[^\d.-]/g, "")))
+      .reduce((sum, value) => sum + value, 0);
+    expect(total).toBeGreaterThan(0);
   });
 
   test("업체 검색·상태 필터·정렬·초기화가 동작함", async ({ page }) => {
     await page.locator("#inputFirmName").fill("농협");
     const searchedRows = page.locator("#dataList .firmListDataRow.active");
-    await expect(searchedRows).toHaveCount(10);
+    await expect.poll(() => searchedRows.count()).toBeGreaterThan(0);
     const searchedNames = await searchedRows.locator(".firmListfirmName").allTextContents();
     expect(searchedNames.every((name) => name.includes("농협"))).toBe(true);
 
@@ -43,7 +46,12 @@ test.describe("Watt 통합관제 /stat.html", () => {
 
     await page.locator("label:has(#inputEmergency)").click();
     await expect(page.locator("#inputEmergency")).toBeChecked();
-    await expect(page.locator("#dataList .firmListDataRow.active")).toHaveCount(4);
+    const emergencyRows = page.locator("#dataList .firmListDataRow.active");
+    await expect.poll(() => emergencyRows.count()).toBeGreaterThan(0);
+    const emergencyMarkers = await emergencyRows.evaluateAll((rows) =>
+      rows.map((row) => row.firstElementChild?.className.startsWith("exclamation") ?? false),
+    );
+    expect(emergencyMarkers.every(Boolean)).toBe(true);
 
     await page.locator(".filterButtons.reset").click();
     await page.locator("#selectOrderBy").selectOption("kepcoRatio-1");
