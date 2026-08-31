@@ -1,10 +1,10 @@
 /*
- * 클론 전용 보조 스타일 — 원본에는 없는 클래스만 담는다.
+ * 클론 전용 보조 스타일 — 원본에는 없는 클래스와 반응형 패치를 담는다.
  *
  * 원본은 #rankingChart 를 ECharts(dark) 로, #map 을 Kakao Maps SDK 로 그린다.
  * 클론은 외부 라이브러리를 로드하지 않으므로 컨테이너와 id 는 원본대로 두고
- * 그 안쪽만 CSS 로 근사한다. 여기 있는 클래스는 전부 클론이 추가한 것이며
- * 원본 마크업의 클래스는 하나도 재정의하지 않는다.
+ * 그 안쪽만 CSS 로 근사한다. 원본 클래스를 재정의하는 유일한 예외는 파일 맨 아래의
+ * 좁은 뷰포트 목록 넘침 패치다.
  *
  * public/fit/assets/css/ 는 원본 무변환 미러이므로 이 파일을 그쪽에 두지 않는다.
  */
@@ -228,4 +228,30 @@
 
 @media (prefers-reduced-motion: reduce) {
     .liveUpdateDot, #firmList { animation: none; }
+}
+
+/*
+ * 좁은 뷰포트 반응형 패치 — 원본은 이 구간에서 목록 오른쪽이 잘린 채로 보인다.
+ * .firmData 가 28vw(min 390px) 인데 행 min-width:420px 이라 뷰포트 약 1650px 이하에서는
+ * 절감금액 열이 프레임 밖으로 넘친다. 글자·여백을 줄여 프레임 안에 맞춘다.
+ * (1075px 이하는 원본이 세로 쌓기 레이아웃이라 대상에서 제외)
+ */
+@media screen and (min-width: 1076px) and (max-width: 1650px) {
+    .list .headerRow,
+    .list .dataRow {
+        min-width: 0;
+        padding: 0 6px;
+        font-size: 0.75rem;
+    }
+    .list .column { padding: 5px 2px; }
+    .list .dataRow > span { padding: 7px 2px; }
+
+    /* 필터 행(정렬 선택기 + 상태 범례)도 같은 폭 제약을 받는다. */
+    .listFilter { padding: 0 4px; }
+    .listFilter select { max-width: 110px; font-size: 0.75rem; }
+    /* LIVE 배지는 점만 남기고 글자는 접는다(툴팁은 title 로 유지). */
+    .liveUpdateBadge { padding: 3px 4px; font-size: 0; }
+    .listStatus { gap: 2px; font-size: 0.625rem; }
+    .listStatus .statusIcon { width: 8px; height: 8px; }
+    .listStatus .statusIcon:first-child { margin-left: 4px; }
 }
