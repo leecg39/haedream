@@ -161,12 +161,12 @@ test.describe("/fit/firm steering", () => {
     await expect(page.locator("#edit-contract")).toHaveValue("");
   });
 
-  test("목록 프레임이 본문 5행만 보이고 헤더를 고정한 채 스크롤됨", async ({ page }) => {
+  test("목록 프레임이 페이지당 10행을 스크롤 없이 모두 보여줌", async ({ page }) => {
     await page.setViewportSize({ width: 1904, height: 913 });
     await page.goto("/fit/firm");
 
     const frame = page.locator(".deskArea");
-    // 페이지당 10행이 렌더되지만 프레임에는 5행분만 들어온다.
+    // 페이지당 10행이 렌더되고 프레임에 10행 전부가 잘리지 않고 들어온다.
     await expect(page.locator("#deskList tr")).toHaveCount(10);
     const fully = await frame.evaluate((area) => {
       const box = area.getBoundingClientRect();
@@ -176,17 +176,9 @@ test.describe("/fit/firm steering", () => {
         return rect.top >= head.bottom - 0.5 && rect.bottom <= box.top + area.clientHeight + 0.5;
       }).length;
     });
-    expect(fully).toBe(5);
-    expect(await frame.evaluate((area) => area.scrollHeight > area.clientHeight + 1)).toBe(true);
-
-    // 스크롤해도 열 제목 행이 프레임 상단에 붙어 있어야 한다.
-    await frame.evaluate((area) => { area.scrollTop = 150; });
-    const headerPinned = await frame.evaluate((area) => {
-      const box = area.getBoundingClientRect();
-      const head = area.querySelector("#deskTable thead th")!.getBoundingClientRect();
-      return Math.abs(head.top - box.top) < 1;
-    });
-    expect(headerPinned).toBe(true);
+    expect(fully).toBe(10);
+    // 내부 스크롤이 생기지 않아야 한다.
+    expect(await frame.evaluate((area) => area.scrollHeight > area.clientHeight + 1)).toBe(false);
   });
 
   test("프레임 최상단 검색이 목록과 툴바 검색창에 함께 반영됨", async ({ page }) => {
