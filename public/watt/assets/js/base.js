@@ -249,7 +249,7 @@ const vio = {
         }
 
         if (isSpecialAccount) {
-            const storedMembers = JSON.parse(localStorage.getItem('members') || '[]');
+            const storedMembers = readStoredMembers();
 
             localStorage.setItem('fid', '98');
             members = (Array.isArray(storedMembers) ? storedMembers : []).filter(row => row.low === 0);
