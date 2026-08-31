@@ -44,6 +44,18 @@ function formatCollectedAt(iso: string | null) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())} 업데이트`;
 }
 
+function isCollectedToday(iso: string | null) {
+  if (!iso) return false;
+  const options: Intl.DateTimeFormatOptions = { timeZone: "Asia/Seoul" };
+  return new Date(iso).toLocaleDateString("sv-SE", options) === new Date().toLocaleDateString("sv-SE", options);
+}
+
+function collectionStatusLabel(selected: KepcoFirmStatus | null) {
+  if (!selected?.lastStatus) return "미수집";
+  if (selected.lastStatus === "success" && !isCollectedToday(selected.lastCollectedAt)) return "갱신 필요";
+  return STATUS_LABEL[selected.lastStatus];
+}
+
 function withCommas(value: string) {
   const num = Number(value.replaceAll(",", ""));
   return Number.isFinite(num) && value !== "" ? echoNumber(num) : value || "-";
@@ -148,7 +160,7 @@ export function ResearchPanel() {
           <span className="researchInfoText" data-name="kepcoPasswd">{selected?.hasPasswd ? "••••••••" : "미등록"}</span>
           <span className="researchLabel">스케줄 상태</span>
           <span className="researchInfoText" data-name="kepcoStatus">
-            {collecting ? "수집 중…" : selected?.lastStatus ? STATUS_LABEL[selected.lastStatus] : "미수집"}
+            {collecting ? "수집 중…" : collectionStatusLabel(selected)}
           </span>
           <span className="researchInfoText" data-name="kepcoTime">{formatCollectedAt(selected?.lastCollectedAt ?? null)}</span>
           <button
