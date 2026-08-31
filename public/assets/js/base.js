@@ -2,12 +2,22 @@
 
 window.document.querySelector("link[rel*='icon']").href = window.location.hostname === 'watt.eggbz.com' ? '/assets/img/eggOnIcon.png' : '/assets/img/favicon.ico';
 
+function readStoredMembers() {
+    try {
+        const members = JSON.parse(localStorage.getItem('members') || '[]');
+        return Array.isArray(members) ? members : [];
+    } catch (error) {
+        console.warn('저장된 업체 목록을 읽지 못했습니다.', error);
+        return [];
+    }
+}
+
 const vio = {
     _fid: localStorage.getItem('fid') ?? '',
     _firmName: localStorage.getItem('firmName') ?? '',
     _accessToken: sessionStorage.getItem('accessToken'),
     _language: localStorage.getItem('language') ?? 'ko',
-    _members: JSON.parse(localStorage.getItem('members')) ?? [],
+    _members: readStoredMembers(),
     _zoneOffset: -9, // UTC 시간차 -9
     _toastTimer: '',
     _setToCO2: 0.4594, // kgCO2eq

@@ -105,24 +105,58 @@
             } else {
                 select.innerHTML = '<option value="">업체 없음</option>';
             }
-            // 업체 변경 시 선택을 저장한다(다른 화면이 fid 기준으로 동작).
-            select.addEventListener('change', () => {
+
+            const persistFirmSelection = () => {
+                const selectedName = select.options[select.selectedIndex]?.text?.trim() || '';
                 try {
                     window.localStorage.setItem('fid', select.value);
                     window.localStorage.setItem('authIdn', select.value);
+                    window.localStorage.setItem('firmName', selectedName);
                 } catch (error) {
                     console.error('업체 선택 저장 실패', error);
                 }
-            });
+            };
+
+            // inline onchange와 등록 핸들러가 함께 실행되지 않도록 단일 change 경로를 사용한다.
+            select.removeAttribute('onchange');
+            window.vio.setFirm = persistFirmSelection;
+            if (window.jQuery) {
+                window.jQuery(select).on('change.firmDemo', persistFirmSelection);
+            } else {
+                select.addEventListener('change', persistFirmSelection);
+            }
+            persistFirmSelection();
+
+            // 피크 화면과 같은 검색 입력 + 최대 높이 스크롤 목록을 적용한다.
+            if (window.jQuery?.fn?.select2) {
+                window.jQuery(select).select2();
+            }
         }
         const statusItems = document.querySelectorAll('#currentStatus li');
         statusItems.forEach((item) => item.classList.add('disable'));
         statusItems[3]?.classList.remove('disable');
 
         document.querySelectorAll('#navigation .navLi > a[href="#"]').forEach((anchor) => {
+            const navItem = anchor.closest('.navLi');
+            const submenu = navItem?.querySelector(':scope > .d2Nav');
+            if (!navItem || !submenu) return;
+
+            if (!submenu.id) submenu.id = `${navItem.id}-submenu`;
+            anchor.setAttribute('aria-controls', submenu.id);
+            anchor.setAttribute('aria-expanded', String(navItem.classList.contains('active')));
+
             anchor.addEventListener('click', (event) => {
                 event.preventDefault();
-                anchor.closest('.navLi')?.classList.toggle('on');
+
+                const currentMenu = document.querySelector('#navigation .navLi.active');
+                if (currentMenu && currentMenu !== navItem) {
+                    currentMenu.classList.remove('active');
+                    currentMenu.querySelector(':scope > a[href="#"]')
+                        ?.setAttribute('aria-expanded', 'false');
+                }
+
+                const isExpanded = navItem.classList.toggle('active');
+                anchor.setAttribute('aria-expanded', String(isExpanded));
             });
         });
         const settings = document.querySelector('.tb-set > a');

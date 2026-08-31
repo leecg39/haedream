@@ -26,6 +26,78 @@ test.describe("Watt 업체관리 /firm.html", () => {
     await expect(page.locator("#researchLink")).toHaveAttribute("href", "/fit/research");
   });
 
+  test("상단에서 DB 업체 전체를 스크롤·검색하고 선택을 유지함", async ({ page }) => {
+    const response = await page.request.get("/api/firm");
+    expect(response.ok()).toBe(true);
+    const body = (await response.json()) as {
+      data: Array<{ fid: number; firmName: string }>;
+    };
+
+    const firmSelect = page.locator("#firmSelect");
+    await expect(firmSelect.locator("option")).toHaveCount(body.data.length);
+    await expect(page.locator("#firmSelect + .select2")).toBeVisible();
+
+    await page.locator("#firmSelect + .select2 .select2-selection").click();
+    const results = page.locator(
+      ".select2-container--open .select2-results__options",
+    );
+    await expect(results).toBeVisible();
+    const scrollState = await results.evaluate((element) => ({
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+      overflowY: getComputedStyle(element).overflowY,
+    }));
+    expect(scrollState.overflowY).toBe("auto");
+    expect(scrollState.scrollHeight).toBeGreaterThan(scrollState.clientHeight);
+
+    const target = body.data.find((firm) => firm.fid === 1660);
+    expect(target).toBeDefined();
+    await page
+      .locator(".select2-container--open .select2-search__field")
+      .fill(target!.firmName);
+    const targetOption = page
+      .locator(".select2-container--open .select2-results__option")
+      .getByText(target!.firmName, { exact: true });
+    await expect(targetOption).toBeVisible();
+    await targetOption.click();
+
+    await expect(firmSelect).toHaveValue(String(target!.fid));
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem("firmName")))
+      .toBe(target!.firmName);
+    await expect(
+      page.locator("#firmSelect + .select2 .select2-selection__rendered"),
+    ).toHaveText(target!.firmName);
+
+    await page.reload();
+    await expect(page.locator("body")).toHaveAttribute("data-firm-demo-ready", "true");
+    await expect(page.locator("#firmSelect")).toHaveValue(String(target!.fid));
+    await expect(
+      page.locator("#firmSelect + .select2 .select2-selection__rendered"),
+    ).toHaveText(target!.firmName);
+  });
+
+  test("왼쪽 대시보드 카테고리의 시각·접근성 상태를 함께 전환함", async ({ page }) => {
+    const dashboardCategory = page.locator("#navigation #main");
+    const dashboardToggle = dashboardCategory.locator(":scope > a");
+    const dashboardSubmenu = dashboardCategory.locator(":scope > .d2Nav");
+
+    await expect(dashboardToggle).toHaveAttribute("aria-controls", "main-submenu");
+    await expect(dashboardToggle).toHaveAttribute("aria-expanded", "false");
+    await expect(dashboardSubmenu).toBeHidden();
+
+    await dashboardToggle.click();
+    await expect(dashboardCategory).toHaveClass(/\bactive\b/);
+    await expect(page.locator("#firm")).not.toHaveClass(/\bactive\b/);
+    await expect(dashboardToggle).toHaveAttribute("aria-expanded", "true");
+    await expect(dashboardSubmenu).toBeVisible();
+
+    await dashboardToggle.click();
+    await expect(dashboardCategory).not.toHaveClass(/\bactive\b/);
+    await expect(dashboardToggle).toHaveAttribute("aria-expanded", "false");
+    await expect(dashboardSubmenu).toBeHidden();
+  });
+
   test("검색·서비스 필터·정렬·50건 페이지 이동이 동작함", async ({ page }) => {
     await page.locator("#deskInput").fill("성신금속");
     await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(1);

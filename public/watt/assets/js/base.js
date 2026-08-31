@@ -2,12 +2,22 @@
 
 window.document.querySelector("link[rel*='icon']").href = window.location.hostname === 'watt.eggbz.com' ? '/assets/img/eggOnIcon.png' : '/assets/img/favicon.ico';
 
+function readStoredMembers() {
+    try {
+        const members = JSON.parse(localStorage.getItem('members') || '[]');
+        return Array.isArray(members) ? members : [];
+    } catch (error) {
+        console.warn('저장된 업체 목록을 읽지 못했습니다.', error);
+        return [];
+    }
+}
+
 const vio = {
     _fid: localStorage.getItem('fid') ?? '',
     _firmName: localStorage.getItem('firmName') ?? '',
     _accessToken: sessionStorage.getItem('accessToken'),
     _language: localStorage.getItem('language') ?? 'ko',
-    _members: JSON.parse(localStorage.getItem('members')) ?? [],
+    _members: readStoredMembers(),
     _zoneOffset: -9, // UTC 시간차 -9
     _toastTimer: '',
     _setToCO2: 0.4594, // kgCO2eq
@@ -206,37 +216,69 @@ const vio = {
             window.location.href = 'login.html';
         }
     },
-    setFirmInfo: function() {
+    setFirmInfo: async function() {
         const dom = document,
             firmSelect = dom.getElementById('firmSelect'),
             firmName = localStorage.getItem('firmName');
 
-        let out = '';
-        if (localStorage.getItem('authId') === '123123') {
-            let members = JSON.parse(localStorage.getItem('members'));
+        let members = Array.isArray(this._members) ? this._members : [];
+        const isSpecialAccount = localStorage.getItem('authId') === '123123';
+
+        // 피크관리와 대시보드에서는 로그인 응답의 제한된 members 대신 DB 업체 전체를 사용한다.
+        // API가 실패하면 기존 members를 그대로 사용해 상단 셸 초기화를 중단하지 않는다.
+        const usesDatabaseFirmSelector = ['peak', 'wattMain'].includes(this._fileName);
+        if (firmSelect && usesDatabaseFirmSelector && !isSpecialAccount) {
+            try {
+                const response = await fetch('/api/firm', {cache: 'no-store'});
+                if (!response.ok) {
+                    throw new Error(`/api/firm ${response.status}`);
+                }
+
+                const jsonData = await response.json();
+                const dbMembers = (Array.isArray(jsonData.data) ? jsonData.data : [])
+                    .filter((item) => item && item.fid != null && String(item.firmName || '').trim())
+                    .map((item) => ({fid: item.fid, name: String(item.firmName)}));
+
+                if (dbMembers.length) {
+                    members = dbMembers;
+                    this._members = dbMembers;
+                }
+            } catch (error) {
+                console.warn('DB 업체 목록을 불러오지 못해 로그인 업체 목록을 사용합니다.', error);
+            }
+        }
+
+        if (isSpecialAccount) {
+            const storedMembers = JSON.parse(localStorage.getItem('members') || '[]');
 
             localStorage.setItem('fid', '98');
-            members = members.filter(row => row.low === 0);
+            members = (Array.isArray(storedMembers) ? storedMembers : []).filter(row => row.low === 0);
             if (members.length && !members.some(row => row.fid == this._fid)) {
                 this._fid = members[members.length - 1].fid;
             }
 
-            for (let i = 0; i < members.length; i++) {
-                const item = members[i];
-                const isSelected = this._fid == item.fid && firmName === item.name;
-                out += `<option value="${item.fid}" ${isSelected ? 'selected' : ''}>${item.name}</option>`;
+            this._members = members;
+        }
+
+        if (firmSelect) {
+            if (members.length && !members.some(item => String(item.fid) === String(this._fid))) {
+                this._fid = members[0].fid;
+                this._firmName = members[0].name;
+                localStorage.setItem('fid', String(this._fid));
+                localStorage.setItem('firmName', this._firmName);
             }
 
-            this._members = members;
-        } else {
-            for (let i = 0; i < this._members.length; i++) {
-                const item = this._members[i];
-                const isSelected = this._fid == item.fid;
-                out += `<option value="${item.fid}" ${isSelected ? 'selected' : ''}>${item.name}</option>`;
+            const options = document.createDocumentFragment();
+            for (let i = 0; i < members.length; i++) {
+                const item = members[i];
+                const option = document.createElement('option');
+                option.value = String(item.fid);
+                option.textContent = item.name;
+                option.selected = String(this._fid) === String(item.fid)
+                    && (!isSpecialAccount || firmName === item.name);
+                options.appendChild(option);
             }
-        }
-        if (firmSelect) {
-            firmSelect.innerHTML = out;
+            firmSelect.replaceChildren(options);
         }
 
         // 상단바 업체 검색 기능

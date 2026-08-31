@@ -75,6 +75,20 @@ test.describe("Watt 피크 업체 선택 /peak.html", () => {
       page.locator("#firmSelect + .select2 .select2-selection__rendered"),
     ).toHaveText(target!.firmName);
   });
+
+  test("손상된 members 저장값이 있어도 DB 업체 선택을 초기화함", async ({ page }) => {
+    const response = await page.request.get("/api/firm");
+    expect(response.ok()).toBe(true);
+    const body = (await response.json()) as { data: FirmSummary[] };
+
+    await page.goto("/peak.html");
+    await page.evaluate(() => localStorage.setItem("members", "{broken-json"));
+    await page.reload();
+
+    const firmSelect = page.locator("#firmSelect");
+    await expect(firmSelect.locator("option")).toHaveCount(body.data.length);
+    await expect(page.locator("#firmSelect + .select2")).toBeVisible();
+  });
 });
 
 

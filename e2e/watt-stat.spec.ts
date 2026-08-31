@@ -34,6 +34,34 @@ test.describe("Watt 통합관제 /stat.html", () => {
     expect(total).toBeGreaterThan(0);
   });
 
+  test("왼쪽 대시보드 카테고리의 시각·접근성 상태를 함께 전환함", async ({ page }) => {
+    const dashboardCategory = page.locator("#navigation #main");
+    const dashboardToggle = dashboardCategory.locator(":scope > a");
+    const dashboardSubmenu = dashboardCategory.locator(":scope > .d2Nav");
+
+    await expect(dashboardToggle).toHaveAttribute("aria-controls", "main-submenu");
+    await expect(dashboardToggle).toHaveAttribute("aria-expanded", "false");
+    await expect(dashboardSubmenu).toBeHidden();
+
+    await dashboardToggle.click();
+
+    await expect(dashboardCategory).toHaveClass(/\bactive\b/);
+    await expect(page.locator("#stat")).not.toHaveClass(/\bactive\b/);
+    await expect(dashboardToggle).toHaveAttribute("aria-expanded", "true");
+    await expect(dashboardSubmenu).toBeVisible();
+    await expect(dashboardSubmenu.getByRole("link")).toHaveText([
+      "대시보드 위젯",
+      "대시보드 전력메인",
+      "태양광 대시보드",
+    ]);
+
+    await dashboardToggle.click();
+
+    await expect(dashboardCategory).not.toHaveClass(/\bactive\b/);
+    await expect(dashboardToggle).toHaveAttribute("aria-expanded", "false");
+    await expect(dashboardSubmenu).toBeHidden();
+  });
+
   test("업체 검색·상태 필터·정렬·초기화가 동작함", async ({ page }) => {
     await page.locator("#inputFirmName").fill("농협");
     const searchedRows = page.locator("#dataList .firmListDataRow.active");

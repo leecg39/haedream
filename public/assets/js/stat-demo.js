@@ -182,9 +182,26 @@
         }
 
         document.querySelectorAll('#navigation .navLi > a[href="#"]').forEach((anchor) => {
+            const navItem = anchor.closest('.navLi');
+            const submenu = navItem?.querySelector(':scope > .d2Nav');
+            if (!navItem || !submenu) return;
+
+            if (!submenu.id) submenu.id = `${navItem.id}-submenu`;
+            anchor.setAttribute('aria-controls', submenu.id);
+            anchor.setAttribute('aria-expanded', String(navItem.classList.contains('active')));
+
             anchor.addEventListener('click', (event) => {
                 event.preventDefault();
-                anchor.closest('.navLi')?.classList.toggle('on');
+
+                const currentMenu = document.querySelector('#navigation .navLi.active');
+                if (currentMenu && currentMenu !== navItem) {
+                    currentMenu.classList.remove('active');
+                    currentMenu.querySelector(':scope > a[href="#"]')
+                        ?.setAttribute('aria-expanded', 'false');
+                }
+
+                const isExpanded = navItem.classList.toggle('active');
+                anchor.setAttribute('aria-expanded', String(isExpanded));
             });
         });
         const settings = document.querySelector('.tb-set > a');
