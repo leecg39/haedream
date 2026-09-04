@@ -1,10 +1,30 @@
 import { MOCK_FETCH_SUMMARY, MOCK_CATEGORIES, MOCK_PAGES } from "@/lib/mock-db";
 import HubDashboard from "@/components/HubDashboard";
+import { AppError } from "@/lib/errors";
+import { getPilotDashboardSnapshot } from "@/features/pilot/source";
+import type { PilotSnapshot } from "@/features/pilot/types";
 
 export const metadata = {
   title: "SolarSimz · 허브 대시보드",
   description: "watt.rfenms.com MockDB 기반 허브 대시보드",
 };
+
+function loadPilotSnapshot(): PilotSnapshot | null {
+  try {
+    return getPilotDashboardSnapshot();
+  } catch (error) {
+    if (error instanceof AppError && error.code === "RTU_NOT_IMPLEMENTED") {
+      return {
+        source: "rtu",
+        gateway: null,
+        points: [],
+        latestReading: null,
+        readings: [],
+      };
+    }
+    return null;
+  }
+}
 
 export default function HubPage() {
   // ── 서버 사이드 데이터 집계 ──────────────────────────────────────────
@@ -28,6 +48,7 @@ export default function HubPage() {
       groups={groups}
       summary={MOCK_FETCH_SUMMARY}
       fetchedAt={fetchedAt}
+      pilot={loadPilotSnapshot()}
     />
   );
 }

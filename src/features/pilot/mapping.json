@@ -1,0 +1,30 @@
+{
+  "gateway": {
+    "id": "gw-pilot-01",
+    "rtu": "KFE",
+    "lte": true,
+    "source": "mock"
+  },
+  "points": [
+    {
+      "id": "pt-pm-01",
+      "tag": "PANEL_PM",
+      "meter": "Panel Power Meter",
+      "gatewayId": "gw-pilot-01",
+      "source": "mock"
+    },
+    {
+      "id": "pt-din-01",
+      "tag": "DIN_TBD",
+      "meter": "DIN(형번미확정)",
+      "gatewayId": "gw-pilot-01",
+      "enabled": false,
+      "source": "mock"
+    }
+  ],
+  "readings": {
+    "interval": "1h",
+    "fields": ["kWh", "kW", "V", "A"],
+    "source": "mock"
+  }
+}

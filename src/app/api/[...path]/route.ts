@@ -20,6 +20,12 @@ import {
   mockWattMain,
   mockWidgets,
 } from "@/lib/watt-mocks";
+import { withPilotSidecar } from "@/features/pilot/mains";
+import {
+  getPilotDashboardSnapshot,
+  resolveDataSource,
+} from "@/features/pilot/source";
+import type { PilotSnapshot } from "@/features/pilot/types";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +86,19 @@ const demoApiPrefixes = new Set([
 
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, { status });
+}
+
+function safePilotSnapshot(): PilotSnapshot | null {
+  try {
+    return getPilotDashboardSnapshot({ source: resolveDataSource() });
+  } catch {
+    return null;
+  }
+}
+
+function withOptionalPilot<T extends Record<string, unknown>>(payload: T) {
+  const snapshot = safePilotSnapshot();
+  return snapshot ? withPilotSidecar(payload, snapshot) : payload;
 }
 
 async function handle(req: NextRequest, path: string[]) {
@@ -148,11 +167,18 @@ async function handle(req: NextRequest, path: string[]) {
   }
 
   if (joined.startsWith("mains/")) {
-    return json(mockMains(url.searchParams.get("fields") ?? undefined));
+    return json(
+      withOptionalPilot(
+        mockMains(url.searchParams.get("fields") ?? undefined) as Record<
+          string,
+          unknown
+        >,
+      ),
+    );
   }
 
   if (joined.startsWith("watt-mains/")) {
-    return json(mockWattMain());
+    return json(withOptionalPilot(mockWattMain() as Record<string, unknown>));
   }
 
   if (joined.startsWith("peak-stats/") || joined.startsWith("controls/")) {
