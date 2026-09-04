@@ -4,9 +4,11 @@ import {
   PILOT_GATEWAY_ID,
   PILOT_GATEWAY_NAME,
   PILOT_MAPPING,
+  PILOT_POINT_DIN_ENABLED,
   PILOT_POINT_DIN_ID,
   PILOT_POINT_PM_ID,
   PILOT_READING_HOURS,
+  PILOT_READING_VALUE_KEYS,
   PILOT_RTU,
   PILOT_TENANT_ID,
 } from "@/features/pilot/constants";
@@ -50,7 +52,7 @@ export function listPilotHourStarts(now = new Date(), hours = PILOT_READING_HOUR
   return starts;
 }
 
-/** Deterministic panel-meter sample. DIN is not generated. */
+/** Deterministic panel-meter sample. DIN is not generated. Values are kWh/kW/V/A only. */
 export function mockHourlyFields(observedAt: Date) {
   const { hour } = seoulParts(observedAt);
   const daytime = hour >= 8 && hour < 18;
@@ -59,7 +61,10 @@ export function mockHourlyFields(observedAt: Date) {
   const kWh = kw;
   const V = Number((380 + ((hour * 3) % 7) - 3).toFixed(1));
   const A = Number(((kw * 1000) / (V * Math.sqrt(3))).toFixed(1));
-  return { kWh, kW: kw, V, A };
+  return { kWh, kW: kw, V, A } satisfies Record<
+    (typeof PILOT_READING_VALUE_KEYS)[number],
+    number
+  >;
 }
 
 function readingId(pointId: string, observedAt: Date) {
@@ -71,6 +76,11 @@ export function seedPilotData(
   db: AppDatabase,
   options?: { now?: Date; hours?: number; tenantId?: string },
 ) {
+  const din = PILOT_MAPPING.points.find((point) => point.id === PILOT_POINT_DIN_ID);
+  if (!din || din.enabled !== PILOT_POINT_DIN_ENABLED) {
+    throw new Error("pt-din-01 must remain enabled: false");
+  }
+
   const now = options?.now ?? new Date();
   const hours = options?.hours ?? PILOT_READING_HOURS;
   const tenantId = options?.tenantId ?? PILOT_TENANT_ID;
@@ -119,13 +129,15 @@ export function seedPilotData(
   );
 
   for (const point of PILOT_MAPPING.points) {
+    const enabled =
+      point.id === PILOT_POINT_DIN_ID ? 0 : point.enabled === false ? 0 : 1;
     upsertPoint.run(
       point.id,
       tenantId,
       point.gatewayId,
       point.tag,
       point.meter,
-      point.enabled === false ? 0 : 1,
+      enabled,
       stamped,
       stamped,
     );

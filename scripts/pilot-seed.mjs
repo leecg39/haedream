@@ -65,6 +65,11 @@ function readingId(pointId, observedAt) {
 }
 
 export function seedPilotData(db, options = {}) {
+  const din = mapping.points.find((point) => point.id === POINT_DIN_ID);
+  if (!din || din.enabled !== false) {
+    throw new Error("pt-din-01 must remain enabled: false");
+  }
+
   const now = options.now ?? new Date();
   const hours = options.hours ?? READING_HOURS;
   const tenantId = options.tenantId ?? TENANT_ID;
@@ -113,13 +118,14 @@ export function seedPilotData(db, options = {}) {
   );
 
   for (const point of mapping.points) {
+    const enabled = point.id === POINT_DIN_ID ? 0 : point.enabled === false ? 0 : 1;
     upsertPoint.run(
       point.id,
       tenantId,
       point.gatewayId,
       point.tag,
       point.meter,
-      point.enabled === false ? 0 : 1,
+      enabled,
       stamped,
       stamped,
     );

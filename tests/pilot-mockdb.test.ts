@@ -11,15 +11,18 @@ import { readFileSync } from "node:fs";
 import {
   FORBIDDEN_DATA_SOURCE_ALIASES,
   FORBIDDEN_LABEL_TERMS,
+  FORBIDDEN_READING_FIELDS,
   PILOT_GATEWAY_ID,
   PILOT_MAPPING,
+  PILOT_POINT_DIN_ENABLED,
   PILOT_POINT_DIN_ID,
   PILOT_POINT_PM_ID,
   PILOT_READING_FIELDS,
   PILOT_READING_HOURS,
+  PILOT_READING_VALUE_KEYS,
   PILOT_TENANT_ID,
 } from "@/features/pilot/constants";
-import { serializePilotSnapshot } from "@/features/pilot/mains";
+import { serializePilotSnapshot, serializeReading } from "@/features/pilot/mains";
 import {
   getPilotDashboardSnapshot,
   getReadings,
@@ -141,6 +144,61 @@ describe("pilot MockDB", () => {
     ).toHaveLength(0);
   });
 
+  it("keeps DIN disabled and readings to hourly kWh/kW/V/A only", () => {
+    expect(PILOT_MAPPING.points.find((point) => point.id === PILOT_POINT_DIN_ID)).toMatchObject({
+      enabled: false,
+    });
+    expect(PILOT_POINT_DIN_ENABLED).toBe(false);
+    expect([...PILOT_READING_FIELDS]).toEqual([...PILOT_READING_VALUE_KEYS]);
+
+    seedPilotData(db);
+    const din = db
+      .prepare(`SELECT enabled FROM control_points WHERE id = ?`)
+      .get(PILOT_POINT_DIN_ID) as { enabled: number };
+    expect(din.enabled).toBe(0);
+    expect(
+      listReadings({ source: "mock", pointId: PILOT_POINT_DIN_ID }, db),
+    ).toHaveLength(0);
+
+    const columns = (
+      db.prepare("PRAGMA table_info(point_readings)").all() as Array<{
+        name: string;
+      }>
+    ).map((column) => column.name);
+    expect(columns).toEqual(
+      expect.arrayContaining(["kwh", "kw", "voltage", "amperage", "interval"]),
+    );
+    expect(
+      columns.some((name) =>
+        /cost|bill|tarif|price|saving|요금|절감/i.test(name),
+      ),
+    ).toBe(false);
+
+    const [reading] = getReadings({ source: "mock", pointId: PILOT_POINT_PM_ID }, db);
+    expect(reading).toBeTruthy();
+    const serialized = serializeReading(reading!);
+    expect(Object.keys(serialized)).toEqual([
+      "id",
+      "pointId",
+      "observedAt",
+      "interval",
+      "kWh",
+      "kW",
+      "V",
+      "A",
+      "source",
+    ]);
+    expect(serialized.interval).toBe("1h");
+    const payload = JSON.stringify({
+      mapping: PILOT_MAPPING.readings,
+      serialized,
+      seed: readFileSync(path.join(process.cwd(), "src/features/pilot/seed.ts"), "utf8"),
+    });
+    for (const field of FORBIDDEN_READING_FIELDS) {
+      expect(payload.toLowerCase()).not.toContain(field.toLowerCase());
+    }
+  });
+
   it("can be re-run without duplicating mock readings", () => {
     seedPilotData(db);
     seedPilotData(db);
@@ -154,6 +212,13 @@ describe("pilot MockDB", () => {
           .get(PILOT_POINT_PM_ID, PILOT_POINT_DIN_ID) as { total: number }
       ).total,
     ).toBe(2);
+    expect(
+      (
+        db
+          .prepare(`SELECT enabled FROM control_points WHERE id = ?`)
+          .get(PILOT_POINT_DIN_ID) as { enabled: number }
+      ).enabled,
+    ).toBe(0);
   });
 
   it("returns mock readings through the data-source abstraction", () => {

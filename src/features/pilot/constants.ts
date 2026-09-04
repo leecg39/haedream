@@ -11,8 +11,11 @@ export const PILOT_GATEWAY_NAME = mapping.gateway.id;
 export const PILOT_RTU = mapping.gateway.rtu;
 export const PILOT_POINT_PM_ID = mapping.points[0].id;
 export const PILOT_POINT_DIN_ID = mapping.points[1].id;
+/** Field ops: DIN is a candidate only. Do not enable in seed. */
+export const PILOT_POINT_DIN_ENABLED = false;
 export const PILOT_READING_INTERVAL = mapping.readings.interval;
 export const PILOT_READING_FIELDS = mapping.readings.fields;
+export const PILOT_READING_VALUE_KEYS = ["kWh", "kW", "V", "A"] as const;
 export const PILOT_DEFAULT_SOURCE = mapping.gateway.source as DataSource;
 export const PILOT_READING_HOURS = 48;
 
@@ -32,6 +35,18 @@ export const FORBIDDEN_DATA_SOURCE_ALIASES = [
   "keepplus",
   "keep",
   "enms",
+] as const;
+
+/** Not allowed on readings rows or seed payloads. */
+export const FORBIDDEN_READING_FIELDS = [
+  "savings",
+  "saving",
+  "tariff",
+  "cost",
+  "bill",
+  "price",
+  "요금",
+  "절감",
 ] as const;
 
 export const FORBIDDEN_LABEL_TERMS = [
