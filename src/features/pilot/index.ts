@@ -7,6 +7,8 @@ export {
 } from "@/features/pilot/source";
 export { seedPilotData } from "@/features/pilot/seed";
 export {
+  FORBIDDEN_DATA_SOURCE_ALIASES,
+  FORBIDDEN_LABEL_TERMS,
   PILOT_GATEWAY_ID,
   PILOT_MAPPING,
   PILOT_POINT_DIN_ID,

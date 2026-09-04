@@ -2,6 +2,7 @@ import type { AppDatabase } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import {
   DATA_SOURCE_ENV,
+  FORBIDDEN_DATA_SOURCE_ALIASES,
   PILOT_DEFAULT_SOURCE,
   PILOT_GATEWAY_ID,
   PILOT_TENANT_ID,
@@ -23,6 +24,13 @@ export function resolveDataSource(explicit?: string | null): DataSource {
   const raw = (explicit || process.env[DATA_SOURCE_ENV] || PILOT_DEFAULT_SOURCE)
     .trim()
     .toLowerCase();
+  if ((FORBIDDEN_DATA_SOURCE_ALIASES as readonly string[]).includes(raw)) {
+    throw new AppError(
+      422,
+      "SOURCE_OUT_OF_SCOPE",
+      "해당 데이터 소스는 MockDB 범위가 아닙니다. mock 또는 rtu만 사용할 수 있습니다.",
+    );
+  }
   if ((DATA_SOURCES as readonly string[]).includes(raw)) {
     return raw as DataSource;
   }
@@ -58,7 +66,8 @@ function createRtuProvider(): DataSourceProvider {
   const source = "rtu" as const;
   const notImplemented = () => {
     // TODO(rtu-cutover): implement the live collector/API adapter only.
-    // Do not emulate KFE / Modbus / LTE protocols in this stub.
+    // Do not emulate field-bus frames here, and do not stub portal APIs
+    // (program registries, planner portals, or EnMS endpoints).
     throw new AppError(
       501,
       "RTU_NOT_IMPLEMENTED",

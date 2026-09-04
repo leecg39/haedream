@@ -2,8 +2,8 @@ import mapping from "../src/features/pilot/mapping.json" with { type: "json" };
 
 const TENANT_ID = "121";
 const GATEWAY_ID = mapping.gateway.id;
-const GATEWAY_CODE = "GW-PILOT-01";
-const GATEWAY_NAME = "KFE 파일럿 게이트웨이";
+const GATEWAY_CODE = mapping.gateway.id;
+const GATEWAY_NAME = mapping.gateway.id;
 const POINT_PM_ID = mapping.points[0].id;
 const POINT_DIN_ID = mapping.points[1].id;
 const READING_HOURS = 48;

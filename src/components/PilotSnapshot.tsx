@@ -38,20 +38,18 @@ export function PilotSnapshotCard({ snapshot, compact = false }: Props) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold tracking-[0.18em] text-cyan-200/70 uppercase">
-            Package-A 파일럿
+            파일럿 MockDB
           </p>
           <h2
             id="pilot-snapshot-title"
             className="mt-1 text-lg font-semibold text-white"
           >
-            {snapshot.gateway
-              ? `${snapshot.gateway.code} · ${snapshot.gateway.name}`
-              : "파일럿 게이트웨이 없음"}
+            {snapshot.gateway?.id ?? "파일럿 게이트웨이 없음"}
           </h2>
           <p className="mt-1 text-xs text-white/50">
-            id {snapshot.gateway?.id ?? "-"} · RTU {snapshot.gateway?.rtu ?? "-"} ·
-            LTE {snapshot.gateway?.lte ? "연결" : "없음"} · source=
-            {snapshot.source}
+            {snapshot.points.map((point) => point.tag).join(" · ") || "계측점 없음"}
+            {" · "}
+            source={snapshot.source}
           </p>
         </div>
         <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-cyan-100">

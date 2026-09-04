@@ -107,6 +107,14 @@ function roleLabel(role: SessionUser["role"]) {
   return { ADMIN: "관리자", OPERATOR: "운영자", VIEWER: "조회자" }[role];
 }
 
+function gatewayLabel(gateway: GatewayOption) {
+  const base =
+    gateway.code === gateway.name
+      ? gateway.code
+      : `${gateway.code} · ${gateway.name}`;
+  return gateway.source ? `${base} (${gateway.source})` : base;
+}
+
 function formFromFacility(facility: Facility): FormState {
   return {
     code: facility.code,
@@ -804,12 +812,7 @@ export function FacilitiesManager() {
               ["", "전체"],
               ...gateways
                 .filter((gateway) => gateway.status === "ACTIVE")
-                .map((gateway) => [
-                  gateway.id,
-                  gateway.source
-                    ? `${gateway.code} · ${gateway.name} (${gateway.source})`
-                    : `${gateway.code} · ${gateway.name}`,
-                ]),
+                .map((gateway) => [gateway.id, gatewayLabel(gateway)]),
             ]}
           />
           <label className="text-xs text-white/60">
@@ -1520,9 +1523,7 @@ function FacilityDialog({
                 .filter((gateway) => gateway.status === "ACTIVE")
                 .map((gateway) => (
                   <option key={gateway.id} value={gateway.id}>
-                    {gateway.source
-                      ? `${gateway.code} · ${gateway.name} (${gateway.source})`
-                      : `${gateway.code} · ${gateway.name}`}
+                    {gatewayLabel(gateway)}
                   </option>
                 ))}
             </select>

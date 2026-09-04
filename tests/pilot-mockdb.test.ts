@@ -7,7 +7,10 @@ import { closeDatabasesForTests, openDatabase, type AppDatabase } from "@/lib/db
 import { seedDatabase } from "@/lib/seed";
 import { seedPilotData } from "@/features/pilot/seed";
 import { SESSION_COOKIE } from "@/lib/auth";
+import { readFileSync } from "node:fs";
 import {
+  FORBIDDEN_DATA_SOURCE_ALIASES,
+  FORBIDDEN_LABEL_TERMS,
   PILOT_GATEWAY_ID,
   PILOT_MAPPING,
   PILOT_POINT_DIN_ID,
@@ -16,6 +19,7 @@ import {
   PILOT_READING_HOURS,
   PILOT_TENANT_ID,
 } from "@/features/pilot/constants";
+import { serializePilotSnapshot } from "@/features/pilot/mains";
 import {
   getPilotDashboardSnapshot,
   getReadings,
@@ -90,6 +94,13 @@ describe("pilot MockDB", () => {
       lte: 1,
       source: "mock",
     });
+    const labeled = db
+      .prepare(`SELECT code, name FROM gateways WHERE id = ?`)
+      .get(PILOT_GATEWAY_ID) as { code: string; name: string };
+    expect(labeled).toEqual({
+      code: PILOT_GATEWAY_ID,
+      name: PILOT_GATEWAY_ID,
+    });
 
     const points = listControlPoints({ gatewayId: PILOT_GATEWAY_ID }, db);
     expect(points).toEqual(
@@ -154,6 +165,31 @@ describe("pilot MockDB", () => {
     const snapshot = getPilotDashboardSnapshot({ source: "mock" }, db);
     expect(snapshot.gateway?.id).toBe(PILOT_GATEWAY_ID);
     expect(snapshot.latestReading?.source).toBe("mock");
+  });
+
+  it("keeps mock labels neutral and rejects out-of-scope sources", () => {
+    const snapshot = serializePilotSnapshot(
+      getPilotDashboardSnapshot({ source: "mock" }, db),
+    );
+    const surfaceText = [
+      JSON.stringify(snapshot),
+      readFileSync(path.join(process.cwd(), "src/components/PilotSnapshot.tsx"), "utf8"),
+      readFileSync(path.join(process.cwd(), "src/features/pilot/mapping.json"), "utf8"),
+    ].join("\n");
+    for (const term of FORBIDDEN_LABEL_TERMS) {
+      expect(surfaceText).not.toContain(term);
+    }
+    expect(snapshot.gateway?.id).toBe(PILOT_GATEWAY_ID);
+    expect(snapshot.points.map((point) => point.tag)).toEqual(
+      expect.arrayContaining(["PANEL_PM", "DIN_TBD"]),
+    );
+    expect(snapshot.source).toBe("mock");
+
+    for (const alias of FORBIDDEN_DATA_SOURCE_ALIASES) {
+      expect(() => resolveDataSource(alias)).toThrowError(
+        expect.objectContaining({ code: "SOURCE_OUT_OF_SCOPE" }),
+      );
+    }
   });
 
   it("stubs the rtu path instead of faking a protocol", () => {
