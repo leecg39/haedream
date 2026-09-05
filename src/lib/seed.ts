@@ -1,5 +1,6 @@
 import { hashSync } from "bcryptjs";
 import type { AppDatabase } from "@/lib/db";
+import { seedPilotData } from "@/features/pilot/seed";
 
 const TENANT_ID = "121";
 const ADMIN_ID = "11111111-1111-4111-8111-111111111111";
@@ -111,4 +112,6 @@ export function seedDatabase(db: AppDatabase) {
       );
     });
   })();
+
+  seedPilotData(db);
 }

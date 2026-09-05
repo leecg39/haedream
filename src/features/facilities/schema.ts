@@ -1,7 +1,15 @@
 import { z } from "zod";
 
-const optionalUuid = z
-  .union([z.string().uuid("올바른 게이트웨이를 선택해 주세요."), z.literal(""), z.null()])
+const gatewayIdValue = z
+  .string()
+  .trim()
+  .regex(
+    /^[A-Za-z0-9][A-Za-z0-9_-]{1,63}$/,
+    "올바른 게이트웨이를 선택해 주세요.",
+  );
+
+const optionalGatewayId = z
+  .union([gatewayIdValue, z.literal(""), z.null()])
   .transform((value) => value || null);
 
 function numericInput(schema: z.ZodNumber) {
@@ -57,7 +65,7 @@ const facilityFields = z.strictObject({
         .min(0, "피크 제어 수치는 0 이상이어야 합니다.")
         .max(100, "피크 제어 수치는 100 이하여야 합니다."),
     ),
-    gatewayId: optionalUuid,
+    gatewayId: optionalGatewayId,
     nodeNumber: z
       .union([
         numericInput(z.number().int().min(1).max(10)),
@@ -131,7 +139,7 @@ export const facilityListQuerySchema = z
     status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
     controlMode: z.enum(["AUTO", "MANUAL"]).optional(),
     processName: z.string().trim().max(50).optional(),
-    gatewayId: z.string().uuid().optional(),
+    gatewayId: gatewayIdValue.optional(),
     deleted: z.enum(["exclude", "only", "include"]).default("exclude"),
     sort: z
       .enum(["updatedAt", "createdAt", "name", "code", "priority", "processName"])

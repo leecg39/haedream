@@ -31,7 +31,8 @@ npm run dev -- -p 3456
 - 단위·저장소·API·브라우저 E2E 테스트
 
 설계와 운영 주의사항은 `docs/facility-crud-design.md`, API 계약은
-`docs/openapi/facilities.yaml`을 참고하세요.
+`docs/openapi/facilities.yaml`을 참고하세요. 파일럿 MockDB 시드와
+`source` 전환은 `docs/pilot-mockdb.md`를 참고하세요.
 
 ## 검증
 

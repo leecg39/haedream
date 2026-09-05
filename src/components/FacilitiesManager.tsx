@@ -20,6 +20,8 @@ import type {
   PaginatedFacilities,
   SessionUser,
 } from "@/features/facilities/types";
+import { PilotSnapshotCard } from "@/components/PilotSnapshot";
+import type { SerializedPilotSnapshot } from "@/features/pilot/mains";
 
 type DialogMode = "create" | "edit" | "detail" | null;
 type ConfirmAction = "delete" | "restore" | "purge";
@@ -105,6 +107,14 @@ function roleLabel(role: SessionUser["role"]) {
   return { ADMIN: "관리자", OPERATOR: "운영자", VIEWER: "조회자" }[role];
 }
 
+function gatewayLabel(gateway: GatewayOption) {
+  const base =
+    gateway.code === gateway.name
+      ? gateway.code
+      : `${gateway.code} · ${gateway.name}`;
+  return gateway.source ? `${base} (${gateway.source})` : base;
+}
+
 function formFromFacility(facility: Facility): FormState {
   return {
     code: facility.code,
@@ -176,6 +186,7 @@ export function FacilitiesManager() {
   const router = useRouter();
   const [session, setSession] = useState<SessionUser | null>(null);
   const [gateways, setGateways] = useState<GatewayOption[]>([]);
+  const [pilot, setPilot] = useState<SerializedPilotSnapshot | null>(null);
   const [processes, setProcesses] = useState<string[]>([]);
   const [facilities, setFacilities] = useState<PaginatedFacilities>({
     items: [],
@@ -308,12 +319,14 @@ export function FacilitiesManager() {
     void Promise.all([
       api<SessionUser>("/api/auth/session"),
       api<{ gateways: GatewayOption[]; processes: string[] }>("/api/gateways"),
+      api<SerializedPilotSnapshot>("/api/pilot").catch(() => null),
     ])
-      .then(([user, meta]) => {
+      .then(([user, meta, snapshot]) => {
         if (!active) return;
         setSession(user);
         setGateways(meta.gateways);
         setProcesses(meta.processes);
+        setPilot(snapshot);
       })
       .catch((caught: Error & { status?: number }) => {
         if (!active) return;
@@ -732,6 +745,12 @@ export function FacilitiesManager() {
           </div>
         </header>
 
+        {pilot?.gateway ? (
+          <div className="mb-5">
+            <PilotSnapshotCard snapshot={pilot} compact />
+          </div>
+        ) : null}
+
         <form
           onSubmit={applyFilters}
           className="mb-5 grid gap-3 rounded-2xl border border-white/15 bg-[#171942]/85 p-4 md:grid-cols-2 xl:grid-cols-4"
@@ -793,10 +812,7 @@ export function FacilitiesManager() {
               ["", "전체"],
               ...gateways
                 .filter((gateway) => gateway.status === "ACTIVE")
-                .map((gateway) => [
-                  gateway.id,
-                  `${gateway.code} · ${gateway.name}`,
-                ]),
+                .map((gateway) => [gateway.id, gatewayLabel(gateway)]),
             ]}
           />
           <label className="text-xs text-white/60">
@@ -1507,7 +1523,7 @@ function FacilityDialog({
                 .filter((gateway) => gateway.status === "ACTIVE")
                 .map((gateway) => (
                   <option key={gateway.id} value={gateway.id}>
-                    {gateway.code} · {gateway.name}
+                    {gatewayLabel(gateway)}
                   </option>
                 ))}
             </select>

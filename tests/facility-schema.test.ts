@@ -35,6 +35,19 @@ describe("facility schema", () => {
     });
   });
 
+  it("accepts the pilot gateway id as a facility relation", () => {
+    const result = facilityCreateSchema.safeParse({
+      ...valid,
+      gatewayId: "gw-pilot-01",
+      nodeNumber: 1,
+      channelNumber: 1,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.gatewayId).toBe("gw-pilot-01");
+    }
+  });
+
   it("requires gateway, node, and channel together", () => {
     const result = facilityCreateSchema.safeParse({
       ...valid,

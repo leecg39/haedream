@@ -1,5 +1,6 @@
 import { hashSync } from "bcryptjs";
 import { migrate, resolveDatabasePath } from "./migrate.mjs";
+import { seedPilotData } from "./pilot-seed.mjs";
 
 if (process.env.ALLOW_DEMO_SEED !== "true") {
   throw new Error(
@@ -80,6 +81,8 @@ db.transaction(() => {
     );
   });
 })();
+
+seedPilotData(db);
 
 db.close();
 console.log(`Seed complete: ${resolveDatabasePath()}`);

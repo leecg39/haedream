@@ -505,14 +505,32 @@ export function listGateways(
   user: SessionUser,
   database?: AppDatabase,
 ): GatewayOption[] {
-  return dbFor(database)
-    .prepare(
-      `SELECT id, code, name, status
-       FROM gateways
-       WHERE tenant_id = ?
-       ORDER BY status ASC, name COLLATE NOCASE ASC`,
-    )
-    .all(user.tenantId) as GatewayOption[];
+  return (
+    dbFor(database)
+      .prepare(
+        `SELECT id, code, name, status, rtu, lte, source
+         FROM gateways
+         WHERE tenant_id = ?
+         ORDER BY status ASC, name COLLATE NOCASE ASC`,
+      )
+      .all(user.tenantId) as Array<{
+      id: string;
+      code: string;
+      name: string;
+      status: GatewayOption["status"];
+      rtu: string | null;
+      lte: number;
+      source: GatewayOption["source"];
+    }>
+  ).map((row) => ({
+    id: row.id,
+    code: row.code,
+    name: row.name,
+    status: row.status,
+    rtu: row.rtu,
+    lte: row.lte === 1,
+    source: row.source,
+  }));
 }
 
 export function listProcesses(user: SessionUser, database?: AppDatabase) {

@@ -14,6 +14,7 @@ export default defineConfig({
       reporter: ["text", "json-summary"],
       include: [
         "src/features/facilities/**/*.ts",
+        "src/features/pilot/**/*.ts",
         "src/lib/{auth,db,http,errors}.ts",
       ],
     },

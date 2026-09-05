@@ -15,6 +15,9 @@ export interface GatewayOption {
   code: string;
   name: string;
   status: FacilityStatus;
+  rtu: string | null;
+  lte: boolean;
+  source: "mock" | "rtu" | null;
 }
 
 export interface Facility {

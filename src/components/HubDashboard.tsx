@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { MockCategory, MockPage, MockFetchSummary } from "@/lib/mock-db";
+import type { PilotSnapshot } from "@/features/pilot/types";
+import { PilotSnapshotCard } from "@/components/PilotSnapshot";
 
 interface CategoryStats {
   category: MockCategory;
@@ -15,6 +17,7 @@ interface Props {
   groups: CategoryStats[];
   summary: MockFetchSummary;
   fetchedAt: string;
+  pilot?: PilotSnapshot | null;
 }
 
 function formatBytes(bytes: number) {
@@ -155,7 +158,7 @@ function CategoryCard({ stats, isExpanded, onToggle }: {
   );
 }
 
-export default function HubDashboard({ groups, summary, fetchedAt }: Props) {
+export default function HubDashboard({ groups, summary, fetchedAt, pilot }: Props) {
   const [query, setQuery] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<number>>(() => new Set());
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -250,6 +253,12 @@ export default function HubDashboard({ groups, summary, fetchedAt }: Props) {
           </a>
         </div>
       </header>
+
+      {pilot?.gateway ? (
+        <div className="mx-auto mb-10 max-w-6xl">
+          <PilotSnapshotCard snapshot={pilot} />
+        </div>
+      ) : null}
 
       {/* ── 요약 통계 카드 ── */}
       <section className="mx-auto mb-10 max-w-6xl grid grid-cols-2 gap-4 sm:grid-cols-4">
