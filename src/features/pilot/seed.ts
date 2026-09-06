@@ -167,4 +167,54 @@ export function seedPilotData(
       fields.A,
     );
   }
+
+  seedPilotAlarms(db, { now, tenantId });
+}
+
+/** Mock disconnect/alarm inbox for operator reception drills. Re-seedable. */
+export function seedPilotAlarms(
+  db: AppDatabase,
+  options?: { now?: Date; tenantId?: string },
+) {
+  const now = options?.now ?? new Date();
+  const tenantId = options?.tenantId ?? PILOT_TENANT_ID;
+  const stamped = now.toISOString();
+  const older = new Date(now.getTime() - 90 * 60 * 1000).toISOString();
+
+  db.prepare(
+    `DELETE FROM pilot_alarms
+     WHERE tenant_id = ? AND gateway_id = ? AND source = 'mock'`,
+  ).run(tenantId, PILOT_GATEWAY_ID);
+
+  const insert = db.prepare(
+    `INSERT INTO pilot_alarms
+     (id, tenant_id, gateway_id, point_id, type, severity, title, message,
+      observed_at, source, acknowledged_at, acknowledged_by, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'mock', NULL, NULL, ?)`,
+  );
+
+  insert.run(
+    "alm-pilot-disconnect-01",
+    tenantId,
+    PILOT_GATEWAY_ID,
+    PILOT_POINT_PM_ID,
+    "DISCONNECT",
+    "CRITICAL",
+    "게이트웨이 통신 끊김",
+    "gw-pilot-01 · PANEL_PM 경로 응답 없음 (Mock 시드)",
+    older,
+    stamped,
+  );
+  insert.run(
+    "alm-pilot-alarm-01",
+    tenantId,
+    PILOT_GATEWAY_ID,
+    PILOT_POINT_PM_ID,
+    "ALARM",
+    "WARN",
+    "계측 수신 지연",
+    "최근 시간열 간격이 예상보다 깁니다 (Mock 시드)",
+    stamped,
+    stamped,
+  );
 }

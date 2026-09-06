@@ -251,12 +251,31 @@ export default function HubDashboard({ groups, summary, fetchedAt, pilot }: Prop
           >
             ⚡ 전력 대시보드
           </a>
+          <Link
+            href="/admin/pilot"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-300/40 bg-cyan-500/15 px-4 py-2 text-sm text-cyan-50 transition-colors hover:bg-cyan-500/25"
+          >
+            파일럿 관제·알람
+          </Link>
+          <Link
+            href="/admin/facilities"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/25 bg-white/5 px-4 py-2 text-sm text-white/80 transition-colors hover:bg-white/10"
+          >
+            설비 관리
+          </Link>
         </div>
       </header>
 
       {pilot?.gateway ? (
-        <div className="mx-auto mb-10 max-w-6xl">
+        <div className="mx-auto mb-10 max-w-6xl space-y-3">
           <PilotSnapshotCard snapshot={pilot} />
+          <p className="text-sm text-white/50">
+            패키지 A 운영(알람·검수·일일확인·BOM)은{" "}
+            <Link href="/admin/pilot" className="text-cyan-200 underline-offset-2 hover:underline">
+              /admin/pilot
+            </Link>
+            에서 확인합니다.
+          </p>
         </div>
       ) : null}
 

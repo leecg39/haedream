@@ -93,7 +93,25 @@ const rows = getReadings({ source: "mock", pointId: "pt-pm-01" });
 화면을 다시 만들지 않습니다. collector/API만 교체합니다.
 
 1. `src/features/pilot/source.ts`의 `createRtuProvider()`에 현장 collector API를 연결합니다.
-2. 수집기가 쓰는 행의 `source`를 `mock` → `rtu`로 바꿉니다.
-3. 프로세스 환경에 `DATA_SOURCE=rtu`를 넣거나 API `?source=rtu`를 사용합니다.
-4. 버스 프레임과 외부 포털 연동은 이 저장소에서 구현하지 않습니다.
+2. **같은 변경에서** `tests/pilot-mockdb.test.ts`의 스텁 단언
+   (`RTU_NOT_IMPLEMENTED` / `source=rtu`→501)을 collector 계약(또는 mocked-RTU)
+   테스트로 교체합니다. provider만 구현하고 단언을 남기면 스위트가 깨집니다.
+   (스텁 유지 중에는 이 단언 때문에 `npm test`가 통과합니다. 런타임 501과
+   테스트 실패를 혼동하지 마세요.)
+3. 수집기가 쓰는 행의 `source`를 `mock` → `rtu`로 바꿉니다.
+4. 프로세스 환경에 `DATA_SOURCE=rtu`를 넣거나 API `?source=rtu`를 사용합니다.
+5. `/hub`의 `RTU_NOT_IMPLEMENTED` 폴백이 실측 성공 경로와 맞는지 확인합니다.
+6. 버스 프레임과 외부 포털 연동은 이 저장소에서 구현하지 않습니다.
    collector가 같은 `getReadings` 형태로 정규화한 뒤 넣습니다.
+
+절차·검수 체크리스트는 [`docs/pilot-connect-and-test.md`](./pilot-connect-and-test.md)를 따릅니다.
+
+## 패키지 A 운영 기록
+
+- UI: `/admin/pilot`
+- 알람: `GET/POST /api/pilot/alarms`, `POST /api/pilot/alarms/:id/ack` (`alarm:ack` = admin/operator)
+- 검수: `GET/POST /api/pilot/inspections` (고정 5항)
+- 일일 확인: `GET/PUT /api/pilot/daily-confirmations`
+- 매핑·BOM: `GET /api/pilot/bom`
+
+Mock 시드는 미확인 `DISCONNECT`/`ALARM` 샘플을 넣습니다. 포털·요금·절감 필드는 없습니다.
