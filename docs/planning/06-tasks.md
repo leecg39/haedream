@@ -116,6 +116,7 @@
 ## Phase 5 — 한 업체 실데이터 흐름과 품질 표기
 
 > Phase 5 상태: 합성 measurement/quality DTO·UTC 정규화·정정 이력·API/UI 품질 배지는 내부 검증됨.
+> Phase 8: 승인 측정 CSV dry-run/apply/reconcile **도구·합성 계약** 준비 완료 (`docs/ops/phase-8-measurement-csv-and-alerts.md`).
 > 승인된 실업체 원본 대조(P5-T1)와 7일 관찰은 외부 데이터 이용 승인 후에 완료한다.
 
 - [ ] **P5-T1 승인된 업체·계측점의 원본→정규 DB 흐름 연결**
@@ -124,6 +125,7 @@
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-5-real-data`
   - Branch: `phase/5-real-data`
   - 완료 기준: 승인 원본과 DB·집계·화면 값을 대조할 수 있고 재처리해도 중복이 없다.
+  - 내부 진행(Phase 8): `npm run ops:import-measurements` + 합성 CSV. dry-run/reconcile 은 hot sidecar 거부·temp 복사본 readonly(원본 불변), apply 는 fileMustExist fail-closed. unchanged write-skip. **실데이터 대조는 미완(외부 blocker).**
 
 - [ ] **P5-T2 출처·측정/수신 시각·품질 DTO 적용**
   - 담당: backend/frontend
@@ -136,6 +138,7 @@
   - Depends On: P5-T2
   - 완료 기준: kW/kWh, 15분 간격, KST/UTC, 누적값 리셋, 누락, 정정 이력이 자동 검증된다.
   - 내부 진행: 합성 fixture 자동 테스트 통과(타임존 명시·tenant_firm_access 검증·calculation_version 이력 포함). 승인 실데이터 회귀는 미완.
+  - Phase 8: CSV 계약 회귀(오프셋 필수·canonical 중복 거부·null value·rollback) 추가. 승인 실데이터 회귀는 여전히 미완.
 
 ## Phase 6 — 모바일·접근성·업무 완주
 
@@ -174,6 +177,7 @@
   - Depends On: P4-T3
   - 완료 기준: 마지막 실행, 최신 측정, 연속 실패, 지연 임계치가 기록되고 시험 경고·복구가 검증된다.
   - 내부 진행: streak 수정, `lastJobActivityAt`(스케줄 전용 아님)·success/measurement/queueStall, `KEPCO_FAIL_STREAK` 양의 정수(≥1)만·시간 임계치는 유한 비음수, file alert sink·복구 테스트.
+  - Phase 8: `KEPCO_ALERT_SINK=webhook` — 동기 URL/allowlist/secret 검증, alerting 시에만 DNS→entry 검증→공인 IP pin(`https.request` custom lookup, Node `all` 계약·`family`/`autoSelectFamily:false`·운영 CA 검증·SNI/Host 보존). NAT64/translated IPv6 차단. 로컬 TLS fixture로 pin/Host/SNI 검증. no-alert 시 DNS/TCP/HTTP 0회. inject 모듈은 절대경로+ALLOW_INJECT. 운영 runbook: `docs/ops/phase-8-measurement-csv-and-alerts.md`.
   - 미완: 실 webhook 송신·7일 파일럿 관찰.
 
 ## 전체 완료 조건
@@ -181,8 +185,9 @@
 - [x] 보호 데이터의 익명 접근, VIEWER 쓰기, 교차 업체 접근이 차단된다.
 - [x] 공개 빌드에서 고객정보와 수집 자격증명이 검출되지 않는다. (최종 검증에서 `check:public-data` 재확인)
 - [x] 업체 등록·수정이 DB에 영속되고 충돌·감사 이력이 검증된다.
-- [ ] 수집 API와 worker가 분리되고 데이터 출처·최신성·품질이 화면에 표시된다. (worker 분리·품질 배지 내부 완료, 실데이터 출처는 P5-T1 후)
-- [ ] 모바일 핵심 업무, CI, 마이그레이션, 백업 복구, 운영 감시 검증이 통과한다. (모바일/CI/시드급 backup·monitor 내부 통과, 1.15GB·7일 관찰 미완)
+- [ ] 수집 API와 worker가 분리되고 데이터 출처·최신성·품질이 화면에 표시된다. (worker 분리·품질 배지 내부 완료, 실데이터 출처는 P5-T1 후; Phase 8 CSV import 도구는 준비됨)
+- [ ] 모바일 핵심 업무, CI, 마이그레이션, 백업 복구, 운영 감시 검증이 통과한다. (모바일/CI/시드급 backup·monitor·webhook sink 내부 통과, 1.15GB·실 webhook·7일 관찰 미완)
 - [ ] 모든 Phase 브랜치가 적대적 검토와 수정 후 통합 기준 브랜치에 병합·push되어 있다.
 
 감사 보고서: `docs/audit/2026-09-07-final-adversarial-audit.md`
+잔여 운영 인계(다른 Cursor 패널): `docs/ops/cursor-handoff-remaining-work.md`
