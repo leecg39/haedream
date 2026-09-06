@@ -1,92 +1,72 @@
-# Final Adversarial Audit — phase/final-adversarial-audit
+# Final Adversarial Audit — phase/final-data-safety-audit
 
 Date: 2026-09-07  
-Base: `origin/feat/fit-clone` @ `89913b9`  
-Branch: `phase/final-adversarial-audit`  
-Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-final-adversarial-audit`
+Base: `origin/feat/fit-clone` @ `bc0a40dc64ac14da98dae94f3de002446aa67734`  
+Branch: `phase/final-data-safety-audit`  
+Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-final-data-safety-audit`
 
 ## 1. Verdict
 
-통합 브랜치의 Phase 1~4·6·7 / Phase5 기반 **완료 표시는 과장**되어 있었다.  
-이 브랜치에서 확인된 Critical/Important 결함을 수정했고, 외부 의존(승인 실데이터, 1.15GB DB, 7일 관찰, 실 webhook)은 **완료로 표시하지 않았다**.
+이전 적대적 감사(`bc0a40d`) 이후에도 **데이터 손실·재시도·복구 증거·권한 계약**에 Critical/Important 잔여 결함이 있었다.  
+이 후속 작업에서 A–F를 수정·자동 검증했고, 외부 의존(승인 실데이터, ≥1GB DB, 7일 관찰, 실 webhook)은 **완료로 표시하지 않았다**.
 
-## 2. Findings before change
+## 2. Prior audit (merged @ bc0a40d)
 
-| ID | Phase | Severity | Finding | Evidence |
+이전 라운드에서 worker CLI, max_attempts, FK `011`, monitor streak, energy UTC/corrections, firm `can_view_pii=0` 기본값, E2E 83-pass 등을 반영했다. 상세는 아래 §8 이전 기록 요약 참고.
+
+## 3. Follow-up findings (this Cursor pass)
+
+| ID | Area | Severity | Finding | Fix |
 |---|---|---|---|---|
-| F1 | P4 | Critical | `scripts/kepco-worker.mjs` 가 fresh temp DB에서 CLI 실패 (`@/` unresolved, `server-only` throw, Node strip-only TS) | 직접 실행 재현 |
-| F2 | P4 | Important | `max_attempts` 기반 제한 재시도 없음 — 실패 즉시 FAILED | `jobs.repository.ts` |
-| F3 | P4 | Important | stale RUNNING 복구가 max_attempts 무시하고 무조건 QUEUED | `recoverStaleRunningJobs` |
-| F4 | P4 | Important | `collection_jobs.fid` / `energy_measurements.fid` FK 없음 | `009`/`010` SQL |
-| F5 | P6 | Important | `firm-extras.css` 가 `html,body{overflow-x:hidden}` 로 가로 잘림을 숨김 | L72 |
-| F6 | P6 | Important | E2E 가 scrollWidth·Escape 위주 — 생성→저장→재조회·viewer·포커스 복귀 부족 | `firm-mobile-a11y.spec.ts` |
-| F7 | P7 | Critical | failure streak 가 최근 FAILED 개수만 합산 → 성공 사이 과거 실패까지 포함 | `monitor-collection-jobs.mjs` |
-| F8 | P7 | Important | last scheduled / latest success / latest measurement / queue stall 미계산 | 동일 |
-| F9 | P7 | Important | alert sink·장애→알림→복구 테스트 없음 (실 webhook도 없음) | 동일 |
-| F10 | P7 | Important | restore-verify 가 active operator 존재만 확인 | `restore-db-verify.mjs` |
-| F11 | P7 | Important | migrate rehearsal 이 외부 1.15GB 사본 경로를 받지 않고, 없으면 완료처럼 보임 | `migrate-rehearsal.mjs` |
-| F12 | P5 | Important | `observedAt` 문자열 그대로 저장 → `+09:00`/`Z` 중복 가능 | `measurements.repository.ts` |
-| F13 | P5 | Important | 정정 이력 테이블/보존 없음 | schema |
-| F14 | P5 | Important | timestamp/value/meterPoint 검증·품질 API/UI 연결 부족 | code |
-| F15 | P3 | Important | 신규 업체 생성 시 `can_view_pii=1` 자동 부여 (DEFAULT 0·최소권한과 불일치) | `createFirmForUser` |
-| F16 | Docs | Important | `06-tasks.md` Phase7·전체 완료 체크가 증거 없이 `[x]` | planning |
-
-## 3. Fixes applied
-
-- Worker: `tsx` + CJS/ESM alias + `server-only` shim bootstrap; CLI smoke test 추가
-- Jobs: non-retryable vs retry requeue; stale recover respects `max_attempts`; firm existence / FK migration `011`
-- Monitor: consecutive streak only; schedule/success/measurement/queueStall fields; file/injectable alert sink (no real webhook HTTP)
-- Restore verify: password hash integrity (no secret logging), firm query, kepco_summary query
-- Migrate rehearsal: `--source-db` / env; `largeDbRehearsal=unverified` when no ≥1GB copy; JSON report
-- Energy: UTC canonical `observedAt`, validation, corrections history, synthetic interval/reset/15min tests; `/api/energy/[fid]` + peak quality banner (DEMO disclaimer)
-- Firm create: `can_view_pii=0`, `can_collect=0`
-- CSS: removed page-level `overflow-x:hidden`
-- E2E: operator create→save→reload, viewer readonly, keyboard focus return, widths 360/390/768/1280
+| A1 | migration `011` | Critical | `INSERT…WHERE EXISTS(firms)` 가 orphan `collection_jobs`/`energy_measurements` 를 조용히 삭제 | CHECK 기반 preflight로 실패·트랜잭션 롤백; 전량 `INSERT` + FK. 자동 테스트로 orphan 실패·원본 보존·정상/재실행 고정 |
+| B1 | `restore-db-verify.mjs` | Important | `path.resolve("")` → cwd 로 usage 무력화; `firmSample.length >= 0` 항상 참; demo 로그인 가정 | 인자 필수; `firmQueryOk` 실의미; `--demo` 없으면 해시 형식·integrity만; 실패 시 non-zero exit |
+| C1 | `migrate-rehearsal.mjs` | Important | `import.meta.url` 공백 취약; helper `process.exit` 이 catch 무력화; live WAL `copyFileSync`; 실패를 성공처럼 보고 | `fileURLToPath`; throw/`RehearsalError`; offline snapshot + backup API + integrity; 정직한 JSON(`failed`, backup flags) |
+| D1 | energy measurements | Important | timezone 없는 `observedAt`; firms 전역 존재만으로 저장; quality 무시/invalid→MEASURED; version-only 정정 이력 누락 | Z/±hh:mm만 허용; `tenant_firm_access` 필수; quality는 derive만·invalid→`NO_DATA`; `calculation_version` 변경도 corrections |
+| E1 | kepco jobs | Critical | retryable 실패 후 같은 `processQueuedJobs` 에서 즉시 재claim → max_attempts 소진; failure_count 덮어쓰기; finish 전이 미강제 | `012` `next_attempt_at` backoff + seen-set; failure_count 누적; RUNNING→terminal만; 실패 어댑터 테스트 |
+| F1 | monitor / firm PII | Important | `lastScheduledRun` 이 모든 job 활동 시각인데 스케줄로 오인; NaN env; 생성 시 PII 저장 후 `can_view_pii=0` 으로 본인 숨김 | `lastJobActivityAt` 로 개명; 숫자 env 거부; PII 쓰기 시 역할 검사 + 명시적 `can_view_pii=1` |
 
 ## 4. Residual external blockers (NOT complete)
 
 | Blocker | Why incomplete | How to finish |
 |---|---|---|
 | P5-T1 승인 실업체 원본 대조 | 실고객/승인 원본 없음 | 승인 후 원본↔DB↔API↔UI 대조 기록 |
-| 1.15GB DB migrate rehearsal | 사본 경로 미제공 | `MIGRATE_REHEARSAL_SOURCE_DB=/path/to/copy node scripts/migrate-rehearsal.mjs` 또는 `--source-db` |
+| 1.15GB DB migrate rehearsal | offline snapshot 경로 미제공 | `--source-db` / `MIGRATE_REHEARSAL_SOURCE_DB` 에 WAL 없는 사본 |
 | 7일 파일럿 관찰 | 시간·운영 환경 외부 | 예정 실행/성공·실패·지연 작업 기록 |
 | 실 webhook 알림 경로 | 의도적으로 HTTP 송신 금지 | injectable/file sink 검증 후 운영 sink만 별도 연결 |
-| GitHub Actions 원격 결과 | push 후 확인 필요 | CI push 후 Actions 상태 확인 |
 
 ## 5. Honest checkbox policy
 
 - `[x]` = 이 브랜치에서 자동 검증으로 합격 기준을 증명한 항목만
 - Phase5 T1 및 실데이터 승인 항목 = `[ ]`
-- Phase7 large DB / 7일 관찰 = `[ ]` 또는 문서상 unverified
+- Phase7 large DB / 7일 관찰 = `[ ]` 또는 문서상 `unverified`
 
-## 6. Commands for remaining ops
+## 6. E2E evidence note
 
-```bash
-# large DB (when available)
-MIGRATE_REHEARSAL_SOURCE_DB=/absolute/path/to/1.15g-copy.db npm run db:migrate-rehearsal
+UI/Playwright 계약 자체는 이번 후속에서 바꾸지 않았다(서버 권한·저장소·스크립트·마이그레이션 중심).  
+관련 E2E `e2e/firm-mobile-a11y.spec.ts` + `e2e/watt-firm.spec.ts` **18 passed**.  
+전체 83-pass 스위트는 UI 미변경으로 이전 최종 증거가 적용되나, 통합 후 GitHub Actions `e2e-core` 로 재확인한다.
 
-# monitor with local alert sink
-KEPCO_ALERT_SINK=file KEPCO_ALERT_PATH=data/alerts/kepco.jsonl npm run ops:monitor-kepco
-
-# standalone worker
-DATABASE_PATH=data/app.db node scripts/kepco-worker.mjs
-```
-
-## 7. Post-fix verification (this branch)
+## 7. Post-fix verification (this pass)
 
 | Check | Result |
 |---|---|
-| `npm test` (147) | pass |
-| `npm run lint` | 0 errors |
+| `npm test` (158) | pass |
+| `npm run lint` | 0 errors (기존 research warnings만) |
 | `npm run typecheck` | pass |
 | `npm run build` | pass |
 | `npm run check:public-data` | pass |
 | `npm audit --omit=dev` | 0 vulnerabilities |
-| `npm run db:migrate-rehearsal` | empty/seeded pass; `largeDbRehearsal=unverified` |
-| `node scripts/kepco-worker.mjs` (fresh temp DB) | pass (`processed 0`) |
-| `npm run test:e2e` | 83 passed |
-| GitHub Actions remote | confirm after push |
+| `npm run db:migrate-rehearsal` | empty/seeded pass; `largeDbRehearsal=unverified`; `failed=false` |
+| temp DB clean migrate + seed + `kepco-worker.mjs` | pass (`processed 0`) |
+| orphan preflight 011 (자동 테스트) | fail + 원본 보존 |
+| related E2E (firm mobile + watt-firm) | 18 passed |
+| GitHub Actions remote | push 후 `quality` / `e2e-core` 확인 |
 
-## 8. Commits / merge path
+## 8. Prior round summary (bc0a40d)
 
-Branch `phase/final-adversarial-audit` → push → merge into `feat/fit-clone` → push.
+Worker CLI, jobs retry/stale, monitor streak, restore/rehearsal 기초, energy UTC/corrections, firm least-privilege 기본, CSS/E2E 83-pass.  
+이번 패스가 그 위의 잔여 데이터 안전 결함을 닫는다.
+
+## 9. Commits / merge path
+
+`phase/final-data-safety-audit` → push → `--no-ff` merge into root `feat/fit-clone` → push `origin/feat/fit-clone` → Actions 대기.
