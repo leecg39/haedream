@@ -25,7 +25,6 @@ import type {
   PilotRunStatus,
 } from "@/features/pilot/types";
 import { PILOT_CHECKLIST_KEYS } from "@/features/pilot/types";
-import { listControlPoints } from "@/features/pilot/repository";
 import type { SessionUser } from "@/features/facilities/types";
 import type { z } from "zod";
 
@@ -497,16 +496,16 @@ export function getChecklistTemplate() {
 }
 
 export function mappingMatchesPilot(database?: AppDatabase) {
-  const points = listControlPoints(
-    { gatewayId: PILOT_GATEWAY_ID, tenantId: PILOT_TENANT_ID },
-    database,
-  );
-  const panel = points.find((point) => point.id === PILOT_POINT_PM_ID);
+  const panel = (database ?? getDb())
+    .prepare(
+      `SELECT tag, enabled FROM control_points
+       WHERE id = ? AND tenant_id = ? AND gateway_id = ?`,
+    )
+    .get(PILOT_POINT_PM_ID, PILOT_TENANT_ID, PILOT_GATEWAY_ID) as
+      | { tag: string; enabled: number }
+      | undefined;
   return Boolean(
-    panel &&
-      panel.tag === "PANEL_PM" &&
-      panel.enabled &&
-      panel.gatewayId === PILOT_GATEWAY_ID,
+    panel && panel.tag === "PANEL_PM" && panel.enabled === 1,
   );
 }
 
