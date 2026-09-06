@@ -32,7 +32,12 @@ npm run dev -- -p 3456
 
 설계와 운영 주의사항은 `docs/facility-crud-design.md`, API 계약은
 `docs/openapi/facilities.yaml`을 참고하세요. 파일럿 MockDB 시드와
-`source` 전환은 `docs/pilot-mockdb.md`를 참고하세요.
+`source` 전환은 `docs/pilot-mockdb.md`, 연결 두 층·현장 검수·포털 비연동
+잠금은 `docs/pilot-connect-and-test.md`를 참고하세요.
+
+패키지 A 운영 UI: `/admin/pilot` (끊김·알람 ack, 검수 5항, 일일 확인, 매핑·BOM).
+API: `/api/pilot/alarms`, `/api/pilot/inspections`, `/api/pilot/daily-confirmations`,
+`/api/pilot/bom`.
 
 ## 검증
 

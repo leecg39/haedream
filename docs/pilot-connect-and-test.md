@@ -82,6 +82,9 @@ npm run test:e2e
 
 성공기준(패키지 A): 태그 일치 · 일일 데이터(또는 Mock 48h) · operator 알람 · 위 검수 완료
 
+소프트웨어 기록(데모): `/admin/pilot` · API `/api/pilot/alarms` · `/api/pilot/inspections` · `/api/pilot/daily-confirmations` · `/api/pilot/bom`  
+현장 LED·SIM·CT 실측은 사람 검수, 앱에는 결과 기록·알람 수신·일일 확인만 둡니다.
+
 ## 5. 테스트 통과 ≠ 포털 연결
 
 | 하면 됨 | 하지 말 것 |

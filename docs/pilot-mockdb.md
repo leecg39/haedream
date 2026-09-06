@@ -105,3 +105,13 @@ const rows = getReadings({ source: "mock", pointId: "pt-pm-01" });
    collector가 같은 `getReadings` 형태로 정규화한 뒤 넣습니다.
 
 절차·검수 체크리스트는 [`docs/pilot-connect-and-test.md`](./pilot-connect-and-test.md)를 따릅니다.
+
+## 패키지 A 운영 기록
+
+- UI: `/admin/pilot`
+- 알람: `GET/POST /api/pilot/alarms`, `POST /api/pilot/alarms/:id/ack` (`alarm:ack` = admin/operator)
+- 검수: `GET/POST /api/pilot/inspections` (고정 5항)
+- 일일 확인: `GET/PUT /api/pilot/daily-confirmations`
+- 매핑·BOM: `GET /api/pilot/bom`
+
+Mock 시드는 미확인 `DISCONNECT`/`ALARM` 샘플을 넣습니다. 포털·요금·절감 필드는 없습니다.

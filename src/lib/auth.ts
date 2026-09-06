@@ -15,7 +15,11 @@ type Permission =
   | "facility:delete"
   | "facility:restore"
   | "facility:purge"
-  | "deleted:read";
+  | "deleted:read"
+  | "alarm:read"
+  | "alarm:ack"
+  | "inspection:read"
+  | "inspection:write";
 
 const permissions: Record<UserRole, ReadonlySet<Permission>> = {
   ADMIN: new Set([
@@ -26,6 +30,10 @@ const permissions: Record<UserRole, ReadonlySet<Permission>> = {
     "facility:restore",
     "facility:purge",
     "deleted:read",
+    "alarm:read",
+    "alarm:ack",
+    "inspection:read",
+    "inspection:write",
   ]),
   OPERATOR: new Set([
     "facility:read",
@@ -34,8 +42,12 @@ const permissions: Record<UserRole, ReadonlySet<Permission>> = {
     "facility:delete",
     "facility:restore",
     "deleted:read",
+    "alarm:read",
+    "alarm:ack",
+    "inspection:read",
+    "inspection:write",
   ]),
-  VIEWER: new Set(["facility:read"]),
+  VIEWER: new Set(["facility:read", "alarm:read", "inspection:read"]),
 };
 
 function hashToken(token: string) {
