@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { SessionUser } from "@/features/facilities/types";
 import { getDb, type AppDatabase } from "@/lib/db";
 import { AppError } from "@/lib/errors";

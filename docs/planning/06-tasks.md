@@ -56,19 +56,19 @@
 
 ## Phase 2 — 고객정보 서버 경계와 공개 산출물 차단
 
-- [ ] **P2-T1 실제 업체 데이터를 클라이언트 코드에서 제거**
+- [x] **P2-T1 실제 업체 데이터를 클라이언트 코드에서 제거**
   - 담당: backend/frontend
   - Depends On: P1-T3
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-2-data-boundary`
   - Branch: `phase/2-data-boundary`
   - 완료 기준: 레이아웃·Client Component·정적 자산에 실제 업체 배열이나 원문 고객정보가 포함되지 않는다.
 
-- [ ] **P2-T2 서버 전용 최소 DTO와 마스킹 구현**
+- [x] **P2-T2 서버 전용 최소 DTO와 마스킹 구현**
   - 담당: backend/security
   - Depends On: P2-T1
   - 완료 기준: 목록·상세 응답은 역할과 업체 범위에 필요한 최소 필드만 포함하며 비밀번호와 원문 수집 응답을 직렬화하지 않는다.
 
-- [ ] **P2-T3 공개 빌드 정보 노출 검사 자동화**
+- [x] **P2-T3 공개 빌드 정보 노출 검사 자동화**
   - 담당: test/security
   - Depends On: P2-T2
   - 완료 기준: `.next/static`, HTML, RSC, JSON, source map, `public/`의 금지 필드·탐지 문자열 검사가 CI에서 실패를 일으킨다.

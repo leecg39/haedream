@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { FIRM_DEFAULT_GEO, FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_SERVICE_TYPE_LABELS, type FirmRow, type FirmSortKey } from "@/lib/fit-mocks/firm";
+import { FIRM_DEFAULT_GEO, FIRM_CONTRACT_LABELS, FIRM_PAGE_LIMIT, FIRM_SERVICE_TYPE_LABELS, type FirmSortKey } from "@/lib/fit-mocks/firm";
 import { FIRM_MODAL_CLOSED, FirmEditModal, type FirmModalState } from "@/components/fit/firm/FirmEditModal";
 import { FirmMapModal } from "@/components/fit/firm/FirmMapModal";
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { Pagination } from "@/components/fit/shared/Pagination";
 import { echoNumber } from "@/components/fit/reduce/format";
 import { totalPages } from "@/components/fit/stat/statUtils";
+import type { FirmListItemDto, PublicFirm } from "@/features/firms/types";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -18,9 +19,9 @@ const FIRM_SORT_OPTIONS: readonly { readonly key: FirmSortKey; readonly label: s
   { key: "kepcoNo", label: "한전고객번호" },
 ];
 
-/** 목록은 서버 컴포넌트가 DB 에서 읽어 넘긴다. 한전 비밀번호는 포함되지 않는다. */
+/** 목록은 서버가 최소 DTO 로 넘긴다. 상세 PII 는 편집 시 API 로 조회한다. */
 interface FirmManagerProps {
-  readonly rows: readonly Omit<FirmRow, "kepcoPasswd">[];
+  readonly rows: readonly FirmListItemDto[];
   readonly canCreate?: boolean;
   readonly canUpdate?: boolean;
 }
@@ -37,6 +38,17 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<FirmModalState>(FIRM_MODAL_CLOSED);
   const [mapOpen, setMapOpen] = useState(false);
+
+  const openEdit = async (fid: number) => {
+    const response = await fetch(`/api/firm/${fid}`, { cache: "no-store" });
+    if (!response.ok) {
+      console.error("업체 상세 조회 실패", response.status);
+      return;
+    }
+    const body = (await response.json()) as { data?: PublicFirm };
+    if (!body.data) return;
+    setModal({ mode: "edit", row: body.data });
+  };
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("ko");
@@ -163,7 +175,7 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
                 {visible.map((row) => (
                   <tr
                     key={row.fid}
-                    onClick={canUpdate ? () => setModal({ mode: "edit", row }) : undefined}
+                    onClick={canUpdate ? () => void openEdit(row.fid) : undefined}
                   >
                     <td>{row.fid}</td>
                     <td>{row.firmName}</td>
@@ -203,7 +215,7 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
                 {visible.map((row) => (
                   <tr
                     key={row.fid}
-                    onClick={canUpdate ? () => setModal({ mode: "edit", row }) : undefined}
+                    onClick={canUpdate ? () => void openEdit(row.fid) : undefined}
                   >
                     <td>{row.fid}</td>
                     <td>{row.firmName}</td>

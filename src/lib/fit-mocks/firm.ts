@@ -1,9 +1,8 @@
 /**
- * 업체관리(`/fit/firm`) 공용 타입·라벨.
+ * 업체관리 UI용 공개 상수.
  *
- * 실제 고객 목록 JSON(`firm-rows.json`)은 이 모듈에 넣지 않는다.
- * 클라이언트 번들로 전체 카탈로그가 새면 tenant_firm_access 경계를 우회한다.
- * DB 시드/스크립트는 `firm-rows.json` 을 직접 읽고, 런타임 목록은 `/api/firm` 만 쓴다.
+ * 실제 업체 배열은 이 모듈에 두지 않는다. 클라이언트 번들로 흘러가지 않도록
+ * 서버 repository/DTO 와 DB 시드만 업체 원본을 다룬다.
  */
 
 /** 전력타입 코드 → 한글 설명 (원본 firm.js `vio._contract`). */
@@ -55,64 +54,8 @@ export const FIRM_PAGE_LIMIT = 10;
 /** 정렬 가능한 컬럼 키 (원본 `th[data-sort]`). */
 export type FirmSortKey = "fid" | "firmName" | "contract" | "kepcoNo" | "registTime" | "frugal";
 
-export interface FirmRow {
-  /** 업체 ID */
-  readonly fid: number;
-  readonly firmName: string;
-  /** 업체등록일 `YYYY-MM-DD HH:mm:ss` (CSV 덤프에 없어 빈값) */
-  readonly registTime: string;
-  /** 전력타입 코드 */
-  readonly contract: string;
-  /** 한전고객번호. 앞자리 0 보존을 위해 문자열, 빈값이면 미등록 */
-  readonly kepcoNo: string;
-  /** EOI 주기(초). 0 이면 미사용 */
-  readonly eoiTime: number;
-  readonly pct_ratio: number;
-  /** 최근전력 kW */
-  readonly peakLast: number;
-  /** 목표전력 kW */
-  readonly powerLimit: number;
-  /** 0 수동 / 1 자동 */
-  readonly peakRunMode: 0 | 1;
-  /** 0 개별 / 1 전체 */
-  readonly peakControlMode: 0 | 1;
-  readonly isDisable: 0 | 1;
-  /** 1 EMS / 2 피크 / 3 저압 / 11~23 준비·제안 */
-  readonly serviceType: number;
-  readonly memo: string;
-  /** 누적절감금액(원) */
-  readonly frugal: number;
-  /** 계약전력 kW */
-  readonly contractLimit: number;
-  readonly ableLowPower: number;
-  readonly maxAbleWatt: number;
-  readonly maxAbleDate: number;
-  readonly pass: string;
-  readonly degreeCity: number;
-  readonly bone: string;
-  readonly kepcoCyber: string;
-  /** 한전 사이버지점 비밀번호 (CSV 덤프 원본 값) */
-  readonly kepcoPasswd: string;
-  readonly manager: string;
-  readonly phone: string;
-  readonly addressText: string;
-  /** 검침일 1~31 */
-  readonly checkDay: number;
-  /** 요금적용전력 kW */
-  readonly ableLimit: number;
-  /** 요금적용날짜 `YYYY-MM-DD` */
-  readonly ableLimitTime: string;
-  readonly pulse_num: number;
-  /** 절감계산시작일 `YYYY-MM-DD` */
-  readonly frugalTime: string;
-  /** 투자금액(천원) */
-  readonly investGold: number;
-  /** 이전 전력타입 코드 */
-  readonly kepcoContract: string;
-  readonly boss: string;
-  /** `경도, 위도`. 미등록이면 빈값 */
-  readonly mapGeo: string;
-}
-
 /** 원본 vio.kakaoMap 의 기본 좌표(청주 인근). 데모 지도 모달 표시용. */
 export const FIRM_DEFAULT_GEO = "127.4888, 36.6426";
+
+/** @deprecated Prefer `@/features/firms/types` — kept for gradual migration. */
+export type { FirmRow } from "@/features/firms/types";

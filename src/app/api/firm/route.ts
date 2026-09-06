@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiError, assertSameOrigin, enforceRateLimit, readJson, requestId } from "@/lib/http";
-import { createFirmForUser, listFirmsForUser } from "@/features/firms/repository";
+import { createFirmForUser, listFirmItemsForUser } from "@/features/firms/repository";
 import { firmCreateSchema } from "@/features/firms/schema";
 import { hasPermission, requirePermission } from "@/lib/auth";
 import { AppError } from "@/lib/errors";
@@ -11,8 +11,7 @@ export const dynamic = "force-dynamic";
  * 업체관리 목록/등록.
  *
  * 정적 세그먼트라 캐치올(`/api/[...path]`)보다 우선한다.
- * 응답 형태 `{ cat: 1, data: [...] }` 는 정적 firm.html(firm-demo.js)이 그대로
- * 소비하므로 바꾸지 않는다.
+ * 목록은 최소 DTO만 반환한다(연락처·주소·지도 좌표 제외).
  */
 export async function GET(request: NextRequest) {
   const id = requestId(request);
@@ -21,7 +20,7 @@ export async function GET(request: NextRequest) {
     enforceRateLimit(`firm:list:${user.id}`);
     return NextResponse.json({
       cat: 1,
-      data: listFirmsForUser(user),
+      data: listFirmItemsForUser(user),
       permissions: {
         canCreate: hasPermission(user.role, "firm:create"),
         canUpdate: hasPermission(user.role, "firm:update"),
