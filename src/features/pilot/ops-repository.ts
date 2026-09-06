@@ -269,7 +269,22 @@ export function listPilotInspections(
        LIMIT ?`,
     )
     .all(tenantId, gatewayId, limit) as RunRow[];
-  return runs.map((run) => mapRun(run, loadInspectionItems(run.id, db)));
+  if (runs.length === 0) return [];
+  const items = db
+    .prepare(
+      `SELECT id, run_id, item_key, result, note
+       FROM pilot_inspection_items
+       WHERE run_id IN (${runs.map(() => "?").join(", ")})
+       ORDER BY item_key ASC`,
+    )
+    .all(...runs.map((run) => run.id)) as ItemRow[];
+  const itemsByRun = new Map<string, PilotInspectionItem[]>();
+  for (const item of items) {
+    const group = itemsByRun.get(item.run_id) ?? [];
+    group.push(mapItem(item));
+    itemsByRun.set(item.run_id, group);
+  }
+  return runs.map((run) => mapRun(run, itemsByRun.get(run.id) ?? []));
 }
 
 export function getPilotInspection(
