@@ -25,7 +25,7 @@ import type {
   PilotRunStatus,
 } from "@/features/pilot/types";
 import { PILOT_CHECKLIST_KEYS } from "@/features/pilot/types";
-import { listControlPoints, listReadings } from "@/features/pilot/repository";
+import { listControlPoints } from "@/features/pilot/repository";
 import type { SessionUser } from "@/features/facilities/types";
 import type { z } from "zod";
 
@@ -528,15 +528,25 @@ export function getPilotOpsSummary(
   const tenantId = options.tenantId ?? PILOT_TENANT_ID;
   const gatewayId = options.gatewayId ?? PILOT_GATEWAY_ID;
   const inspections = listPilotInspections({ tenantId, gatewayId, limit: 1 }, database);
-  const readings = listReadings(
-    { tenantId, gatewayId, pointId: PILOT_POINT_PM_ID, source: "mock" },
-    database,
-  );
+  const latestReading = (database ?? getDb())
+    .prepare(
+      `SELECT r.observed_at
+       FROM point_readings r
+       INNER JOIN control_points p
+         ON p.id = r.point_id AND p.tenant_id = r.tenant_id
+       WHERE r.tenant_id = ? AND p.gateway_id = ?
+         AND r.point_id = ? AND r.source = 'mock'
+       ORDER BY r.observed_at DESC
+       LIMIT 1`,
+    )
+    .get(tenantId, gatewayId, PILOT_POINT_PM_ID) as
+      | { observed_at: string }
+      | undefined;
   return {
     unackedAlarmCount: countUnackedPilotAlarms(tenantId, gatewayId, database),
     latestInspection: inspections[0] ?? null,
     todayConfirmation: getDailyConfirmation({ tenantId, gatewayId }, database),
-    latestReadingAt: readings.at(-1)?.observedAt ?? null,
+    latestReadingAt: latestReading?.observed_at ?? null,
     mappingOk: mappingMatchesPilot(database),
   };
 }
