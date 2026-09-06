@@ -4,6 +4,11 @@ import type { PublicFirm } from "@/features/firms/types";
 
 const sample: PublicFirm = {
   fid: 7,
+  version: 1,
+  createdAt: "2026-01-01T00:00:00.000Z",
+  createdBy: "user-1",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+  updatedBy: "user-1",
   firmName: "합성 목록 업체",
   registTime: "2026-01-01 00:00:00",
   contract: "IGL1",

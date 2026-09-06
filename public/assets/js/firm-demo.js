@@ -17,6 +17,7 @@
         descending: false,
         selectedId: null,
         editingId: null,
+        editingVersion: null,
         clockTimer: null,
         canMutate: false,
         authRequired: false
@@ -325,10 +326,23 @@
         });
     }
 
-    function openModal(fid = null) {
+    async function openModal(fid = null) {
         if (!state.canMutate) return;
-        const firm = fid === null ? null : state.firms.find((item) => item.fid === fid);
+        let firm = null;
+        if (fid !== null) {
+            try {
+                const response = await fetch(`/api/firm/${fid}`, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`detail ${response.status}`);
+                const body = await response.json();
+                firm = body?.data ?? null;
+            } catch (error) {
+                console.error('업체 상세 조회 실패', error);
+                showToast('업체 정보를 불러오지 못했습니다.', true);
+                return;
+            }
+        }
         state.editingId = firm?.fid ?? null;
+        state.editingVersion = firm?.version ?? null;
         state.selectedId = firm?.fid ?? null;
         setFormValues(firm);
         document.getElementById('modal')?.classList.remove('disable');
@@ -341,6 +355,7 @@
         document.getElementById('modal')?.classList.add('disable');
         document.body.dataset.modalOpen = 'false';
         state.editingId = null;
+        state.editingVersion = null;
         state.selectedId = null;
         renderRows();
     }
@@ -348,13 +363,15 @@
     function readForm() {
         const result = {};
         Object.entries(formFieldMap).forEach(([id, key]) => {
+            // 비밀번호 필드는 서버로 보내지 않는다(스키마도 거부).
+            if (key === 'passwd' || key === 'kepcoPasswd') return;
             const value = document.getElementById(id)?.value ?? '';
             result[key] = numericFields.has(key) ? Number(value || 0) : value;
         });
         return result;
     }
 
-    function saveFirm() {
+    async function saveFirm() {
         if (!state.canMutate) return;
         const values = readForm();
         if (!String(values.firmName).trim()) {
@@ -362,16 +379,40 @@
             document.getElementById('edit-firmName')?.focus();
             return;
         }
-        if (state.editingId === null) {
-            const nextId = Math.max(...state.firms.map((firm) => firm.fid)) + 1;
-            state.firms.unshift(normalizeFirm({ ...values, fid: nextId, registTime: new Date().toISOString().slice(0, 10) }, 0));
-        } else {
-            const firm = state.firms.find((item) => item.fid === state.editingId);
-            if (firm) Object.assign(firm, values);
+        const done = document.getElementById('modalActDone');
+        if (done?.dataset.saving === '1') return;
+        if (done) done.dataset.saving = '1';
+        try {
+            let response;
+            if (state.editingId === null) {
+                response = await fetch('/api/firm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(values),
+                });
+            } else {
+                response = await fetch(`/api/firm/${state.editingId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...values, version: state.editingVersion }),
+                });
+            }
+            if (!response.ok) {
+                const payload = await response.json().catch(() => null);
+                throw new Error(payload?.error?.message || `저장 실패 (HTTP ${response.status})`);
+            }
+            const loaded = await loadFirms();
+            state.firms = loaded.firms;
+            state.canMutate = loaded.canMutate;
+            closeModal();
+            applyFilters(true);
+            showToast('확인 되었습니다.');
+        } catch (error) {
+            console.error('업체 저장 실패', error);
+            showToast(error instanceof Error ? error.message : '저장에 실패했습니다.', true);
+        } finally {
+            if (done) delete done.dataset.saving;
         }
-        closeModal();
-        applyFilters(true);
-        showToast('확인 되었습니다.');
     }
 
     function showToast(message, isError = false) {

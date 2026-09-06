@@ -81,3 +81,18 @@ export type FirmCreateInput = z.input<typeof firmCreateSchema>;
 
 /** 검증을 통과한 뒤의 값 — 전 필드가 채워져 있다. */
 export type FirmRecord = z.output<typeof firmCreateSchema>;
+
+/** 부분 수정. version 은 필수이며 그 외는 create 와 같은 허용 필드. */
+export const firmUpdateSchema = firmCreateSchema
+  .partial()
+  .extend({
+    version: numericInput(
+      z.number().int().positive("버전 정보가 올바르지 않습니다."),
+    ),
+  })
+  .refine(
+    (value) => Object.keys(value).some((key) => key !== "version"),
+    "수정할 항목을 하나 이상 입력해 주세요.",
+  );
+
+export type FirmUpdateInput = z.input<typeof firmUpdateSchema>;

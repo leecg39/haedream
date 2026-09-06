@@ -6,6 +6,11 @@
 
 export interface FirmRow {
   readonly fid: number;
+  readonly version: number;
+  readonly createdAt: string;
+  readonly createdBy: string;
+  readonly updatedAt: string;
+  readonly updatedBy: string;
   readonly firmName: string;
   readonly registTime: string;
   readonly contract: string;
@@ -61,6 +66,7 @@ export interface FirmOptionDto {
  */
 export interface FirmListItemDto {
   readonly fid: number;
+  readonly version: number;
   readonly firmName: string;
   readonly registTime: string;
   readonly contract: string;

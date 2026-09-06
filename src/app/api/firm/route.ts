@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     enforceRateLimit(`firm:create:${user.id}`, 30);
     // strictObject 라 스키마에 없는 키(한전 비밀번호 등)는 여기서 400 으로 거부된다.
     const input = firmCreateSchema.parse(await readJson(request));
-    const created = createFirmForUser(user, input);
+    const created = createFirmForUser(user, input, id);
     return NextResponse.json({ cat: 1, data: created }, {
       status: 201,
       headers: {
