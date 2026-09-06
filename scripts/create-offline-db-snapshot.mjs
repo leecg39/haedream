@@ -2,6 +2,7 @@
 /**
  * Live SQLite(WAL 포함)에서 일관된 offline snapshot 을 만든다.
  * 대상 경로에는 -wal/-shm/-journal 이 없어야 하며, 생성 후 검증한다.
+ * 결과 DB 와 companion meta 는 항상 mode 0600 으로 강제한다.
  *
  * 사용:
  *   node scripts/create-offline-db-snapshot.mjs <source.db> <offline-snapshot.db>
@@ -11,15 +12,23 @@
  */
 import Database from "better-sqlite3";
 import {
+  chmodSync,
+  closeSync,
+  createReadStream,
   existsSync,
+  fsyncSync,
   lstatSync,
   mkdirSync,
+  openSync,
+  renameSync,
   rmSync,
   statSync,
+  writeFileSync,
 } from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { createReadStream } from "node:fs";
+
+const OWNER_RW = 0o600;
 
 function die(message, code = 1) {
   console.error(`[offline-snapshot] ${message}`);
@@ -32,6 +41,40 @@ function assertNoSidecars(dbPath) {
       throw new Error(`destination still has sidecar ${suffix}`);
     }
   }
+}
+
+/** Force owner-only read/write even if umask/backup created a wider mode. */
+function forceOwnerReadWriteOnly(filePath) {
+  chmodSync(filePath, OWNER_RW);
+  const mode = lstatSync(filePath).mode & 0o777;
+  if (mode !== OWNER_RW) {
+    throw new Error(
+      `failed to enforce 0600 on ${path.basename(filePath)} (got ${mode.toString(8)})`,
+    );
+  }
+}
+
+function writeMetaAtomic(metaPath, payload) {
+  if (existsSync(metaPath)) {
+    const st = lstatSync(metaPath);
+    if (st.isSymbolicLink() || !st.isFile()) {
+      throw new Error("meta path must be absent or a regular file");
+    }
+    // Replace existing meta with a fresh 0600 file.
+    rmSync(metaPath, { force: true });
+  }
+  const tmp = `${metaPath}.${process.pid}.${Date.now()}.tmp`;
+  const fd = openSync(tmp, "wx", OWNER_RW);
+  try {
+    writeFileSync(fd, `${JSON.stringify(payload, null, 2)}\n`);
+    fsyncSync(fd);
+  } finally {
+    closeSync(fd);
+  }
+  // wx 0o600 can still be masked by umask on some platforms — force after write.
+  forceOwnerReadWriteOnly(tmp);
+  renameSync(tmp, metaPath);
+  forceOwnerReadWriteOnly(metaPath);
 }
 
 async function sha256File(filePath) {
@@ -53,6 +96,7 @@ if (!sourceArg || !destArg) {
 } else {
   const sourcePath = path.resolve(sourceArg);
   const destPath = path.resolve(destArg);
+  const metaPath = `${destPath}.meta.json`;
 
   try {
     const sourceStat = lstatSync(sourcePath);
@@ -74,6 +118,9 @@ if (!sourceArg || !destArg) {
       source.close();
     }
 
+    // Backup may create 0644/0666 under a permissive umask — lock down immediately.
+    const modeAfterBackup = lstatSync(destPath).mode & 0o777;
+    forceOwnerReadWriteOnly(destPath);
     assertNoSidecars(destPath);
     const destStat = lstatSync(destPath);
     if (!destStat.isFile() || destStat.isSymbolicLink()) {
@@ -110,9 +157,24 @@ if (!sourceArg || !destArg) {
       }
     }
     assertNoSidecars(destPath);
+    // Re-assert after verify open/close (some platforms may alter mode bits).
+    forceOwnerReadWriteOnly(destPath);
 
     const bytes = statSync(destPath).size;
     const sha256 = await sha256File(destPath);
+    const meta = {
+      kind: "offline-db-snapshot-meta",
+      bytes,
+      sha256,
+      destBasename: path.basename(destPath),
+      mode: "0600",
+      modeAfterBackup: modeAfterBackup.toString(8).padStart(3, "0"),
+      createdAt: new Date().toISOString(),
+    };
+    writeMetaAtomic(metaPath, meta);
+    forceOwnerReadWriteOnly(destPath);
+    forceOwnerReadWriteOnly(metaPath);
+
     console.log(
       JSON.stringify(
         {
@@ -120,17 +182,21 @@ if (!sourceArg || !destArg) {
           bytes,
           sha256,
           destBasename: path.basename(destPath),
+          metaBasename: path.basename(metaPath),
+          mode: "0600",
         },
         null,
         2,
       ),
     );
   } catch (error) {
-    if (existsSync(destPath)) {
-      try {
-        rmSync(destPath, { force: true });
-      } catch {
-        // ignore cleanup failure; primary error below
+    for (const p of [destPath, metaPath]) {
+      if (existsSync(p)) {
+        try {
+          rmSync(p, { force: true });
+        } catch {
+          // ignore cleanup failure; primary error below
+        }
       }
     }
     die(error instanceof Error ? error.message : String(error));

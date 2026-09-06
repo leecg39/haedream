@@ -5,6 +5,9 @@ import {
   rmSync,
   readFileSync,
   existsSync,
+  chmodSync,
+  statSync,
+  writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -55,8 +58,12 @@ describe("ops readiness prep scripts", () => {
       expect(existsSync(offline)).toBe(true);
       expect(existsSync(`${offline}-wal`)).toBe(false);
       expect(existsSync(`${offline}-shm`)).toBe(false);
+      expect(existsSync(`${offline}.meta.json`)).toBe(true);
+      expect(statSync(offline).mode & 0o777).toBe(0o600);
+      expect(statSync(`${offline}.meta.json`).mode & 0o777).toBe(0o600);
       const payload = JSON.parse(result.stdout);
       expect(payload.ok).toBe(true);
+      expect(payload.mode).toBe("0600");
       expect(payload.bytes).toBeGreaterThan(0);
       expect(payload.sha256).toMatch(/^[a-f0-9]{64}$/);
       const verify = new Database(offline, { readonly: true, fileMustExist: true });
@@ -70,6 +77,56 @@ describe("ops readiness prep scripts", () => {
       }
     } finally {
       db.close();
+    }
+  });
+
+  it("create-offline-db-snapshot forces 0600 even when umask or prior meta mode is wide", () => {
+    const live = path.join(directory, "wide-src.db");
+    const offline = path.join(directory, "wide-out.db");
+    const meta = `${offline}.meta.json`;
+    const db = new Database(live);
+    db.exec(`CREATE TABLE t (id INTEGER PRIMARY KEY); INSERT INTO t DEFAULT VALUES;`);
+    db.close();
+
+    // Pre-create companion meta with world-readable mode; script must replace at 0600.
+    writeFileSync(meta, "{}\n", { mode: 0o666 });
+    chmodSync(meta, 0o666);
+    expect(statSync(meta).mode & 0o777).toBe(0o666);
+
+    const previousUmask = process.umask(0o000);
+    try {
+      // Prove spawnSync children inherit the widened umask (not only the parent).
+      // Do not chmod after write — resulting mode must reflect umask alone.
+      const childProbe = path.join(directory, "child-umask-probe");
+      const probeRun = spawnSync(
+        "node",
+        [
+          "-e",
+          `const fs=require('fs');fs.writeFileSync(process.argv[1],'x',{mode:0o666});process.stdout.write(String(fs.statSync(process.argv[1]).mode&0o777));`,
+          childProbe,
+        ],
+        { cwd: root, encoding: "utf8" },
+      );
+      expect(probeRun.status).toBe(0);
+      expect(Number(probeRun.stdout)).toBe(0o666);
+
+      const result = runNode("scripts/create-offline-db-snapshot.mjs", [
+        live,
+        offline,
+      ]);
+      expect(result.status, result.stderr || result.stdout).toBe(0);
+      expect(statSync(offline).mode & 0o777).toBe(0o600);
+      expect(statSync(meta).mode & 0o777).toBe(0o600);
+      const metaBody = JSON.parse(readFileSync(meta, "utf8"));
+      expect(metaBody.mode).toBe("0600");
+      // Under inherited umask 000, backup must have been wider before force
+      // (otherwise the case does not exercise chmod repair).
+      const afterBackup = Number.parseInt(metaBody.modeAfterBackup, 8);
+      expect(afterBackup & ~0o600).toBeGreaterThan(0);
+      expect(metaBody.sha256).toMatch(/^[a-f0-9]{64}$/);
+      expect(JSON.stringify(metaBody)).not.toMatch(/Users\//);
+    } finally {
+      process.umask(previousUmask);
     }
   });
 
