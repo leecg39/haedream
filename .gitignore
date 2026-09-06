@@ -64,3 +64,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 로컬 실업체 덤프 백업 (커밋 금지)
+/data/firm-rows.real.json.bak
+/data/firm-seed.json

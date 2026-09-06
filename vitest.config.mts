@@ -5,6 +5,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // Vitest runs in Node; Next's server-only guard must not block repository tests.
+      "server-only": fileURLToPath(new URL("./tests/shims/server-only.ts", import.meta.url)),
     },
   },
   test: {

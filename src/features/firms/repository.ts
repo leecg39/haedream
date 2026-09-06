@@ -1,7 +1,10 @@
+import "server-only";
+
 import { getDb, type AppDatabase } from "@/lib/db";
 import { AppError } from "@/lib/errors";
 import { firmCreateSchema, type FirmCreateInput } from "@/features/firms/schema";
-import type { PublicFirm } from "@/features/firms/types";
+import type { FirmListItemDto, PublicFirm } from "@/features/firms/types";
+import { toFirmListItem } from "@/features/firms/dto.server";
 import type { SessionUser } from "@/features/facilities/types";
 import { hasPermission } from "@/lib/auth";
 import { requireFirmAccess } from "@/features/firms/authorization.server";
@@ -10,10 +13,7 @@ import { DEMO_FIRM_ID_START } from "@/lib/seed";
 /**
  * 업체 마스터 조회/등록.
  *
- * 컬럼은 snake_case, 응답은 정적 JSON(firm-rows.json)이 쓰던 키를 그대로 쓴다.
- * 정적 firm.html(public/assets/js/firm-demo.js)이 이 형태를 그대로 소비하므로
- * 별칭을 임의로 바꾸면 안 된다.
- *
+ * 컬럼은 snake_case, 응답은 정적 EMS(firm-demo.js)가 기대하는 camelCase 키를 쓴다.
  * 어떤 경로로도 한전 비밀번호를 읽거나 쓰지 않는다 — 컬럼 자체가 없다.
  */
 
@@ -97,6 +97,14 @@ export function listFirmsForUser(
       .all(user.tenantId) as Array<{ fid: number }>).map((row) => row.fid),
   );
   return rows.map((row) => (piiFids.has(row.fid) ? row : maskFirmPii(row)));
+}
+
+/** 목록/표용 최소 DTO. 연락처·주소·지도 좌표를 직렬화하지 않는다. */
+export function listFirmItemsForUser(
+  user: SessionUser,
+  db: AppDatabase = getDb(),
+): FirmListItemDto[] {
+  return listFirmsForUser(user, db).map(toFirmListItem);
 }
 
 function maskFirmPii(firm: PublicFirm): PublicFirm {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import {
   findFirmForUser,
-  listFirmsForUser,
+  listFirmItemsForUser,
 } from "@/features/firms/repository";
 import { handleKepcoRoute } from "@/features/kepco/routes.server";
 import peakInfoFixture from "@/lib/fixtures/peak-info-121.json";
@@ -143,7 +143,7 @@ function handleFirmRoute(request: NextRequest, path: readonly string[]) {
   }
   const user = requirePermission(request, "firm:read");
   if (path.length === 1) {
-    return json({ cat: 1, data: listFirmsForUser(user) });
+    return json({ cat: 1, data: listFirmItemsForUser(user) });
   }
   if (path.length === 2 && /^\d+$/.test(path[1] ?? "")) {
     const fid = z.coerce.number().int().nonnegative().parse(path[1]);

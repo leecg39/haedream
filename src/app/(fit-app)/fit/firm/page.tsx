@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { FirmManager } from "@/components/fit/firm/FirmManager";
-import { listFirmsForUser } from "@/features/firms/repository";
+import { listFirmItemsForUser } from "@/features/firms/repository";
 import { findFitMockPageByRoute } from "@/lib/fit-mock-db";
 import { getCurrentSessionUser, hasPermission } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -18,7 +18,7 @@ export default async function Page() {
   if (!user) redirect("/fit/login");
   return (
     <FirmManager
-      rows={listFirmsForUser(user)}
+      rows={listFirmItemsForUser(user)}
       canCreate={hasPermission(user.role, "firm:create")}
       canUpdate={hasPermission(user.role, "firm:update")}
     />
