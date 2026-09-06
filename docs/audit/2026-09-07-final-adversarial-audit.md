@@ -82,10 +82,12 @@ UI/Playwright 계약을 이번 패스에서 바꾸지 않았다(스크립트·�
 
 `phase/final-ops-rehearsal-audit` → push → root `feat/fit-clone` `--no-ff` merge → push `origin/feat/fit-clone` → Actions `quality`/`e2e-core` 대기.
 
-## 10. Post-merge CI (fill after push)
+## 10. Post-merge CI
 
 | Item | Value |
 |---|---|
-| Final merge SHA on `origin/feat/fit-clone` | _(pending)_ |
-| New GitHub Actions run | _(pending)_ |
-| `quality` / `e2e-core` | _(pending)_ |
+| Final merge SHA on `origin/feat/fit-clone` | `2c3d528bb65e403a274528f2655fc51c0f5cbdcc` |
+| New GitHub Actions run | `34059982086` — https://github.com/leecg39/haedream/actions/runs/34059982086 |
+| `quality` / `e2e-core` | **success** / **success** |
+
+Phase commits: `fe95704` (fix), `db3dd24` (docs), merge `2c3d528`.
