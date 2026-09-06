@@ -10,7 +10,8 @@ import { echoNumber } from "@/components/fit/reduce/format";
 import { totalPages } from "@/components/fit/stat/statUtils";
 import type { FirmListItemDto, PublicFirm } from "@/features/firms/types";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { pressableProps } from "@/components/fit/firm/pressable";
 
 const FIRM_SORT_OPTIONS: readonly { readonly key: FirmSortKey; readonly label: string }[] = [
   { key: "fid", label: "ID" },
@@ -28,6 +29,7 @@ interface FirmManagerProps {
 
 export function FirmManager({ rows, canCreate = false, canUpdate = false }: FirmManagerProps) {
   const router = useRouter();
+  const addButtonRef = useRef<HTMLSpanElement | null>(null);
   const [serviceType, setServiceType] = useState(0);
   const [query, setQuery] = useState("");
   // 원본 firm.js 는 _sheet.sortTag='registTime', sortAsc=0(내림차순) 으로 시작하되
@@ -38,8 +40,10 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<FirmModalState>(FIRM_MODAL_CLOSED);
   const [mapOpen, setMapOpen] = useState(false);
+  const [returnFocus, setReturnFocus] = useState<HTMLElement | null>(null);
 
-  const openEdit = async (fid: number) => {
+  const openEdit = async (fid: number, source?: HTMLElement | null) => {
+    setReturnFocus(source ?? (document.activeElement as HTMLElement | null));
     const response = await fetch(`/api/firm/${fid}`, { cache: "no-store" });
     if (!response.ok) {
       console.error("업체 상세 조회 실패", response.status);
@@ -48,6 +52,16 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
     const body = (await response.json()) as { data?: PublicFirm };
     if (!body.data) return;
     setModal({ mode: "edit", row: body.data });
+  };
+
+  const openCreate = () => {
+    setReturnFocus(addButtonRef.current);
+    setModal({ mode: "create" });
+  };
+
+  const closeModal = () => {
+    setModal(FIRM_MODAL_CLOSED);
+    window.setTimeout(() => returnFocus?.focus?.(), 0);
   };
 
   const filtered = useMemo(() => {
@@ -91,6 +105,11 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
       <PageStyles files={[...LIB_STYLES, "/fit/assets/css/deskLib.css", "/fit/clone-css/firm-extras.css"]} />
       <main className="contents" id="contentsArea">
         <h1 className="deskTitle">업체관리</h1>
+        {!canCreate && !canUpdate ? (
+          <p className="firmReadonlyNotice" role="status">
+            조회 전용 계정입니다. 업체 추가·수정 권한이 없습니다.
+          </p>
+        ) : null}
         {/* 프레임 최상단 검색. 목록 툴바의 기존 검색창과 같은 query 상태를 쓰므로
             어느 쪽에 입력해도 두 입력값과 목록이 함께 갱신된다. */}
         <div className="firmSearchBar">
@@ -112,10 +131,17 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
                 .deskAct 에 배경/보더 리셋이 없어 button 으로 만들면 UA 기본 상자가 보인다. */}
             <div className="deskTool" id="deskTool">
               {canCreate ? (
-                <span className="deskAct act" data-act="add" role="button" onClick={() => setModal({ mode: "create" })}>추가</span>
+                <span
+                  ref={addButtonRef}
+                  className="deskAct act"
+                  data-act="add"
+                  {...pressableProps(openCreate)}
+                >
+                  추가
+                </span>
               ) : null}
-              <span className="deskAct act" data-act="excel" role="button" onClick={() => window.print()}>엑셀</span>
-              <span className="deskAct act" data-act="print" role="button" onClick={() => window.print()}>프린트</span>
+              <span className="deskAct act" data-act="excel" {...pressableProps(() => window.print())}>엑셀</span>
+              <span className="deskAct act" data-act="print" {...pressableProps(() => window.print())}>프린트</span>
               <Link href="/fit/rate-plan" target="_blank" className="deskAct act" id="chargeLink">요금표</Link>
               <Link href="/fit/research" target="_blank" className="deskAct act" id="researchLink">한전수집</Link>
             </div>
@@ -146,6 +172,28 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
             </div>
           </div>
           <div className="deskArea">
+            <div className="firmCardList" aria-label="업체 카드 목록">
+              {visible.map((row) => (
+                <button
+                  type="button"
+                  className="firmCard"
+                  key={`card-${row.fid}`}
+                  disabled={!canUpdate}
+                  onClick={(event) => {
+                    if (!canUpdate) return;
+                    void openEdit(row.fid, event.currentTarget);
+                  }}
+                >
+                  <span className="firmCardName">{row.firmName}</span>
+                  <span className="firmCardMeta">
+                    <span>ID {row.fid}</span>
+                    <span>{FIRM_SERVICE_TYPE_LABELS[row.serviceType] || "서비스 미정"}</span>
+                    <span>{row.kepcoNo || "한전번호 없음"}</span>
+                    <span>{row.isDisable ? "비활성" : "활성"}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
             <table className="desk" id="deskTable">
               <thead>
                 <tr id="deskSort">
@@ -160,7 +208,7 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
                       }
                       data-sort={option.key}
                       key={option.key}
-                      onClick={() => changeSort(option.key)}
+                      {...pressableProps(() => changeSort(option.key))}
                     >
                       {option.label}
                     </th>
@@ -168,14 +216,26 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
                   <th>EOI</th><th>PCT</th><th>최근전력</th><th>목표전력</th>
                   <th>운전모드</th><th>제어방식</th><th>활성</th><th>서비스</th>
                   {/* 원본에서 메모는 13번째이고 data-sort 만 있고 .sort 클래스는 없다 */}
-                  <th data-sort="registTime" onClick={() => changeSort("registTime")}>메모</th>
+                  <th data-sort="registTime" {...pressableProps(() => changeSort("registTime"))}>메모</th>
                 </tr>
               </thead>
               <tbody id="deskList">
                 {visible.map((row) => (
                   <tr
                     key={row.fid}
-                    onClick={canUpdate ? () => void openEdit(row.fid) : undefined}
+                    tabIndex={canUpdate ? 0 : undefined}
+                    aria-label={canUpdate ? `${row.firmName} 편집` : undefined}
+                    onClick={canUpdate ? (event) => void openEdit(row.fid, event.currentTarget) : undefined}
+                    onKeyDown={
+                      canUpdate
+                        ? (event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              void openEdit(row.fid, event.currentTarget);
+                            }
+                          }
+                        : undefined
+                    }
                   >
                     <td>{row.fid}</td>
                     <td>{row.firmName}</td>
@@ -242,7 +302,7 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
       </main>
       <FirmEditModal
         state={modal}
-        onClose={() => setModal(FIRM_MODAL_CLOSED)}
+        onClose={closeModal}
         onOpenMap={() => setMapOpen(true)}
         onCreated={() => { setPage(1); router.refresh(); }}
       />

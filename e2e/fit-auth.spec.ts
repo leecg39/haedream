@@ -41,6 +41,7 @@ test.describe("FIT 인증과 권한 경계", () => {
   test("VIEWER의 malformed 쓰기와 수집 요청은 모두 403이다", async ({ page }) => {
     await loginToFit(page, "viewer");
     await page.goto("/fit/firm");
+    await expect(page.locator(".firmReadonlyNotice")).toContainText("조회 전용");
     await expect(page.locator('[data-act="add"]')).toHaveCount(0);
     const firstFirm = page.locator("#deskList tr").first();
     await firstFirm.click();
