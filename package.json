@@ -26,7 +26,8 @@
     "db:backup": "node scripts/backup-db.mjs",
     "db:restore-verify": "node scripts/restore-db-verify.mjs",
     "db:migrate-rehearsal": "node scripts/migrate-rehearsal.mjs",
-    "ops:monitor-kepco": "node scripts/monitor-collection-jobs.mjs"
+    "ops:monitor-kepco": "node scripts/monitor-collection-jobs.mjs",
+    "ops:import-measurements": "node scripts/import-measurement-csv.mjs"
   },
   "dependencies": {
     "agentation": "^3.0.2",

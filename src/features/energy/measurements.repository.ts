@@ -25,6 +25,13 @@ export interface UpsertMeasurementInput {
   readonly correctedBy?: string;
 }
 
+/** 동일 canonical 키 재처리 결과. 행 수는 늘지 않는다. */
+export type UpsertMeasurementOutcome = "inserted" | "unchanged" | "corrected";
+
+export interface UpsertMeasurementResult extends EnergyMeasurementDto {
+  readonly outcome: UpsertMeasurementOutcome;
+}
+
 const METER_POINT_RE = /^[A-Za-z0-9_./:-]{1,64}$/;
 const SOURCES = new Set<EnergySource>(["DEMO", "MEASURED", "ESTIMATED"]);
 const UNITS = new Set<EnergyUnit>(["kW", "kWh"]);
@@ -66,6 +73,16 @@ export function assertValidValue(value: number | null): number | null {
     throw new AppError(422, "INVALID_VALUE", "측정값이 올바르지 않습니다.");
   }
   return value;
+}
+
+/** null 구분. 숫자 -0 과 0 은 동일 측정값으로 본다 (`===`). */
+export function measurementValuesEqual(
+  a: number | null,
+  b: number | null,
+): boolean {
+  if (a === null && b === null) return true;
+  if (a === null || b === null) return false;
+  return a === b;
 }
 
 function staleThresholdMs() {
@@ -113,13 +130,13 @@ function requireTenantFirmAccess(tenantId: string, fid: number, db: AppDatabase)
   }
 }
 
-function findExistingRow(
+export function findExistingMeasurement(
   tenantId: string,
   fid: number,
   meterPoint: string,
   observedAt: string,
   unit: EnergyUnit,
-  db: AppDatabase,
+  db: AppDatabase = getDb(),
 ) {
   return db
     .prepare(
@@ -140,11 +157,44 @@ function findExistingRow(
     | undefined;
 }
 
+/** dry-run 분류용. DB 를 변경하지 않는다. */
+export function classifyMeasurementUpsert(
+  input: UpsertMeasurementInput,
+  db: AppDatabase = getDb(),
+): UpsertMeasurementOutcome {
+  if (!SOURCES.has(input.source)) {
+    throw new AppError(422, "INVALID_SOURCE", "출처 값이 올바르지 않습니다.");
+  }
+  if (!UNITS.has(input.unit)) {
+    throw new AppError(422, "INVALID_UNIT", "단위가 올바르지 않습니다.");
+  }
+  const meterPoint = assertValidMeterPoint(input.meterPoint);
+  const observedAt = canonicalizeObservedAt(input.observedAt);
+  const value = assertValidValue(input.value);
+  const quality = deriveQuality(input.source, observedAt, value);
+  const calculationVersion = input.calculationVersion ?? "v1";
+  const existing = findExistingMeasurement(
+    input.tenantId,
+    input.fid,
+    meterPoint,
+    observedAt,
+    input.unit,
+    db,
+  );
+  if (!existing) return "inserted";
+  const changed =
+    !measurementValuesEqual(existing.value, value) ||
+    existing.source !== input.source ||
+    existing.quality !== quality ||
+    existing.calculationVersion !== calculationVersion;
+  return changed ? "corrected" : "unchanged";
+}
+
 /** 동일 키 재처리 시 값이 덮어써지고 행 수는 늘어나지 않는다. 정정 시 이력을 남긴다. */
 export function upsertMeasurement(
   input: UpsertMeasurementInput,
   db: AppDatabase = getDb(),
-): EnergyMeasurementDto {
+): UpsertMeasurementResult {
   if (!SOURCES.has(input.source)) {
     throw new AppError(422, "INVALID_SOURCE", "출처 값이 올바르지 않습니다.");
   }
@@ -162,7 +212,7 @@ export function upsertMeasurement(
   const calculationVersion = input.calculationVersion ?? "v1";
 
   return db.transaction(() => {
-    const existing = findExistingRow(
+    const existing = findExistingMeasurement(
       input.tenantId,
       input.fid,
       meterPoint,
@@ -173,10 +223,28 @@ export function upsertMeasurement(
 
     const changed =
       existing &&
-      (existing.value !== value ||
+      (!measurementValuesEqual(existing.value, value) ||
         existing.source !== input.source ||
         existing.quality !== quality ||
         existing.calculationVersion !== calculationVersion);
+
+    // unchanged: write 자체를 건너뛰어 ingested_at·correction 을 불변으로 유지한다.
+    if (existing && !changed) {
+      return {
+        fid: input.fid,
+        meterPoint,
+        observedAt,
+        ingestedAt: existing.ingestedAt,
+        source: existing.source,
+        quality: existing.quality,
+        unit: input.unit,
+        value: existing.value,
+        calculationVersion: existing.calculationVersion,
+        outcome: "unchanged" as const,
+      };
+    }
+
+    const outcome: UpsertMeasurementOutcome = !existing ? "inserted" : "corrected";
 
     if (changed && existing) {
       db.prepare(
@@ -203,7 +271,7 @@ export function upsertMeasurement(
         input.correctedBy ?? null,
         input.correctionReason ??
           (existing.calculationVersion !== calculationVersion &&
-          existing.value === value &&
+          measurementValuesEqual(existing.value, value) &&
           existing.source === input.source
             ? `calculation_version ${existing.calculationVersion} → ${calculationVersion}`
             : "value correction"),
@@ -245,6 +313,7 @@ export function upsertMeasurement(
       unit: input.unit,
       value,
       calculationVersion,
+      outcome,
     };
   })();
 }
