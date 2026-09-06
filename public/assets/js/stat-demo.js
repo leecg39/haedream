@@ -18,16 +18,16 @@
     };
 
     const firmNames = [
-        '오리온농협(주)', '롯데제과 안산공장', '에스엠테크', '금강화학', '알렌클로비스',
-        '해태제과 천안공장', '동원F&B 진천공장', '서울우유 양주공장', 'CJ제일제당 인천공장', '삼양식품 원주공장',
-        '남서울농협 하나로마트', '북대구농협 물류센터', '부산축산농협', '광주원예농협', '전주김제완주축협',
-        '대상 청정원 이천공장', '오뚜기 대풍공장', '풀무원 음성공장', '매일유업 평택공장', '빙그레 남양주공장',
-        '현대그린푸드 스마트푸드센터', '한화솔루션 울산공장', 'LG화학 오창공장', 'SKC 수원공장', '포스코퓨처엠 세종공장',
-        '한국콜마 세종사업장', '아모레퍼시픽 오산공장', '농심 구미공장', '하림 익산공장', '선진 이천공장',
-        '청주농협 농산물유통센터', '제주감귤농협 제2공장', '강원양돈농협', '순천농협 미곡처리장', '충남세종농협 물류센터',
-        '태광산업 반여공장', '코오롱인더스트리 김천공장', '동국제강 인천공장', '세아베스틸 군산공장', '한솔제지 장항공장',
-        '대웅제약 오송공장', '유한양행 오창공장', '종근당 천안공장', '녹십자 오창공장', '한국야쿠르트 논산공장',
-        '기아 광명공장', '현대모비스 진천공장', '두산에너빌리티 창원공장', '효성중공업 창원공장', '한전KDN 나주센터'
+        '합성관제 업체 001', '합성관제 업체 002', '합성관제 업체 003', '합성관제 업체 004', '합성관제 업체 005',
+        '합성관제 업체 006', '합성관제 업체 007', '합성관제 업체 008', '합성관제 업체 009', '합성관제 업체 010',
+        '합성관제 업체 011', '합성관제 업체 012', '합성관제 업체 013', '합성관제 업체 014', '합성관제 업체 015',
+        '합성관제 업체 016', '합성관제 업체 017', '합성관제 업체 018', '합성관제 업체 019', '합성관제 업체 020',
+        '합성관제 업체 021', '합성관제 업체 022', '합성관제 업체 023', '합성관제 업체 024', '합성관제 업체 025',
+        '합성관제 업체 026', '합성관제 업체 027', '합성관제 업체 028', '합성관제 업체 029', '합성관제 업체 030',
+        '합성관제 업체 031', '합성관제 업체 032', '합성관제 업체 033', '합성관제 업체 034', '합성관제 업체 035',
+        '합성관제 업체 036', '합성관제 업체 037', '합성관제 업체 038', '합성관제 업체 039', '합성관제 업체 040',
+        '합성관제 업체 041', '합성관제 업체 042', '합성관제 업체 043', '합성관제 업체 044', '합성관제 업체 045',
+        '합성관제 업체 046', '합성관제 업체 047', '합성관제 업체 048', '합성관제 업체 049', '합성관제 업체 050',
     ];
 
     const locations = [
@@ -92,10 +92,13 @@
     // 우선 쓰고, 없으면 기존 데모 좌표 테이블로 대체한다. 예측/피크 등 실측이
     // 없는 지표는 fid 기반 결정적 값으로 채워 데모 시뮬레이션과 호환시킨다.
     async function loadFirmsFromDb() {
-        const response = await fetch('/api/firm', { cache: 'no-store' });
+        const response = await fetch('/api/firm', { cache: 'no-store', credentials: 'same-origin' });
         if (!response.ok) throw new Error(`/api/firm ${response.status}`);
         const body = await response.json();
         const rows = body.data ?? [];
+        if (!Array.isArray(rows) || rows.length === 0) {
+            throw new Error('/api/firm returned an empty firm list');
+        }
         return rows.map((row, index) => {
             const fid = Number(row.fid);
             // 계약전력: DB contractLimit 우선, 없으면 결정적 대체값.
@@ -631,12 +634,18 @@
         }
         if (!localStorage.getItem('fid')) localStorage.setItem('fid', '1');
         if (!localStorage.getItem('firmName')) localStorage.setItem('firmName', 'ABC EMS 통합관제센터');
-        // 업체 데이터베이스에서 실제 목록을 가져온다. 실패하면 데모 목록으로 대체.
+        // /api/firm 으로 서버 세션만 검증하고, 영상 클론용 고밀도 데모 목록은 유지한다.
+        // (허가 업체만 내려오면 "농협" 검색·480마커 시나리오가 깨진다.)
         try {
-            state.firms = await loadFirmsFromDb();
-            if (!state.firms.length) state.firms = buildFirms();
+            const response = await fetch('/api/firm', { cache: 'no-store' });
+            if (response.status === 401) {
+                window.location.href = '/fit/login';
+                return;
+            }
+            if (!response.ok) throw new Error(`/api/firm ${response.status}`);
+            state.firms = buildFirms();
         } catch (error) {
-            console.error('업체 DB 로드 실패, 데모 목록 사용', error);
+            console.error('업체 세션 확인 실패, 데모 목록 사용', error);
             state.firms = buildFirms();
         }
         state.filtered = [...state.firms];

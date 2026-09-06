@@ -17,7 +17,9 @@
         descending: false,
         selectedId: null,
         editingId: null,
-        clockTimer: null
+        clockTimer: null,
+        canMutate: false,
+        authRequired: false
     };
 
     function normalizeFirm(seed, index) {
@@ -61,9 +63,16 @@
     // 업체 목록은 실제 운영 DB 덤프(firm-details.csv)를 변환한 /api/firm 응답을 쓴다.
     async function loadFirms() {
         const response = await fetch('/api/firm');
-        if (!response.ok) throw new Error(`/api/firm ${response.status}`);
+        if (!response.ok) {
+            const error = new Error(`/api/firm ${response.status}`);
+            error.status = response.status;
+            throw error;
+        }
         const body = await response.json();
-        return (body.data ?? []).map((row, index) => normalizeFirm(row, index));
+        return {
+            firms: (body.data ?? []).map((row, index) => normalizeFirm(row, index)),
+            canMutate: Boolean(body.permissions?.canCreate && body.permissions?.canUpdate)
+        };
     }
 
     async function injectShell() {
@@ -164,10 +173,21 @@
             event.preventDefault();
             settings.parentElement?.classList.toggle('on');
         });
-        document.getElementById('appLogout')?.addEventListener('click', (event) => {
+        document.getElementById('appLogout')?.addEventListener('click', async (event) => {
             event.preventDefault();
-            sessionStorage.removeItem('accessToken');
-            window.location.href = '/login.html';
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: '{}'
+                });
+                if (!response.ok) throw new Error(`logout ${response.status}`);
+                sessionStorage.removeItem('accessToken');
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('로그아웃 실패', error);
+                showToast('로그아웃하지 못했습니다. 다시 시도해 주세요.', true);
+            }
         });
         updateClock();
         state.clockTimer = window.setInterval(updateClock, 1000);
@@ -234,7 +254,9 @@
                 <td title="${escapeHtml(firm.memo)}">${escapeHtml(firm.memo || '')}</td>
             </tr>`).join('') : '<tr><td colspan="13">검색 결과가 없습니다.</td></tr>';
         list.querySelectorAll('tr[data-fid]').forEach((row) => {
-            row.addEventListener('click', () => openModal(Number(row.dataset.fid)));
+            row.addEventListener('click', () => {
+                if (state.canMutate) openModal(Number(row.dataset.fid));
+            });
         });
 
         const first = state.filtered.length ? firstIndex + 1 : 0;
@@ -304,6 +326,7 @@
     }
 
     function openModal(fid = null) {
+        if (!state.canMutate) return;
         const firm = fid === null ? null : state.firms.find((item) => item.fid === fid);
         state.editingId = firm?.fid ?? null;
         state.selectedId = firm?.fid ?? null;
@@ -332,6 +355,7 @@
     }
 
     function saveFirm() {
+        if (!state.canMutate) return;
         const values = readForm();
         if (!String(values.firmName).trim()) {
             showToast('업체이름을 입력하세요.', true);
@@ -399,7 +423,9 @@
 
     function bindControls() {
         const tool = document.getElementById('deskTool');
-        tool?.querySelector('[data-act="add"]')?.addEventListener('click', () => openModal());
+        tool?.querySelector('[data-act="add"]')?.addEventListener('click', () => {
+            if (state.canMutate) openModal();
+        });
         tool?.querySelector('[data-act="excel"]')?.addEventListener('click', exportExcel);
         tool?.querySelector('[data-act="print"]')?.addEventListener('click', () => {
             document.body.dataset.printRequested = 'true';
@@ -442,13 +468,35 @@
         });
     }
 
+    function applyAccessPolicy() {
+        const add = document.querySelector('[data-act="add"]');
+        const done = document.getElementById('modalActDone');
+        if (!state.canMutate) {
+            [add, done].forEach((element) => {
+                element?.setAttribute('aria-disabled', 'true');
+                element?.classList.remove('act');
+            });
+        }
+        if (!state.authRequired) return;
+
+        document.body.dataset.firmAuthRequired = 'true';
+        const notice = document.createElement('p');
+        notice.className = 'firmAuthNotice';
+        notice.setAttribute('role', 'alert');
+        notice.innerHTML = '업체 정보를 보려면 <a href="/fit/login">로그인</a>해 주세요.';
+        document.querySelector('.sheetArea')?.before(notice);
+    }
+
     async function init() {
-        if (!sessionStorage.getItem('accessToken')) sessionStorage.setItem('accessToken', 'firm-demo-local');
         try {
-            state.firms = await loadFirms();
+            const loaded = await loadFirms();
+            state.firms = loaded.firms;
+            state.canMutate = loaded.canMutate;
         } catch (error) {
             console.error('업체 목록 로드 실패', error);
             state.firms = [];
+            state.canMutate = false;
+            state.authRequired = error?.status === 401;
         }
         state.filtered = [...state.firms];
         window.vio = {
@@ -466,6 +514,7 @@
         }
         populateContractSelects();
         bindControls();
+        applyAccessPolicy();
         applyFilters(true);
         const contents = document.getElementById('contentsArea');
         contents?.classList.remove('disable');

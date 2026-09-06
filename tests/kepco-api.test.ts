@@ -6,13 +6,18 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { closeDatabasesForTests, getDb } from "@/lib/db";
 import { GET, POST } from "@/app/api/[...path]/route";
 import { GET as firmGET } from "@/app/api/firm/route";
+import { SESSION_COOKIE } from "@/lib/auth";
+import { seedDatabase } from "@/lib/seed";
 
 const origin = "http://localhost";
 
-function request(pathname: string, method = "GET", body?: unknown) {
+function request(pathname: string, method = "GET", body?: unknown, cookie?: string) {
   return new NextRequest(`${origin}${pathname}`, {
     method,
-    headers: body ? { "content-type": "application/json", origin } : {},
+    headers: {
+      ...(cookie ? { cookie: `${SESSION_COOKIE}=${cookie}` } : {}),
+      ...(body ? { "content-type": "application/json", origin } : {}),
+    },
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
 }
@@ -24,26 +29,52 @@ function routeFor(pathname: string) {
 
 describe("kepco API", () => {
   let tempDir: string;
+  let operatorCookie: string;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     tempDir = mkdtempSync(path.join(tmpdir(), "kepco-api-"));
     process.env.DATABASE_PATH = path.join(tempDir, "test.db");
     process.env.KEPCO_BATCH_LOCK_PATH = path.join(tempDir, "kepco-pipeline.lock");
+    process.env.RATE_LIMIT_DISABLED = "true";
+    const db = getDb();
+    seedDatabase(db);
+    const insertFirm = db.prepare(
+      "INSERT OR REPLACE INTO firms (fid, seq, firm_name, kepco_no) VALUES (?, ?, ?, ?)",
+    );
+    insertFirm.run(1, 10, "비밀번호 검증용 업체", "1000000001");
+    insertFirm.run(2, 11, "상세 검증용 업체", "1000000002");
+    insertFirm.run(7, 12, "수집 데이터 업체", "1000000007");
+    insertFirm.run(1655, 13, "자격증명 없는 업체", "");
+    const grant = db.prepare(
+      `INSERT OR REPLACE INTO tenant_firm_access
+       (tenant_id, fid, can_view_pii, can_collect, created_at)
+       VALUES ('121', ?, 1, 1, ?)`,
+    );
+    for (const fid of [1, 2, 7, 1655]) grant.run(fid, new Date().toISOString());
+    const login = await POST(
+      request("/api/tokens", "POST", { cf: "login", id: "operator", pw: "demo" }),
+      routeFor("/api/tokens"),
+    );
+    operatorCookie = login.cookies.get(SESSION_COOKIE)?.value ?? "";
+    expect(operatorCookie).toBeTruthy();
   });
 
   afterAll(() => {
     closeDatabasesForTests();
     rmSync(tempDir, { recursive: true, force: true });
     delete process.env.KEPCO_BATCH_LOCK_PATH;
+    delete process.env.RATE_LIMIT_DISABLED;
   });
 
   it("GET /api/kepco/status — 고객번호 등록 업체 목록과 수집 상태를 반환한다", async () => {
-    const res = await GET(request("/api/kepco/status"), routeFor("/api/kepco/status"));
+    const res = await GET(request("/api/kepco/status", "GET", undefined, operatorCookie), routeFor("/api/kepco/status"));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.cat).toBe(1);
     expect(Array.isArray(body.data)).toBe(true);
     expect(body.data.length).toBeGreaterThan(0);
+    expect(body.data.every((row: { kepcoNo: string }) => String(row.kepcoNo).trim() !== "")).toBe(true);
+    expect(body.data.some((row: { fid: number }) => row.fid === 1655)).toBe(false);
     const row = body.data[0];
     expect(row).toHaveProperty("fid");
     expect(row).toHaveProperty("firmName");
@@ -59,7 +90,7 @@ describe("kepco API", () => {
     getDb()
       .prepare("INSERT OR IGNORE INTO firms (fid, seq, firm_name) VALUES (?, ?, ?)")
       .run(1, 0, "비밀번호 검증용 업체");
-    const res = await firmGET(request("/api/firm"));
+    const res = await firmGET(request("/api/firm", "GET", undefined, operatorCookie));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.data.length).toBeGreaterThan(0);
@@ -67,7 +98,7 @@ describe("kepco API", () => {
   });
 
   it("GET /api/kepco/firm/[fid] — 수집 전에는 모든 데이터셋이 비어 있다", async () => {
-    const res = await GET(request("/api/kepco/firm/2"), routeFor("/api/kepco/firm/2"));
+    const res = await GET(request("/api/kepco/firm/2", "GET", undefined, operatorCookie), routeFor("/api/kepco/firm/2"));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.data.summary).toBeNull();
@@ -85,7 +116,7 @@ describe("kepco API", () => {
     writeFileSync(lockPath, JSON.stringify({ owner: process.pid, pids: [process.pid] }));
     try {
       const res = await POST(
-        request("/api/kepco/collect", "POST", { fid: 2 }),
+        request("/api/kepco/collect", "POST", { fid: 2 }, operatorCookie),
         routeFor("/api/kepco/collect"),
       );
       expect(res.status).toBe(409);
@@ -98,7 +129,7 @@ describe("kepco API", () => {
 
   it("POST /api/kepco/collect — 고객번호 없는 업체는 no_credentials", async () => {
     const res = await POST(
-      request("/api/kepco/collect", "POST", { fid: 1655 }),
+      request("/api/kepco/collect", "POST", { fid: 1655 }, operatorCookie),
       routeFor("/api/kepco/collect"),
     );
     expect(res.status).toBe(200);
@@ -112,12 +143,12 @@ describe("kepco API", () => {
     expect(log.status).toBe("no_credentials");
   });
 
-  it("POST /api/kepco/collect — 존재하지 않는 업체는 404", async () => {
+  it("POST /api/kepco/collect — 매핑되지 않은 업체는 403", async () => {
     const res = await POST(
-      request("/api/kepco/collect", "POST", { fid: 999999 }),
+      request("/api/kepco/collect", "POST", { fid: 999999 }, operatorCookie),
       routeFor("/api/kepco/collect"),
     );
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(403);
   });
 
   it("수집 성공 데이터는 상세 API로 노출하되 raw_json은 노출하지 않는다", async () => {
@@ -153,7 +184,7 @@ describe("kepco API", () => {
     ).run();
 
     const pathname = "/api/kepco/firm/7?month=202608";
-    const res = await GET(request(pathname), routeFor(pathname));
+    const res = await GET(request(pathname, "GET", undefined, operatorCookie), routeFor(pathname));
     const body = await res.json();
     expect(body.data.summary.cntr_knd_nm).toBe("산업용(을)고압A");
     expect(body.data.summary).not.toHaveProperty("raw_json");

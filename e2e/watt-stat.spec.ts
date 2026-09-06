@@ -1,17 +1,21 @@
 import { expect, test } from "@playwright/test";
+import { loginToFit } from "./fit-auth";
 import { stubMapTiles } from "./map-stub";
 
 test.describe("Watt 통합관제 /stat.html", () => {
+  test.describe.configure({ timeout: 60_000 });
+
   test.beforeEach(async ({ page }) => {
     await stubMapTiles(page);
     await page.setViewportSize({ width: 2032, height: 1162 });
+    await loginToFit(page, "operator");
     await page.goto("/stat.html");
     await expect(page.locator("body")).toHaveAttribute("data-stat-demo-ready", "true");
     await expect(page.locator("#map")).toHaveAttribute("data-map-ready", "true");
     await expect(page.locator("#map .wattDemoMarkerHost").first()).toBeAttached();
   });
 
-  test("로그인 리다이렉트 없이 영상의 전체 패널과 고밀도 지도를 렌더링함", async ({ page }) => {
+  test("로그인 세션에서 영상의 전체 패널과 고밀도 지도를 렌더링함", async ({ page }) => {
     await expect(page).toHaveURL(/\/stat\.html$/);
     await expect(page).toHaveTitle("통합관제");
     await expect(page.locator("#leftnav .leftNav")).toBeVisible();
@@ -63,11 +67,18 @@ test.describe("Watt 통합관제 /stat.html", () => {
   });
 
   test("업체 검색·상태 필터·정렬·초기화가 동작함", async ({ page }) => {
-    await page.locator("#inputFirmName").fill("농협");
+    // API 권한 목록이든 로컬 폴백이든, 화면에 이미 로드된 업체명으로 검색한다.
+    const sampleName = (
+      await page.locator("#dataList .firmListDataRow.active .firmListfirmName").first().textContent()
+    )?.trim();
+    expect(sampleName).toBeTruthy();
+    const query = sampleName!.slice(0, Math.min(4, sampleName!.length));
+    await page.locator("#inputFirmName").fill(query);
+    await page.locator("#inputFirmName").dispatchEvent("input");
     const searchedRows = page.locator("#dataList .firmListDataRow.active");
     await expect.poll(() => searchedRows.count()).toBeGreaterThan(0);
     const searchedNames = await searchedRows.locator(".firmListfirmName").allTextContents();
-    expect(searchedNames.every((name) => name.includes("농협"))).toBe(true);
+    expect(searchedNames.every((name) => name.includes(query))).toBe(true);
 
     await page.locator(".filterButtons.reset").click();
     await expect(page.locator("#inputFirmName")).toHaveValue("");

@@ -57,7 +57,7 @@ export function FitLoginForm() {
   };
 
   // 원본 login.js 의 검증 순서와 문구를 그대로 따른다.
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!authId.trim()) {
       setToast("아이디를 입력해주세요.");
       return;
@@ -69,12 +69,32 @@ export function FitLoginForm() {
     }
 
     setSubmitting(true);
-    persistId();
-    router.push("/fit/peak");
+    try {
+      const response = await fetch("/api/tokens", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ cf: "login", id: authId, pw: authPasswd }),
+      });
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: { message?: string }; msg?: string }
+        | null;
+      if (!response.ok) {
+        setToast(
+          payload?.error?.message ?? payload?.msg ?? "로그인에 실패했습니다.",
+        );
+        return;
+      }
+      persistId();
+      router.push("/fit/peak");
+    } catch {
+      setToast("로그인 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") handleLogin();
+    if (event.key === "Enter") void handleLogin();
   };
 
   return (
@@ -127,7 +147,7 @@ export function FitLoginForm() {
               type="button"
               className="actLogin"
               id="actLogin"
-              onClick={handleLogin}
+              onClick={() => void handleLogin()}
               disabled={submitting}
             >
               LOGIN

@@ -1,6 +1,10 @@
 import { hashSync } from "bcryptjs";
 import { migrate, resolveDatabasePath } from "./migrate.mjs";
 
+if (process.env.NODE_ENV === "production") {
+  throw new Error("Demo seeding is disabled in production.");
+}
+
 if (process.env.ALLOW_DEMO_SEED !== "true") {
   throw new Error(
     "Demo seeding is opt-in. Set ALLOW_DEMO_SEED=true only for an isolated development or demo database.",
@@ -16,6 +20,10 @@ const viewerId = "33333333-3333-4333-8333-333333333333";
 const gatewayA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const gatewayB = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const passwordHash = hashSync("demo", 10);
+const demoFirms = [
+  { fid: 2_000_000_001, seq: -2, firmName: "합성 데모 업체 A", kepcoNo: "0000000001" },
+  { fid: 2_000_000_002, seq: -1, firmName: "합성 데모 업체 B", kepcoNo: "0000000002" },
+];
 
 db.transaction(() => {
   db.prepare(
@@ -44,6 +52,32 @@ db.transaction(() => {
       now,
     );
   });
+
+  const insertFirm = db.prepare(
+    `INSERT OR IGNORE INTO firms (fid, seq, firm_name, kepco_no)
+     VALUES (?, ?, ?, ?)`,
+  );
+  const grantFirm = db.prepare(
+    `INSERT OR IGNORE INTO tenant_firm_access
+     (tenant_id, fid, can_view_pii, can_collect, created_at)
+     VALUES (?, ?, 1, 1, ?)`,
+  );
+  const findFirm = db.prepare(
+    "SELECT seq, firm_name, kepco_no FROM firms WHERE fid = ?",
+  );
+  for (const firm of demoFirms) {
+    const existing = findFirm.get(firm.fid);
+    if (
+      existing &&
+      (existing.seq !== firm.seq ||
+        existing.firm_name !== firm.firmName ||
+        existing.kepco_no !== firm.kepcoNo)
+    ) {
+      throw new Error(`reserved demo firm id collision: ${firm.fid}`);
+    }
+    insertFirm.run(firm.fid, firm.seq, firm.firmName, firm.kepcoNo);
+    grantFirm.run(tenantId, firm.fid, now);
+  }
 
   const insertGateway = db.prepare(
     `INSERT OR IGNORE INTO gateways

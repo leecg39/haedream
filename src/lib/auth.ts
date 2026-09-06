@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { compare } from "bcryptjs";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { AppError } from "@/lib/errors";
@@ -8,14 +9,20 @@ import type { SessionUser, UserRole } from "@/features/facilities/types";
 export const SESSION_COOKIE = "solar_session";
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 
-type Permission =
+export type Permission =
   | "facility:read"
   | "facility:create"
   | "facility:update"
   | "facility:delete"
   | "facility:restore"
   | "facility:purge"
-  | "deleted:read";
+  | "deleted:read"
+  | "firm:read"
+  | "firm:pii:read"
+  | "firm:create"
+  | "firm:update"
+  | "kepco:read"
+  | "kepco:collect";
 
 const permissions: Record<UserRole, ReadonlySet<Permission>> = {
   ADMIN: new Set([
@@ -26,6 +33,12 @@ const permissions: Record<UserRole, ReadonlySet<Permission>> = {
     "facility:restore",
     "facility:purge",
     "deleted:read",
+    "firm:read",
+    "firm:pii:read",
+    "firm:create",
+    "firm:update",
+    "kepco:read",
+    "kepco:collect",
   ]),
   OPERATOR: new Set([
     "facility:read",
@@ -34,8 +47,14 @@ const permissions: Record<UserRole, ReadonlySet<Permission>> = {
     "facility:delete",
     "facility:restore",
     "deleted:read",
+    "firm:read",
+    "firm:pii:read",
+    "firm:create",
+    "firm:update",
+    "kepco:read",
+    "kepco:collect",
   ]),
-  VIEWER: new Set(["facility:read"]),
+  VIEWER: new Set(["facility:read", "firm:read", "kepco:read"]),
 };
 
 function hashToken(token: string) {
@@ -143,20 +162,26 @@ export async function loginUser(
   };
 }
 
+function sessionCookieSecure() {
+  // E2E/local `next start` 는 NODE_ENV=production 이지만 http://localhost 다.
+  // Secure 쿠키를 강제하면 브라우저가 세션을 버려 /fit/peak 직후 로그인으로 튕긴다.
+  if (process.env.COOKIE_INSECURE === "true") return false;
+  return process.env.NODE_ENV === "production";
+}
+
 export function setSessionCookie(response: NextResponse, token: string) {
   response.cookies.set({
     name: SESSION_COOKIE,
     value: token,
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: sessionCookieSecure(),
     path: "/",
     maxAge: SESSION_TTL_SECONDS,
   });
 }
 
-export function getSessionUser(request: NextRequest): SessionUser | null {
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
+export function getSessionUserByToken(token: string | undefined): SessionUser | null {
   if (!token) return null;
   const row = getDb()
     .prepare(
@@ -187,6 +212,16 @@ export function getSessionUser(request: NextRequest): SessionUser | null {
         role: row.role,
       }
     : null;
+}
+
+export function getSessionUser(request: NextRequest): SessionUser | null {
+  return getSessionUserByToken(request.cookies.get(SESSION_COOKIE)?.value);
+}
+
+/** Server Component/layout 전용 현재 세션 조회. */
+export async function getCurrentSessionUser(): Promise<SessionUser | null> {
+  const cookieStore = await cookies();
+  return getSessionUserByToken(cookieStore.get(SESSION_COOKIE)?.value);
 }
 
 export function requirePermission(
@@ -246,7 +281,7 @@ export function logoutUser(
     value: "",
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: sessionCookieSecure(),
     path: "/",
     maxAge: 0,
   });

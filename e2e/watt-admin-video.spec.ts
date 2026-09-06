@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { loginToFit } from "./fit-auth";
 
 test.describe("5.58.58 WATT 환경설정 관리 영상 재현", () => {
+  test.beforeEach(async ({ page }) => {
+    await loginToFit(page);
+  });
+
   test("사용자 행을 권한별 입력 폼에서 수정함", async ({ page }) => {
     await page.goto("/fit/user");
 

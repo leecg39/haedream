@@ -21,9 +21,11 @@ const FIRM_SORT_OPTIONS: readonly { readonly key: FirmSortKey; readonly label: s
 /** 목록은 서버 컴포넌트가 DB 에서 읽어 넘긴다. 한전 비밀번호는 포함되지 않는다. */
 interface FirmManagerProps {
   readonly rows: readonly Omit<FirmRow, "kepcoPasswd">[];
+  readonly canCreate?: boolean;
+  readonly canUpdate?: boolean;
 }
 
-export function FirmManager({ rows }: FirmManagerProps) {
+export function FirmManager({ rows, canCreate = false, canUpdate = false }: FirmManagerProps) {
   const router = useRouter();
   const [serviceType, setServiceType] = useState(0);
   const [query, setQuery] = useState("");
@@ -97,7 +99,9 @@ export function FirmManager({ rows }: FirmManagerProps) {
             {/* 원본은 <button> 이 아니라 <span class="deskAct act" data-act="..."> 다.
                 .deskAct 에 배경/보더 리셋이 없어 button 으로 만들면 UA 기본 상자가 보인다. */}
             <div className="deskTool" id="deskTool">
-              <span className="deskAct act" data-act="add" role="button" onClick={() => setModal({ mode: "create" })}>추가</span>
+              {canCreate ? (
+                <span className="deskAct act" data-act="add" role="button" onClick={() => setModal({ mode: "create" })}>추가</span>
+              ) : null}
               <span className="deskAct act" data-act="excel" role="button" onClick={() => window.print()}>엑셀</span>
               <span className="deskAct act" data-act="print" role="button" onClick={() => window.print()}>프린트</span>
               <Link href="/fit/rate-plan" target="_blank" className="deskAct act" id="chargeLink">요금표</Link>
@@ -157,7 +161,10 @@ export function FirmManager({ rows }: FirmManagerProps) {
               </thead>
               <tbody id="deskList">
                 {visible.map((row) => (
-                  <tr key={row.fid} onClick={() => setModal({ mode: "edit", row })}>
+                  <tr
+                    key={row.fid}
+                    onClick={canUpdate ? () => setModal({ mode: "edit", row }) : undefined}
+                  >
                     <td>{row.fid}</td>
                     <td>{row.firmName}</td>
                     <td title={FIRM_CONTRACT_LABELS[row.contract]}>{FIRM_CONTRACT_LABELS[row.contract] ?? row.contract}</td>
@@ -194,7 +201,10 @@ export function FirmManager({ rows }: FirmManagerProps) {
               </thead>
               <tbody id="lowDeskList">
                 {visible.map((row) => (
-                  <tr key={row.fid} onClick={() => setModal({ mode: "edit", row })}>
+                  <tr
+                    key={row.fid}
+                    onClick={canUpdate ? () => setModal({ mode: "edit", row }) : undefined}
+                  >
                     <td>{row.fid}</td>
                     <td>{row.firmName}</td>
                     <td>{row.registTime.slice(0, 10)}</td>

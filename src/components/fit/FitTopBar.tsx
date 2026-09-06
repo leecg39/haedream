@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { FitFirmOption, FitStatusBadge } from "@/types/fit";
 import { FirmSelect } from "./FirmSelect";
@@ -58,6 +58,7 @@ interface FitTopBarProps {
 
 export function FitTopBar({ firms = [], status }: FitTopBarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { mobileOpen, toggleMobile } = useFitShell();
   const [clock, setClock] = useState<{ ymd: string; dtime: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -126,6 +127,16 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
   // 두 요소 사이 이동 중 깜빡임을 막기 위해 한 틱 지연 후 닫는다.
   const scheduleClose = () => {
     closeTimer.current = setTimeout(() => setSettingsOpen(false), 80);
+  };
+
+  const logout = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      router.replace("/fit/login");
+      router.refresh();
+    }
   };
 
   return (
@@ -243,7 +254,7 @@ export function FitTopBar({ firms = [], status }: FitTopBarProps) {
             id="appLogout"
             style={{ order: wattAdmin ? 4 : undefined }}
           >
-            <Link href="/fit/login">
+            <Link href="/fit/login" onClick={(event) => void logout(event)}>
               <i className="bi bi-door-open" role="img" aria-label="로그아웃" />
               <span className="text">로그아웃</span>
             </Link>
