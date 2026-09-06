@@ -202,18 +202,6 @@ export function acknowledgePilotAlarm(
   database?: AppDatabase,
 ): PilotAlarm {
   const db = database ?? getDb();
-  const updated = db
-    .prepare(
-      `UPDATE pilot_alarms
-       SET acknowledged_at = ?, acknowledged_by = ?
-       WHERE id = ? AND tenant_id = ? AND acknowledged_at IS NULL
-       RETURNING id, tenant_id, gateway_id, point_id, type, severity, title, message,
-                 observed_at, source, acknowledged_at, acknowledged_by, created_at`,
-    )
-    .get(new Date().toISOString(), user.id, alarmId, user.tenantId) as
-      | AlarmRow
-      | undefined;
-  if (updated) return mapAlarm(updated);
   const existing = db
     .prepare(
       `SELECT id, tenant_id, gateway_id, point_id, type, severity, title, message,
@@ -225,7 +213,23 @@ export function acknowledgePilotAlarm(
   if (!existing) {
     throw new AppError(404, "ALARM_NOT_FOUND", "알람을 찾을 수 없습니다.");
   }
-  return mapAlarm(existing);
+  if (existing.acknowledged_at) {
+    return mapAlarm(existing);
+  }
+  const stamped = new Date().toISOString();
+  db.prepare(
+    `UPDATE pilot_alarms
+     SET acknowledged_at = ?, acknowledged_by = ?
+     WHERE id = ? AND tenant_id = ? AND acknowledged_at IS NULL`,
+  ).run(stamped, user.id, alarmId, user.tenantId);
+  const updated = db
+    .prepare(
+      `SELECT id, tenant_id, gateway_id, point_id, type, severity, title, message,
+              observed_at, source, acknowledged_at, acknowledged_by, created_at
+       FROM pilot_alarms WHERE id = ?`,
+    )
+    .get(alarmId) as AlarmRow;
+  return mapAlarm(updated);
 }
 
 function loadInspectionItems(
