@@ -62,7 +62,7 @@ describe("firm integrity CRUD", () => {
       can_view_pii: number;
       can_collect: number;
     };
-    expect(flags).toEqual({ can_view_pii: 1, can_collect: 0 });
+    expect(flags).toEqual({ can_view_pii: 0, can_collect: 0 });
 
     const audit = db
       .prepare(

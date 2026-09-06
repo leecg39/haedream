@@ -292,10 +292,12 @@ export function createFirmForUser(
   }
   return db.transaction(() => {
     const firm = createFirm(input, db, user.id);
+    // 최소권한: 생성만으로 PII/수집 권한을 부여하지 않는다.
+    // 역할의 firm:pii:read 와 별도로 access.can_view_pii 가 필요하다.
     db.prepare(
       `INSERT INTO tenant_firm_access
        (tenant_id, fid, can_view_pii, can_collect, created_at)
-       VALUES (?, ?, 1, 0, ?)`,
+       VALUES (?, ?, 0, 0, ?)`,
     ).run(user.tenantId, firm.fid, new Date().toISOString());
     writeFirmAudit(db, user, firm.fid, "CREATE", requestId, null, firm);
     return firm;

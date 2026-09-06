@@ -69,7 +69,7 @@
 .firmCardMeta span{min-width:0;overflow-wrap:anywhere}
 
 @media (max-width:768px){
-  html,body{overflow-x:hidden}
+  /* 페이지 가로 넘침은 레이아웃으로 제거하고, overflow-x:hidden 으로 숨기지 않는다. */
   .firmSearchBar,.deskStat,.deskTool,.deskPages{flex-wrap:wrap}
   .deskTool{gap:.4rem}
   .firmCardList{display:grid}
