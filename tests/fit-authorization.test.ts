@@ -244,7 +244,7 @@ describe("FIT 업체·한전 접근 제어", () => {
     const access = getDb()
       .prepare("SELECT can_view_pii, can_collect FROM tenant_firm_access WHERE tenant_id = ? AND fid = ?")
       .get("121", body.data.fid);
-    expect(access).toEqual({ can_view_pii: 1, can_collect: 0 });
+    expect(access).toEqual({ can_view_pii: 0, can_collect: 0 });
   });
 
   it("demo mock API는 GET만 허용하고 익명 쓰기 메서드를 기본 거부한다", async () => {

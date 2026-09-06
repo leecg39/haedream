@@ -1,7 +1,10 @@
-import "server-only";
-
 export type EnergySource = "DEMO" | "MEASURED" | "ESTIMATED";
-export type EnergyQuality = "DEMO" | "MEASURED" | "ESTIMATED" | "STALE" | "NO_DATA";
+export type EnergyQuality =
+  | "DEMO"
+  | "MEASURED"
+  | "ESTIMATED"
+  | "STALE"
+  | "NO_DATA";
 export type EnergyUnit = "kW" | "kWh";
 
 export interface EnergyMeasurementDto {
@@ -23,4 +26,15 @@ export interface EnergySeriesDto {
   readonly points: readonly EnergyMeasurementDto[];
   readonly latestObservedAt: string | null;
   readonly quality: EnergyQuality;
+}
+
+export interface EnergyCorrectionDto {
+  readonly id: string;
+  readonly measurementId: string;
+  readonly observedAt: string;
+  readonly previousValue: number | null;
+  readonly previousSource: EnergySource;
+  readonly previousQuality: EnergyQuality;
+  readonly correctedAt: string;
+  readonly reason: string | null;
 }

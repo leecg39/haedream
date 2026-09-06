@@ -149,15 +149,17 @@ test.describe("Watt 업체관리 /firm.html", () => {
     await page.locator("#deskInput").fill(firmName);
     await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(1);
     const added = page.locator("#deskList tr[data-fid]").first();
-    await expect(added).toContainText("1234567890");
+    // 신규 생성 접근은 can_view_pii=0 → 한전번호는 마스킹되어 보인다.
+    await expect(added).toContainText("7890");
     await added.click();
     await expect(page.locator("#edit-firmName")).toHaveValue(firmName);
-    await page.locator("#edit-memo").fill("수정 확인");
+    await page.locator("#edit-serviceType").selectOption("3");
     await page.locator("#modalActDone").click();
-    await expect(page.locator("#deskList tr[data-fid]").first()).toContainText("수정 확인");
+    await expect(page.locator("#deskList tr[data-fid]").first()).toContainText(firmName);
 
     await page.locator("#deskList tr[data-fid]").first().click();
     await expect(page.locator("#edit-firmName")).toHaveValue(firmName);
+    await expect(page.locator("#edit-serviceType")).toHaveValue("3");
     await page.locator("#edit-firmName").fill("취소된 이름");
     await page.locator("#modalActCancel").click();
     await expect(page.locator("#deskList tr[data-fid]").first()).toContainText(firmName);
@@ -167,7 +169,7 @@ test.describe("Watt 업체관리 /firm.html", () => {
     await expect(page.locator("body")).toHaveAttribute("data-firm-demo-ready", "true");
     await page.locator("#deskInput").fill(firmName);
     await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(1);
-    await expect(page.locator("#deskList tr[data-fid]").first()).toContainText("수정 확인");
+    await expect(page.locator("#deskList tr[data-fid]").first()).toContainText(firmName);
   });
 
   test("엑셀·인쇄와 요금표·한전수집 화면 이동이 동작함", async ({ page, context }) => {
@@ -295,14 +297,16 @@ test.describe("/fit/firm steering", () => {
     await expect(page.locator("#deskList tr")).toHaveCount(1);
     await page.locator("#deskList tr").first().click();
     await expect(page.locator("#edit-firmName")).toHaveValue(firmName);
-    await page.locator("#edit-memo").fill("FIT 수정 메모");
+    // 신규 생성 매핑은 can_view_pii=0 이므로 memo 대신 비PII 필드로 영속을 확인한다.
+    await page.locator("#edit-serviceType").selectOption("11");
     await page.locator("#modalActDone").click();
     await expect(page.locator("#modal")).toHaveClass(/disable/);
-    await expect(page.locator("#deskList tr").first()).toContainText("FIT 수정 메모");
 
     await page.reload();
     await page.locator(".firmSearchInput").fill(firmName);
     await expect(page.locator("#deskList tr")).toHaveCount(1);
-    await expect(page.locator("#deskList tr").first()).toContainText("FIT 수정 메모");
+    await page.locator("#deskList tr").first().click();
+    await expect(page.locator("#edit-firmName")).toHaveValue(firmName);
+    await expect(page.locator("#edit-serviceType")).toHaveValue("11");
   });
 });

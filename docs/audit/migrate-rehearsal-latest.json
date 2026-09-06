@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-09-06T20:12:37.767Z",
+  "emptyDb": true,
+  "seededDb": true,
+  "externalSourceDb": null,
+  "largeDbRehearsal": "unverified",
+  "largeDbBytes": null,
+  "notes": [
+    "1.15GB-class DB copy was not provided. Pass --source-db <path> or MIGRATE_REHEARSAL_SOURCE_DB."
+  ]
+}
