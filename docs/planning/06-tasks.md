@@ -113,6 +113,9 @@
 
 ## Phase 5 — 한 업체 실데이터 흐름과 품질 표기
 
+> Phase 5 상태: 합성 measurement/quality DTO·중복 방지 기반은 `phase/5-real-data`로 병합됨.
+> 승인된 실업체 원본 대조(P5-T1)와 7일 관찰은 외부 데이터 이용 승인 후에 완료한다.
+
 - [ ] **P5-T1 승인된 업체·계측점의 원본→정규 DB 흐름 연결**
   - 담당: backend/database
   - Depends On: P4-T3
