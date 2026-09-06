@@ -1,0 +1,3 @@
+generation	best_iteration	outer_work	outer_score	status	description
+0	0	10707	0	baseline	별도 규모 고정 평가 기준선
+1	3	937	91.2487157934	keep	고정 외부 규모에서 회귀 없이 비용 감소 확인

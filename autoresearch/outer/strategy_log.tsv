@@ -1,0 +1,3 @@
+generation	evidence	strategy
+1	검수 20건에 SQL 21회; 요약에 계측 2400행 적재	N+1 제거와 전체 계측 로딩 제거 후 중복 쓰기 조회 축소
+2	outer 10707→937; summary 96.5% 감소; mapping 및 ack 미개선	필수 검수 반환량을 보존하고 매핑 전체 조회 및 알람 중복 조회에 집중

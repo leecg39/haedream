@@ -1,0 +1,90 @@
+{
+  "inner": {
+    "inspection": {
+      "queries": 2,
+      "rows": 120,
+      "work": 140,
+      "ms": 0.6754579999999919
+    },
+    "summary": {
+      "queries": 6,
+      "rows": 2425,
+      "work": 2485,
+      "ms": 2.7140420000000063
+    },
+    "mapping": {
+      "queries": 1,
+      "rows": 18,
+      "work": 28,
+      "ms": 0.057583000000022366
+    },
+    "dailyCreate": {
+      "queries": 4,
+      "rows": 2,
+      "work": 42,
+      "ms": 1.3411670000000413
+    },
+    "dailyUpdate": {
+      "queries": 4,
+      "rows": 3,
+      "work": 43,
+      "ms": 0.8292500000000018
+    },
+    "ack": {
+      "queries": 3,
+      "rows": 2,
+      "work": 32,
+      "ms": 0.20554099999998243
+    },
+    "ackAgain": {
+      "queries": 1,
+      "rows": 1,
+      "work": 11,
+      "ms": 0.04454199999997854
+    }
+  },
+  "outer": {
+    "inspection": {
+      "queries": 2,
+      "rows": 600,
+      "work": 620,
+      "ms": 0.6317090000000007
+    },
+    "summary": {
+      "queries": 6,
+      "rows": 8833,
+      "work": 8893,
+      "ms": 6.3169169999999895
+    },
+    "mapping": {
+      "queries": 1,
+      "rows": 66,
+      "work": 76,
+      "ms": 0.06004200000000992
+    },
+    "dailyCreate": {
+      "queries": 4,
+      "rows": 2,
+      "work": 42,
+      "ms": 0.22845799999998917
+    },
+    "dailyUpdate": {
+      "queries": 4,
+      "rows": 3,
+      "work": 43,
+      "ms": 0.16124999999999545
+    },
+    "ack": {
+      "queries": 3,
+      "rows": 2,
+      "work": 32,
+      "ms": 0.07474999999999454
+    },
+    "ackAgain": {
+      "queries": 1,
+      "rows": 1,
+      "work": 11,
+      "ms": 0.02954099999999471
+    }
+  }
+}

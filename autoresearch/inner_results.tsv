@@ -1,0 +1,6 @@
+# metric_direction: lower_is_better
+iteration	commit	metric	delta	guard	status	description
+0	4c42a1f	2971	0	pass	baseline	고정 워크로드 초기 측정
+1	7fda269	2781	-190	pass	keep	선택된 검수의 항목을 일괄 조회하여 N+1 제거
+2	dfe92b1	382	-2399	pass	keep	운영 요약의 계측 전체 로딩을 최근 시각 한 행 조회로 교체
+3	a7d20df	361	-21	pass	keep	일일 확인 UPSERT 전 중복 존재 조회 제거

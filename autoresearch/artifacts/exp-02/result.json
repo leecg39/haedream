@@ -1,0 +1,104 @@
+{
+  "id": "exp-02",
+  "commit": "dfe92b16da376481e682b84bc4ea59d44e3e3ef0",
+  "targetHash": "4fe0a87cfb1e2747eb0e3cbefb38325ebf69f2bbdeb1623a9007ab7e7b3bcd0b",
+  "frozenHash": "b68aed3ac439ba829692c5b6b84827082de8447fa96312a377d2dfd917ba8a07",
+  "verify": true,
+  "guards": {
+    "test": true,
+    "typecheck": true,
+    "lint": true
+  },
+  "inner": 382,
+  "outer": 958,
+  "metrics": {
+    "inner": {
+      "inspection": {
+        "queries": 2,
+        "rows": 120,
+        "work": 140,
+        "ms": 0.6953329999999482
+      },
+      "summary": {
+        "queries": 6,
+        "rows": 26,
+        "work": 86,
+        "ms": 1.0016669999999976
+      },
+      "mapping": {
+        "queries": 1,
+        "rows": 18,
+        "work": 28,
+        "ms": 0.05320799999998371
+      },
+      "dailyCreate": {
+        "queries": 4,
+        "rows": 2,
+        "work": 42,
+        "ms": 1.4714579999999842
+      },
+      "dailyUpdate": {
+        "queries": 4,
+        "rows": 3,
+        "work": 43,
+        "ms": 0.4990829999999846
+      },
+      "ack": {
+        "queries": 3,
+        "rows": 2,
+        "work": 32,
+        "ms": 0.17104199999999992
+      },
+      "ackAgain": {
+        "queries": 1,
+        "rows": 1,
+        "work": 11,
+        "ms": 0.04425000000003365
+      }
+    },
+    "outer": {
+      "inspection": {
+        "queries": 2,
+        "rows": 600,
+        "work": 620,
+        "ms": 0.6534169999999904
+      },
+      "summary": {
+        "queries": 6,
+        "rows": 74,
+        "work": 134,
+        "ms": 0.3277909999999906
+      },
+      "mapping": {
+        "queries": 1,
+        "rows": 66,
+        "work": 76,
+        "ms": 0.0629170000000272
+      },
+      "dailyCreate": {
+        "queries": 4,
+        "rows": 2,
+        "work": 42,
+        "ms": 0.28899999999998727
+      },
+      "dailyUpdate": {
+        "queries": 4,
+        "rows": 3,
+        "work": 43,
+        "ms": 0.286042000000009
+      },
+      "ack": {
+        "queries": 3,
+        "rows": 2,
+        "work": 32,
+        "ms": 0.08949999999998681
+      },
+      "ackAgain": {
+        "queries": 1,
+        "rows": 1,
+        "work": 11,
+        "ms": 0.027916000000004715
+      }
+    }
+  }
+}
