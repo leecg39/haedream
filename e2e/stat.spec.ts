@@ -95,7 +95,16 @@ test.describe("통합관제 클론", () => {
       items.map((item) => item.getAttribute("data-fid")),
     );
     expect(updatedOrder).not.toEqual(initialOrder);
-    await expect(probeRow.locator("[data-stat-power]")).not.toHaveText(initialPower ?? "");
+    // 행이 재렌더되므로 fid 기준으로 다시 조회한다. 전력값은 틱마다 바뀔 때까지 대기한다.
+    await expect
+      .poll(
+        async () =>
+          page
+            .locator(`#firmList .dataRow[data-fid="${probeFid}"] [data-stat-power]`)
+            .textContent(),
+        { timeout: 15_000 },
+      )
+      .not.toBe(initialPower);
     await expect(panel).not.toHaveAttribute("data-live-order", "source");
   });
 

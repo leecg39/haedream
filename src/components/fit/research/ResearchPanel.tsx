@@ -13,6 +13,18 @@ interface KepcoFirmStatus {
   lastStatus: "success" | "no_credentials" | "login_failed" | "error" | null;
   lastMessage: string | null;
   lastCollectedAt: string | null;
+  activeJobStatus?: "QUEUED" | "RUNNING" | null;
+  lastJobAt?: string | null;
+}
+
+interface CollectionJobDto {
+  jobId: string;
+  fid: number;
+  status: "QUEUED" | "RUNNING" | "SUCCEEDED" | "PARTIAL" | "FAILED" | "CANCELLED";
+  errorCode: string | null;
+  errorMessage: string | null;
+  resultSummary: string | null;
+  jobFinishedAt: string | null;
 }
 
 interface KepcoFirmData {
@@ -38,6 +50,15 @@ const STATUS_LABEL: Record<NonNullable<KepcoFirmStatus["lastStatus"]>, string> =
   error: "수집 오류",
 };
 
+const JOB_STATUS_LABEL: Record<CollectionJobDto["status"], string> = {
+  QUEUED: "요청 접수",
+  RUNNING: "수집 중",
+  SUCCEEDED: "완료",
+  PARTIAL: "부분 성공",
+  FAILED: "실패",
+  CANCELLED: "취소",
+};
+
 function formatCollectedAt(iso: string | null) {
   if (!iso) return "미수집";
   const date = new Date(iso);
@@ -51,9 +72,13 @@ function isCollectedToday(iso: string | null) {
   return new Date(iso).toLocaleDateString("sv-SE", options) === new Date().toLocaleDateString("sv-SE", options);
 }
 
-function collectionStatusLabel(selected: KepcoFirmStatus | null) {
+function collectionStatusLabel(selected: KepcoFirmStatus | null, collecting: boolean) {
+  if (collecting || selected?.activeJobStatus === "QUEUED") return "요청 접수";
+  if (selected?.activeJobStatus === "RUNNING") return "수집 중";
   if (!selected?.lastStatus) return "미수집";
-  if (selected.lastStatus === "success" && !isCollectedToday(selected.lastCollectedAt)) return "갱신 필요";
+  if (selected.lastStatus === "success" && !isCollectedToday(selected.lastCollectedAt)) {
+    return "데이터 지연";
+  }
   return STATUS_LABEL[selected.lastStatus];
 }
 
@@ -194,14 +219,28 @@ export function ResearchPanel({ canCollect = false }: { readonly canCollect?: bo
       const res = await fetch("/api/kepco/collect", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ fid: selectedFid }),
+        body: JSON.stringify({ fid: selectedFid, mode: "single" }),
       });
-      const data = await readProtectedData<Array<{ status: string; message: string }>>(
+      const accepted = await readProtectedData<CollectionJobDto>(
         res,
         "한전 수집 요청을 처리하지 못했습니다.",
       );
-      const result = data[0];
-      setCollectMessage(result ? `${STATUS_LABEL[result.status as keyof typeof STATUS_LABEL] ?? result.status}: ${result.message}` : null);
+      setCollectMessage(`${JOB_STATUS_LABEL[accepted.status]}: 작업 ${accepted.jobId.slice(0, 8)}…`);
+
+      let job = accepted;
+      for (let attempt = 0; attempt < 60; attempt += 1) {
+        if (!["QUEUED", "RUNNING"].includes(job.status)) break;
+        await new Promise((resolve) => window.setTimeout(resolve, 400));
+        const poll = await fetch(`/api/kepco/jobs/${job.jobId}`, { cache: "no-store" });
+        job = await readProtectedData<CollectionJobDto>(
+          poll,
+          "수집 작업 상태를 확인하지 못했습니다.",
+        );
+        setCollectMessage(
+          `${JOB_STATUS_LABEL[job.status]}${job.errorMessage ? `: ${job.errorMessage}` : job.resultSummary ? `: ${job.resultSummary}` : ""}`,
+        );
+      }
+
       const firms = await loadStatus();
       setFirms(firms);
       setFirmData(await loadFirmData(selectedFid));
@@ -257,7 +296,7 @@ export function ResearchPanel({ canCollect = false }: { readonly canCollect?: bo
           <span className="researchInfoText" data-name="kepcoPasswd">{selected?.hasPasswd ? "••••••••" : "미등록"}</span>
           <span className="researchLabel">스케줄 상태</span>
           <span className="researchInfoText" data-name="kepcoStatus">
-            {collecting ? "수집 중…" : collectionStatusLabel(selected)}
+            {collectionStatusLabel(selected, collecting)}
           </span>
           <span className="researchInfoText" data-name="kepcoTime">{formatCollectedAt(selected?.lastCollectedAt ?? null)}</span>
           {canCollect ? (

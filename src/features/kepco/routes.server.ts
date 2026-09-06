@@ -5,9 +5,15 @@ import {
   findFirmForCollection,
   listFirmsForUser,
 } from "@/features/firms/repository";
+import {
+  enqueueSingleCollectJob,
+  findActiveCollectionJob,
+  getCollectionJobForUser,
+  processQueuedJobs,
+  toJobPublicDto,
+} from "@/features/kepco/jobs.repository";
 import { requirePermission } from "@/lib/auth";
 import { isKepcoBatchActive } from "@/lib/kepco/batch-lock.server";
-import { collectFirms } from "@/lib/kepco/collect";
 import { getKepcoPassword } from "@/lib/kepco/credentials.server";
 import { getDb } from "@/lib/db";
 import { AppError } from "@/lib/errors";
@@ -21,9 +27,8 @@ import {
 
 const collectSchema = z.strictObject({
   fid: z.number().int().nonnegative(),
+  mode: z.literal("single").default("single"),
 });
-
-const activeFirmCollections = new Set<string>();
 
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, {
@@ -81,18 +86,37 @@ function listKepcoStatus(
       .filter((row) => accessible.has(row.fid))
       .map((row) => [row.fid, row]),
   );
+  const activeJobs = db
+    .prepare(
+      `SELECT fid, status, finished_at, updated_at
+       FROM collection_jobs
+       WHERE tenant_id = ? AND status IN ('QUEUED', 'RUNNING')`,
+    )
+    .all(tenantId) as Array<{
+      fid: number;
+      status: string;
+      finished_at: string | null;
+      updated_at: string;
+    }>;
+  const activeByFid = new Map(activeJobs.map((row) => [row.fid, row]));
 
   return firms
     .filter((row) => String(row.kepcoNo ?? "").trim() !== "")
-    .map((row) => ({
-      fid: row.fid,
-      firmName: row.firmName,
-      kepcoNo: row.kepcoNo,
-      hasPasswd: Boolean(getKepcoPassword(row.fid)),
-      lastStatus: logByFid.get(row.fid)?.status ?? null,
-      lastMessage: logByFid.get(row.fid)?.message ?? null,
-      lastCollectedAt: summaryByFid.get(row.fid)?.collected_at ?? null,
-    }));
+    .map((row) => {
+      const active = activeByFid.get(row.fid);
+      return {
+        fid: row.fid,
+        firmName: row.firmName,
+        kepcoNo: row.kepcoNo,
+        hasPasswd: Boolean(getKepcoPassword(row.fid)),
+        lastStatus: logByFid.get(row.fid)?.status ?? null,
+        lastMessage: logByFid.get(row.fid)?.message ?? null,
+        lastCollectedAt: summaryByFid.get(row.fid)?.collected_at ?? null,
+        activeJobStatus: active?.status ?? null,
+        // 작업 종료 시각과 최신 측정 시각을 분리한다.
+        lastJobAt: logByFid.get(row.fid)?.finished_at ?? null,
+      };
+    });
 }
 
 function getKepcoFirmData(fid: number, requestedMonth: string | null) {
@@ -167,7 +191,14 @@ function getKepcoFirmData(fid: number, requestedMonth: string | null) {
   };
 }
 
-async function collectSingleFirm(request: NextRequest) {
+function shouldRunInlineWorker() {
+  if (process.env.KEPCO_INLINE_WORKER === "0") return false;
+  if (process.env.KEPCO_INLINE_WORKER === "1") return true;
+  // 테스트·로컬에서는 별도 worker 없이 큐를 비운다. 운영은 worker 프로세스를 쓴다.
+  return process.env.NODE_ENV !== "production";
+}
+
+async function enqueueCollect(request: NextRequest, requestTraceId: string) {
   const user = requirePermission(request, "kepco:collect");
   assertSameOrigin(request);
   const body = collectSchema.parse(await readJson(request));
@@ -181,28 +212,25 @@ async function collectSingleFirm(request: NextRequest) {
     );
   }
 
-  const lockKey = `${user.tenantId}:${body.fid}`;
-  if (activeFirmCollections.has(lockKey)) {
+  const existing = findActiveCollectionJob(user.tenantId, target.fid);
+  if (existing) {
     throw new AppError(
       409,
       "KEPCO_FIRM_COLLECTION_ACTIVE",
       "이 업체의 한전 수집이 이미 진행 중입니다.",
     );
   }
-  activeFirmCollections.add(lockKey);
-  try {
-    await Promise.resolve();
-    return await collectFirms([
-      {
-        fid: target.fid,
-        kepcoNo: target.kepcoNo,
-        kepcoPasswd: getKepcoPassword(target.fid),
-        checkDay: target.checkDay,
-      },
-    ]);
-  } finally {
-    activeFirmCollections.delete(lockKey);
+
+  const job = enqueueSingleCollectJob(user, target.fid, requestTraceId);
+  if (shouldRunInlineWorker()) {
+    // 응답 이후에 실행되도록 스케줄한다. 호출자는 202 만 받는다.
+    queueMicrotask(() => {
+      void processQueuedJobs(1).catch((error) => {
+        console.error("inline kepco worker failed", error);
+      });
+    });
   }
+  return job;
 }
 
 export async function handleKepcoRoute(
@@ -238,12 +266,24 @@ export async function handleKepcoRoute(
       });
     }
 
+    const jobMatch = joined.match(/^kepco\/jobs\/([0-9a-f-]{36})$/i);
+    if (jobMatch) {
+      if (method !== "GET") {
+        requirePermission(request, "kepco:collect");
+        methodNotAllowed();
+      }
+      const user = requirePermission(request, "kepco:read");
+      const job = getCollectionJobForUser(user, jobMatch[1]!);
+      return json({ cat: 1, data: toJobPublicDto(job) });
+    }
+
     if (joined === "kepco/collect") {
       if (method !== "POST") {
         requirePermission(request, "kepco:collect");
         methodNotAllowed();
       }
-      return json({ cat: 1, data: await collectSingleFirm(request) });
+      const job = await enqueueCollect(request, id);
+      return json({ cat: 1, data: toJobPublicDto(job) }, 202);
     }
 
     requirePermission(
