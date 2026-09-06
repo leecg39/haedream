@@ -444,15 +444,7 @@ export function upsertDailyConfirmation(
   }
 
   const now = new Date().toISOString();
-  const existing = getDailyConfirmation(
-    {
-      tenantId: user.tenantId,
-      gatewayId: parsed.gatewayId,
-      confirmDate,
-    },
-    db,
-  );
-  const id = existing?.id ?? randomUUID();
+  const id = randomUUID();
   db.prepare(
     `INSERT INTO pilot_daily_confirmations
      (id, tenant_id, gateway_id, confirm_date, reception_ok, alarm_reviewed,
