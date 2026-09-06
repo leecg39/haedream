@@ -26,6 +26,7 @@ import { SESSION_COOKIE } from "@/lib/auth";
 import { closeDatabasesForTests, getDb, openDatabase } from "@/lib/db";
 import { clearRateLimitsForTests } from "@/lib/http";
 import { seedDatabase } from "@/lib/seed";
+import { processQueuedJobs } from "@/features/kepco/jobs.repository";
 
 const origin = "http://localhost";
 
@@ -84,6 +85,7 @@ describe("FIT 업체·한전 접근 제어", () => {
     directory = mkdtempSync(path.join(tmpdir(), "solarsimz-fit-auth-"));
     process.env.DATABASE_PATH = path.join(directory, "fit-auth.db");
     process.env.RATE_LIMIT_DISABLED = "true";
+    process.env.KEPCO_INLINE_WORKER = "0";
     const db = openDatabase(process.env.DATABASE_PATH);
     seedDatabase(db);
     const now = new Date().toISOString();
@@ -359,42 +361,42 @@ describe("FIT 업체·한전 접근 제어", () => {
     expect(await errorCode(denied)).toBe("FIRM_ACCESS_DENIED");
   });
 
-  it("VIEWER 수집은 malformed 본문도 403이며 수집 로그를 만들지 않는다", async () => {
+  it("VIEWER 수집은 malformed 본문도 403이며 작업을 만들지 않는다", async () => {
     const db = getDb();
-    const before = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const before = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     const response = await catchAllPOST(
       request("/api/kepco/collect", "POST", viewerCookie, undefined, "{malformed"),
       routeFor("/api/kepco/collect"),
     );
     expect(response.status).toBe(403);
     expect(await errorCode(response)).toBe("FORBIDDEN");
-    const after = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const after = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     expect(after).toBe(before);
   });
 
   it("빈 수집 본문은 전체 배치로 승격되지 않고 422이며 부수 효과가 없다", async () => {
     const db = getDb();
-    const before = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const before = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     const response = await catchAllPOST(
       request("/api/kepco/collect", "POST", operatorCookie, {}),
       routeFor("/api/kepco/collect"),
     );
     expect(response.status).toBe(422);
     expect(await errorCode(response)).toBe("VALIDATION_ERROR");
-    const after = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const after = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     expect(after).toBe(before);
   });
 
-  it("매핑되지 않은 업체 수집은 403이며 수집 로그를 만들지 않는다", async () => {
+  it("매핑되지 않은 업체 수집은 403이며 작업을 만들지 않는다", async () => {
     const db = getDb();
-    const before = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const before = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     const response = await catchAllPOST(
       request("/api/kepco/collect", "POST", operatorCookie, { fid: 303 }),
       routeFor("/api/kepco/collect"),
     );
     expect(response.status).toBe(403);
     expect(await errorCode(response)).toBe("FIRM_ACCESS_DENIED");
-    const after = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const after = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     expect(after).toBe(before);
   });
 
@@ -407,26 +409,39 @@ describe("FIT 업체·한전 접근 제어", () => {
     expect(await errorCode(response)).toBe("FIRM_COLLECTION_DENIED");
   });
 
-  it("허가된 OPERATOR 단일 수집은 전체 업체가 아닌 해당 fid 하나만 처리한다", async () => {
+  it("허가된 OPERATOR 단일 수집은 202 작업만 만들고 worker 가 해당 fid 만 처리한다", async () => {
     const db = getDb();
-    const before = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const beforeJobs = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
+    const beforeLogs = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
     const response = await catchAllPOST(
-      request("/api/kepco/collect", "POST", operatorCookie, { fid: 101 }),
+      request("/api/kepco/collect", "POST", operatorCookie, { fid: 101, mode: "single" }),
       routeFor("/api/kepco/collect"),
     );
-    expect(response.status).toBe(200);
-    const body = (await response.json()) as { data: Array<{ fid: number; status: string }> };
-    expect(body.data).toHaveLength(1);
-    expect(body.data[0]).toMatchObject({ fid: 101, status: "no_credentials" });
+    expect(response.status).toBe(202);
+    const body = (await response.json()) as { data: { jobId: string; fid: number; status: string } };
+    expect(body.data).toMatchObject({ fid: 101, status: "QUEUED" });
+    expect(body.data.jobId).toMatch(/^[0-9a-f-]{36}$/i);
+    expect(
+      (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count - beforeJobs,
+    ).toBe(1);
+
+    await processQueuedJobs(5);
+    const job = db
+      .prepare("SELECT status, failure_count, error_code FROM collection_jobs WHERE id = ?")
+      .get(body.data.jobId) as { status: string; failure_count: number; error_code: string };
+    expect(job.status).toBe("FAILED");
+    expect(job.error_code).toBe("NO_CREDENTIALS");
     const logs = db
-      .prepare("SELECT fid FROM kepco_collect_log ORDER BY id DESC LIMIT ?")
-      .all((db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count - before) as Array<{ fid: number }>;
-    expect(logs).toEqual([{ fid: 101 }]);
+      .prepare("SELECT fid, status FROM kepco_collect_log ORDER BY id DESC LIMIT ?")
+      .all(
+        (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count - beforeLogs,
+      ) as Array<{ fid: number; status: string }>;
+    expect(logs).toEqual([{ fid: 101, status: "no_credentials" }]);
   });
 
-  it("같은 업체의 동시 수집은 하나만 실행하고 나머지는 409로 거부한다", async () => {
+  it("같은 업체의 동시 수집은 활성 작업 하나만 만들고 나머지는 409로 거부한다", async () => {
     const db = getDb();
-    const before = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const before = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     const responses = await Promise.all([
       catchAllPOST(
         request("/api/kepco/collect", "POST", operatorCookie, { fid: 101 }),
@@ -437,9 +452,10 @@ describe("FIT 업체·한전 접근 제어", () => {
         routeFor("/api/kepco/collect"),
       ),
     ]);
-    expect(responses.map((response) => response.status).sort()).toEqual([200, 409]);
-    const after = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    expect(responses.map((response) => response.status).sort()).toEqual([202, 409]);
+    const after = (db.prepare("SELECT COUNT(*) AS count FROM collection_jobs").get() as { count: number }).count;
     expect(after - before).toBe(1);
+    await processQueuedJobs(5);
   });
 
   it("업체별 수집 속도 제한은 권한·본문·범위 검사 뒤 적용된다", async () => {
@@ -452,8 +468,10 @@ describe("FIT 업체·한전 접근 제어", () => {
           request("/api/kepco/collect", "POST", operatorCookie, { fid: 101 }),
           routeFor("/api/kepco/collect"),
         ));
+        // 활성 작업을 비워 다음 요청이 중복 409 가 아니라 rate limit 경로를 타게 한다.
+        await processQueuedJobs(5);
       }
-      expect(responses.slice(0, 5).every((response) => response.status === 200)).toBe(true);
+      expect(responses.slice(0, 5).every((response) => response.status === 202)).toBe(true);
       expect(responses[5]?.status).toBe(429);
       expect(await errorCode(responses[5]!)).toBe("RATE_LIMITED");
     } finally {

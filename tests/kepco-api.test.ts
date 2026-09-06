@@ -8,6 +8,7 @@ import { GET, POST } from "@/app/api/[...path]/route";
 import { GET as firmGET } from "@/app/api/firm/route";
 import { SESSION_COOKIE } from "@/lib/auth";
 import { seedDatabase } from "@/lib/seed";
+import { processQueuedJobs } from "@/features/kepco/jobs.repository";
 
 const origin = "http://localhost";
 
@@ -36,6 +37,7 @@ describe("kepco API", () => {
     process.env.DATABASE_PATH = path.join(tempDir, "test.db");
     process.env.KEPCO_BATCH_LOCK_PATH = path.join(tempDir, "kepco-pipeline.lock");
     process.env.RATE_LIMIT_DISABLED = "true";
+    process.env.KEPCO_INLINE_WORKER = "0";
     const db = getDb();
     seedDatabase(db);
     const insertFirm = db.prepare(
@@ -127,16 +129,21 @@ describe("kepco API", () => {
     }
   });
 
-  it("POST /api/kepco/collect — 고객번호 없는 업체는 no_credentials", async () => {
+  it("POST /api/kepco/collect — 고객번호 없는 업체는 작업 실패(NO_CREDENTIALS)로 기록된다", async () => {
     const res = await POST(
       request("/api/kepco/collect", "POST", { fid: 1655 }, operatorCookie),
       routeFor("/api/kepco/collect"),
     );
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(202);
     const body = await res.json();
-    expect(body.data[0].status).toBe("no_credentials");
+    expect(body.data.status).toBe("QUEUED");
+    await processQueuedJobs(5);
 
     const db = getDb();
+    const job = db
+      .prepare("SELECT status, error_code FROM collection_jobs WHERE id = ?")
+      .get(body.data.jobId) as { status: string; error_code: string };
+    expect(job).toMatchObject({ status: "FAILED", error_code: "NO_CREDENTIALS" });
     const log = db
       .prepare("SELECT status FROM kepco_collect_log WHERE fid = 1655 ORDER BY id DESC LIMIT 1")
       .get() as { status: string };
