@@ -146,19 +146,19 @@
 
 ## Phase 7 — CI·마이그레이션·백업·운영 감시
 
-- [ ] **P7-T1 PR 품질 검사와 보안 스캔 CI 구성**
+- [x] **P7-T1 PR 품질 검사와 보안 스캔 CI 구성**
   - 담당: devops/test
   - Depends On: P2-T3
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-7-operations`
   - Branch: `phase/7-operations`
   - 완료 기준: lint, typecheck, unit/API, build, 핵심 E2E, 정보 노출 검사, 의존성 감사가 PR에서 자동 실행된다.
 
-- [ ] **P7-T2 마이그레이션 리허설과 백업 복구 자동화**
+- [x] **P7-T2 마이그레이션 리허설과 백업 복구 자동화**
   - 담당: database/devops
   - Depends On: P5-T3
   - 완료 기준: 운영 DB 사본 마이그레이션, 백업 무결성, 복구 후 핵심 데이터 대조가 재현 가능하다.
 
-- [ ] **P7-T3 수집 지연·실패·스케줄 누락 감시**
+- [x] **P7-T3 수집 지연·실패·스케줄 누락 감시**
   - 담당: backend/devops
   - Depends On: P4-T3
   - 완료 기준: 마지막 실행, 최신 측정, 연속 실패, 지연 임계치가 기록되고 시험 경고·복구가 검증된다.
