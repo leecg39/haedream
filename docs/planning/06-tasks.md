@@ -75,19 +75,19 @@
 
 ## Phase 3 — 업체 DB 단일 원본과 수정 영속화
 
-- [ ] **P3-T1 업체 무결성·버전·감사 마이그레이션**
+- [x] **P3-T1 업체 무결성·버전·감사 마이그레이션**
   - 담당: database/backend
   - Depends On: P2-T3
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-3-firm-crud`
   - Branch: `phase/3-firm-crud`
   - 완료 기준: 버전, 작성·수정 주체/시각, 접근 매핑 생성이 트랜잭션으로 보장된다.
 
-- [ ] **P3-T2 업체 목록·상세·생성·수정 API 완성**
+- [x] **P3-T2 업체 목록·상세·생성·수정 API 완성**
   - 담당: backend
   - Depends On: P3-T1
   - 완료 기준: strict 입력, 허용 필드, 409 충돌, 권한 거부 무변경, 감사 기록이 검증된다.
 
-- [ ] **P3-T3 FIT/ABC 업체 UI를 DB 원본에 연결**
+- [x] **P3-T3 FIT/ABC 업체 UI를 DB 원본에 연결**
   - 담당: frontend
   - Depends On: P3-T2
   - 완료 기준: 등록·수정 결과가 새로고침, 재로그인, 다른 브라우저, 시험 서버 재시작 후 유지된다.
