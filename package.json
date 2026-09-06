@@ -31,7 +31,8 @@
     "ops:monitor-kepco": "node scripts/monitor-collection-jobs.mjs",
     "ops:import-measurements": "node scripts/import-measurement-csv.mjs",
     "ops:audit-migration-011": "node scripts/audit-migration-011.mjs",
-    "ops:verify-webhook-config": "node scripts/verify-webhook-config.mjs"
+    "ops:verify-webhook-config": "node scripts/verify-webhook-config.mjs",
+    "ops:synth-rehearsal": "node scripts/ops-synthetic-readiness-rehearsal.mjs"
   },
   "dependencies": {
     "agentation": "^3.0.2",

@@ -184,4 +184,23 @@ describe("ops readiness prep scripts", () => {
     expect(ok.stdout).not.toContain(secret);
     expect(ok.stdout).not.toContain("https://alerts.example.com/hook");
   });
+
+  it("ops-synthetic-readiness-rehearsal completes A/D/E synthetic path", () => {
+    const reportPath = path.join(directory, "synth-ops.json");
+    const result = runNode("scripts/ops-synthetic-readiness-rehearsal.mjs", [
+      "--report",
+      reportPath,
+    ]);
+    expect(result.status, result.stderr || result.stdout).toBe(0);
+    const summary = JSON.parse(result.stdout);
+    expect(summary.ok).toBe(true);
+    expect(summary.applyInserted).toBeGreaterThan(0);
+    expect(summary.reapplyUnchanged).toBeGreaterThan(0);
+    expect(summary.reconcileMismatch).toBe(0);
+    const report = JSON.parse(readFileSync(reportPath, "utf8"));
+    expect(report.notRealCustomerData).toBe(true);
+    expect(report.steps.reapply.ingestedAtUnchanged).toBe(true);
+    expect(report.steps.audit011.migration011Applied).toBe(true);
+    expect(JSON.stringify(report)).not.toMatch(/solarsimz\.db/);
+  });
 });

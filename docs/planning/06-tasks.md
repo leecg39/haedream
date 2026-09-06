@@ -127,6 +127,7 @@
   - Branch: `phase/5-real-data`
   - 완료 기준: 승인 원본과 DB·집계·화면 값을 대조할 수 있고 재처리해도 중복이 없다.
   - 내부 진행(Phase 8): `npm run ops:import-measurements` + 합성 CSV. dry-run/reconcile 은 hot sidecar 거부·temp 복사본 readonly(원본 불변), apply 는 fileMustExist fail-closed. unchanged write-skip. **실데이터 대조는 미완(외부 blocker).**
+  - 준비(2026-09-07 pass2): `npm run ops:synth-rehearsal` — 합성 dry-run/apply/reconcile/reapply + Day0 monitor + 011 audit 증거(`docs/audit/2026-09-07-synthetic-ops-rehearsal.json`). P5-T1 체크 금지.
 
 - [ ] **P5-T2 출처·측정/수신 시각·품질 DTO 적용**
   - 담당: backend/frontend

@@ -47,6 +47,11 @@ export function resolveDatabasePath() {
 
 export function migrate() {
   const databasePath = resolveDatabasePath();
+  if (!process.env.DATABASE_PATH) {
+    console.warn(
+      `[migrate] DATABASE_PATH unset; using default ${databasePath}. Set DATABASE_PATH explicitly for ops/offline targets.`,
+    );
+  }
   mkdirSync(path.dirname(databasePath), { recursive: true });
   const db = new Database(databasePath, { timeout: 10_000 });
   db.pragma("busy_timeout = 10000");

@@ -1,0 +1,64 @@
+{
+  "kind": "synthetic-ops-rehearsal",
+  "notRealCustomerData": true,
+  "checkedAt": "2026-09-06T23:06:11.506Z",
+  "baseCommitHint": "see git HEAD at run time",
+  "csvBasename": "sample-approved-synthetic.csv",
+  "csvSha256": "79faf234dd61048e501b8e47f6d6d1722df5dfe5d25401d9a6bee238cc24eed0",
+  "fid": 101,
+  "calculationVersion": "synth-v1",
+  "steps": {
+    "dryRun": {
+      "ok": true,
+      "inserted": 4,
+      "corrected": 0,
+      "unchanged": 0,
+      "rejected": 0,
+      "rowCount": 4
+    },
+    "apply": {
+      "ok": true,
+      "inserted": 4,
+      "corrected": 0,
+      "unchanged": 0,
+      "rejected": 0,
+      "rowCount": 4
+    },
+    "reconcile": {
+      "ok": true,
+      "mismatchCount": 0
+    },
+    "reapply": {
+      "ok": true,
+      "inserted": 0,
+      "corrected": 0,
+      "unchanged": 4,
+      "rejected": 0,
+      "rowCount": 4,
+      "ingestedAtUnchanged": true,
+      "measurementCount": 4
+    },
+    "monitorDay0": {
+      "ok": true,
+      "exitStatus": 0,
+      "alertDelivered": false,
+      "alertReason": "no_alert",
+      "queueStall": 0,
+      "staleRunning": 0,
+      "failureStreakCount": 0
+    },
+    "audit011": {
+      "ok": true,
+      "migration011Applied": true,
+      "orphanCollectionJobs": 0,
+      "orphanEnergyMeasurements": 0,
+      "stopRecommended": false
+    }
+  },
+  "ok": true,
+  "notes": [
+    "Does not satisfy P5-T1 / P7-T3 / external E; synthetic only",
+    "Uses isolated temp offline DB only (never the default live path)"
+  ],
+  "runId": "6682d8eb-3b50-4f72-b3ec-2c50c490f6f3"
+}
