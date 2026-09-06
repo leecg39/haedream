@@ -5,13 +5,13 @@
  * 사용: node scripts/monitor-collection-jobs.mjs
  * 환경:
  *   DATABASE_PATH
- *   KEPCO_STALE_MINUTES (기본 30)
- *   KEPCO_FAIL_STREAK (기본 3)
- *   KEPCO_QUEUE_STALL_MINUTES (기본 20)
+ *   KEPCO_STALE_MINUTES (기본 30, 유한 비음수)
+ *   KEPCO_FAIL_STREAK (기본 3, 유한 비음수)
+ *   KEPCO_QUEUE_STALL_MINUTES (기본 20, 유한 비음수)
  *   KEPCO_ALERT_SINK=file|none (기본 none; file 은 KEPCO_ALERT_PATH)
  *   KEPCO_ALERT_PATH (file sink 경로)
  *
- * 종료 코드: 정상 0, 임계 위반 2
+ * 종료 코드: 정상 0, 임계 위반 2, 설정 오류 1
  *
  * 실제 webhook HTTP 송신은 하지 않는다. 시험은 injectable/local file sink 를 쓴다.
  */
@@ -20,10 +20,32 @@ import { appendFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+function requireNonNegativeNumber(name, raw, fallback) {
+  if (raw === undefined || raw === "") return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) {
+    console.error(`[monitor] invalid ${name}=${JSON.stringify(raw)} (need finite >= 0)`);
+    process.exit(1);
+  }
+  return value;
+}
+
 const dbPath = path.resolve(process.env.DATABASE_PATH ?? "data/app.db");
-const staleMinutes = Number(process.env.KEPCO_STALE_MINUTES ?? 30);
-const failStreak = Number(process.env.KEPCO_FAIL_STREAK ?? 3);
-const queueStallMinutes = Number(process.env.KEPCO_QUEUE_STALL_MINUTES ?? 20);
+const staleMinutes = requireNonNegativeNumber(
+  "KEPCO_STALE_MINUTES",
+  process.env.KEPCO_STALE_MINUTES,
+  30,
+);
+const failStreak = requireNonNegativeNumber(
+  "KEPCO_FAIL_STREAK",
+  process.env.KEPCO_FAIL_STREAK,
+  3,
+);
+const queueStallMinutes = requireNonNegativeNumber(
+  "KEPCO_QUEUE_STALL_MINUTES",
+  process.env.KEPCO_QUEUE_STALL_MINUTES,
+  20,
+);
 
 const db = new Database(dbPath, { readonly: true, fileMustExist: true });
 const now = Date.now();
@@ -50,7 +72,8 @@ const queueStall = db
   )
   .get(stallCutoff).count;
 
-const lastScheduledRun =
+/** 모든 job 의 마지막 활동 시각(시작 또는 생성). 스케줄 전용 시각이 아니다. */
+const lastJobActivityAt =
   db
     .prepare(
       `SELECT MAX(COALESCE(started_at, created_at)) AS at
@@ -120,7 +143,7 @@ for (const [fid, rows] of byFid.entries()) {
 
 const report = {
   checkedAt: new Date().toISOString(),
-  lastScheduledRun,
+  lastJobActivityAt,
   latestSuccessfulCollection,
   latestMeasurement,
   queued,
