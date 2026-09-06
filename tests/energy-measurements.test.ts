@@ -34,6 +34,11 @@ describe("energy measurements quality boundary", () => {
     db.prepare(
       "INSERT OR REPLACE INTO firms (fid, seq, firm_name) VALUES (101, 1, '품질 업체')",
     ).run();
+    db.prepare(
+      `INSERT OR REPLACE INTO tenant_firm_access
+       (tenant_id, fid, can_view_pii, can_collect, created_at)
+       VALUES (?, 101, 1, 1, ?)`,
+    ).run(tenantId, new Date().toISOString());
   });
 
   afterEach(() => {
@@ -238,6 +243,21 @@ describe("energy measurements quality boundary", () => {
           tenantId,
           fid: 101,
           meterPoint: "main",
+          observedAt: "2026-09-06T12:00:00",
+          source: "MEASURED",
+          unit: "kW",
+          value: 1,
+        },
+        db,
+      ),
+    ).toThrow(AppError);
+
+    expect(() =>
+      upsertMeasurement(
+        {
+          tenantId,
+          fid: 101,
+          meterPoint: "main",
           observedAt: "2026-09-06T00:00:00.000Z",
           source: "MEASURED",
           unit: "kW",
@@ -261,5 +281,67 @@ describe("energy measurements quality boundary", () => {
         db,
       ),
     ).toThrow(AppError);
+  });
+
+  it("tenant_firm_access 없는 전역 firms 만으로는 저장을 거부한다", () => {
+    db.prepare(
+      "INSERT OR REPLACE INTO firms (fid, seq, firm_name) VALUES (202, 2, '미연결 업체')",
+    ).run();
+    expect(() =>
+      upsertMeasurement(
+        {
+          tenantId,
+          fid: 202,
+          meterPoint: "main",
+          observedAt: "2026-09-06T00:00:00.000Z",
+          source: "MEASURED",
+          unit: "kW",
+          value: 1,
+        },
+        db,
+      ),
+    ).toThrow(AppError);
+    expect(countMeasurements(tenantId, 202, db)).toBe(0);
+  });
+
+  it("calculation_version 만 바뀐 정정도 이력에 남는다", () => {
+    upsertMeasurement(
+      {
+        tenantId,
+        fid: 101,
+        meterPoint: "main",
+        observedAt: "2026-09-06T05:00:00.000Z",
+        source: "MEASURED",
+        unit: "kW",
+        value: 7,
+        calculationVersion: "v1",
+      },
+      db,
+    );
+    upsertMeasurement(
+      {
+        tenantId,
+        fid: 101,
+        meterPoint: "main",
+        observedAt: "2026-09-06T05:00:00.000Z",
+        source: "MEASURED",
+        unit: "kW",
+        value: 7,
+        calculationVersion: "v2",
+        correctionReason: "formula bump",
+      },
+      db,
+    );
+    const corrections = listCorrections(tenantId, 101, "main", db);
+    expect(corrections).toHaveLength(1);
+    expect(corrections[0]?.previousCalculationVersion).toBe("v1");
+    expect(corrections[0]?.previousValue).toBe(7);
+    expect(listMeasurements(tenantId, 101, "main", "kW", db)[0]?.calculationVersion).toBe(
+      "v2",
+    );
+  });
+
+  it("파싱 불가 observedAt 은 MEASURED 로 위장하지 않는다", () => {
+    expect(deriveQuality("MEASURED", "not-a-date", 1)).toBe("NO_DATA");
   });
 });

@@ -160,6 +160,18 @@ describe("firm integrity CRUD", () => {
       "req-create",
       db,
     );
+    const flags = db
+      .prepare(
+        `SELECT can_view_pii, can_collect FROM tenant_firm_access
+         WHERE tenant_id = ? AND fid = ?`,
+      )
+      .get(operator.tenantId, created.fid) as {
+      can_view_pii: number;
+      can_collect: number;
+    };
+    // PII 를 명시한 생성은 can_view_pii=1 로 명시 허용된다.
+    expect(flags).toEqual({ can_view_pii: 1, can_collect: 0 });
+
     db.prepare(
       `UPDATE tenant_firm_access SET can_view_pii = 0
        WHERE tenant_id = ? AND fid = ?`,
@@ -187,5 +199,42 @@ describe("firm integrity CRUD", () => {
       addressText: "실주소",
       kepcoNo: "1234567890",
     });
+  });
+
+  it("PII 역할 없는 생성자가 비어 있지 않은 PII 를 넣으면 거부한다", () => {
+    const viewer = db
+      .prepare(
+        `SELECT id, tenant_id AS tenantId, username, name, role
+         FROM users WHERE username = 'viewer' LIMIT 1`,
+      )
+      .get() as SessionUser | undefined;
+    if (!viewer) {
+      // 시드에 viewer 가 없으면 operator 역할만 있는 환경 — create 권한 자체를 제거한 사용자로 대체
+      const noCreate = { ...operator, role: "VIEWER" as const };
+      expect(() =>
+        createFirmForUser(
+          noCreate,
+          { firmName: "거부", phone: "01011112222" },
+          "req-viewer",
+          db,
+        ),
+      ).toThrow(AppError);
+      return;
+    }
+    expect(() =>
+      createFirmForUser(
+        viewer,
+        { firmName: "거부", phone: "01011112222" },
+        "req-viewer",
+        db,
+      ),
+    ).toThrow(AppError);
+    expect(
+      (
+        db
+          .prepare(`SELECT COUNT(*) AS c FROM firms WHERE firm_name = '거부'`)
+          .get() as { c: number }
+      ).c,
+    ).toBe(0);
   });
 });

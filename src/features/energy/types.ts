@@ -35,6 +35,7 @@ export interface EnergyCorrectionDto {
   readonly previousValue: number | null;
   readonly previousSource: EnergySource;
   readonly previousQuality: EnergyQuality;
+  readonly previousCalculationVersion: string;
   readonly correctedAt: string;
   readonly reason: string | null;
 }
