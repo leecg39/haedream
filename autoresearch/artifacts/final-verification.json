@@ -1,0 +1,18 @@
+{
+  "source_commit": "4e1d4d2",
+  "accepted_experiments": [1, 2, 3, 4, 6],
+  "discarded_experiments": [5],
+  "discard_revert_commit": "6a255dc",
+  "inner_work": { "baseline": 2971, "final": 317, "reduction_percent": 89.3301918545944 },
+  "outer_work": { "baseline": 10707, "final": 797, "reduction_percent": 92.55627159801999 },
+  "checks": {
+    "frozen_workload": { "passed": 2, "failed": 0, "result": "exp-06/result.json" },
+    "existing_tests": { "passed": 67, "failed": 0, "log": "exp-06/test.log" },
+    "typecheck": { "exit_code": 0, "log": "exp-06/typecheck.log" },
+    "lint": { "exit_code": 0, "errors": 0, "existing_warnings": 38, "log": "exp-06/lint.log" },
+    "build": { "command": "npm run build", "exit_code": 0 },
+    "e2e": { "command": "npm run test:e2e", "exit_code": 0, "passed": 12, "failed": 0, "duration_seconds": 32.9, "report": "../../playwright-report/index.html" },
+    "frozen_integrity": { "files": 134, "changed": 0 }
+  },
+  "scope": "DB work proxy; not end-to-end latency; no model-weight training or background service"
+}

@@ -4,3 +4,6 @@ iteration	commit	metric	delta	guard	status	description
 1	7fda269	2781	-190	pass	keep	선택된 검수의 항목을 일괄 조회하여 N+1 제거
 2	dfe92b1	382	-2399	pass	keep	운영 요약의 계측 전체 로딩을 최근 시각 한 행 조회로 교체
 3	a7d20df	361	-21	pass	keep	일일 확인 UPSERT 전 중복 존재 조회 제거
+4	5ed5e3c	327	-34	pass	keep	매핑 검증 시 전체 관제점 대신 지정한 관제점 한 행 조회
+5	-	316	-11	pass	discard	UPDATE 우선 ack는 반복 확인 SQL 1→2회 회귀; f04e469 되돌림
+6	4e1d4d2	317	-10	pass	keep	반복 ack 조기 반환을 보존하고 UPDATE RETURNING으로 성공 후 재조회 제거
