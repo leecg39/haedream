@@ -132,14 +132,14 @@
 
 ## Phase 6 — 모바일·접근성·업무 완주
 
-- [ ] **P6-T1 업체 목록과 편집 폼 반응형 개선**
+- [x] **P6-T1 업체 목록과 편집 폼 반응형 개선**
   - 담당: frontend
   - Depends On: P3-T3
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-6-mobile-a11y`
   - Branch: `phase/6-mobile-a11y`
   - 완료 기준: 360·390·768·1280px에서 조회→수정→저장→재조회가 가능하고 페이지 전체 가로 넘침이 없다.
 
-- [ ] **P6-T2 키보드·포커스·모달 접근성 보완**
+- [x] **P6-T2 키보드·포커스·모달 접근성 보완**
   - 담당: frontend/test
   - Depends On: P6-T1
   - 완료 기준: 메뉴·탭·모달을 키보드로 사용할 수 있고 포커스 복귀와 Escape 닫기가 동작한다.
