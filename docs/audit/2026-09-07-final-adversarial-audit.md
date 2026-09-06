@@ -1,74 +1,91 @@
-# Final Adversarial Audit — phase/final-data-safety-audit
+# Final Adversarial Audit — phase/final-ops-rehearsal-audit
 
 Date: 2026-09-07  
-Base: `origin/feat/fit-clone` @ `bc0a40dc64ac14da98dae94f3de002446aa67734`  
-Branch: `phase/final-data-safety-audit`  
-Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-final-data-safety-audit`
+Base: `origin/feat/fit-clone` @ `edbfdec02f2b5b8c871ffe4262dd7716c5f362e9`  
+Branch: `phase/final-ops-rehearsal-audit`  
+Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-final-ops-rehearsal-audit`
 
 ## 1. Verdict
 
-이전 적대적 감사(`bc0a40d`) 이후에도 **데이터 손실·재시도·복구 증거·권한 계약**에 Critical/Important 잔여 결함이 있었다.  
-이 후속 작업에서 A–F를 수정·자동 검증했고, 외부 의존(승인 실데이터, ≥1GB DB, 7일 관찰, 실 webhook)은 **완료로 표시하지 않았다**.
+데이터 안전 후속(`edbfdec`) 이후에도 **운영 리허설 계약·복원 검증 자원 정리·모니터 개수 임계치·011 orphan 구분**에 Important 잔여 결함이 있었다.  
+이 패스에서 재현·수정·자동 검증했고, 외부 의존(승인 실데이터, ≥1GB DB, 7일 관찰, 실 webhook)은 **완료로 표시하지 않았다**.
 
-## 2. Prior audit (merged @ bc0a40d)
+## 2. Prior CI baselines (record exactly)
 
-이전 라운드에서 worker CLI, max_attempts, FK `011`, monitor streak, energy UTC/corrections, firm `can_view_pii=0` 기본값, E2E 83-pass 등을 반영했다. 상세는 아래 §8 이전 기록 요약 참고.
+| Run | SHA | Result |
+|---|---|---|
+| 코드 CI `34059247760` | `4b95315826c4b363f6afe7aacf3f52eb09619927` | **success** — `quality` ✓, `e2e-core` ✓ |
+| 문서 병합 CI `34059440570` | `edbfdec02f2b5b8c871ffe4262dd7716c5f362e9` | **success** — `quality` ✓, `e2e-core` ✓ |
 
-## 3. Follow-up findings (this Cursor pass)
+현재 작업 기준 SHA(패치 전): `edbfdec02f2b5b8c871ffe4262dd7716c5f362e9`  
+패치 후 최종 SHA·신규 CI run ID는 §10에 추가한다.
+
+## 3. Findings fixed in this ops-rehearsal pass
 
 | ID | Area | Severity | Finding | Fix |
 |---|---|---|---|---|
-| A1 | migration `011` | Critical | `INSERT…WHERE EXISTS(firms)` 가 orphan `collection_jobs`/`energy_measurements` 를 조용히 삭제 | CHECK 기반 preflight로 실패·트랜잭션 롤백; 전량 `INSERT` + FK. 자동 테스트로 orphan 실패·원본 보존·정상/재실행 고정 |
-| B1 | `restore-db-verify.mjs` | Important | `path.resolve("")` → cwd 로 usage 무력화; `firmSample.length >= 0` 항상 참; demo 로그인 가정 | 인자 필수; `firmQueryOk` 실의미; `--demo` 없으면 해시 형식·integrity만; 실패 시 non-zero exit |
-| C1 | `migrate-rehearsal.mjs` | Important | `import.meta.url` 공백 취약; helper `process.exit` 이 catch 무력화; live WAL `copyFileSync`; 실패를 성공처럼 보고 | `fileURLToPath`; throw/`RehearsalError`; offline snapshot + backup API + integrity; 정직한 JSON(`failed`, backup flags) |
-| D1 | energy measurements | Important | timezone 없는 `observedAt`; firms 전역 존재만으로 저장; quality 무시/invalid→MEASURED; version-only 정정 이력 누락 | Z/±hh:mm만 허용; `tenant_firm_access` 필수; quality는 derive만·invalid→`NO_DATA`; `calculation_version` 변경도 corrections |
-| E1 | kepco jobs | Critical | retryable 실패 후 같은 `processQueuedJobs` 에서 즉시 재claim → max_attempts 소진; failure_count 덮어쓰기; finish 전이 미강제 | `012` `next_attempt_at` backoff + seen-set; failure_count 누적; RUNNING→terminal만; 실패 어댑터 테스트 |
-| F1 | monitor / firm PII | Important | `lastScheduledRun` 이 모든 job 활동 시각인데 스케줄로 오인; NaN env; 생성 시 PII 저장 후 `can_view_pii=0` 으로 본인 숨김 | `lastJobActivityAt` 로 개명; 숫자 env 거부; PII 쓰기 시 역할 검사 + 명시적 `can_view_pii=1` |
+| R1 | `migrate-rehearsal.mjs` | Important | `backupAndRestore` 가 항상 `--demo` → 명시적 `--source-db` 운영 offline snapshot 도 operator/"demo" 없으면 실패 | seeded 만 `{ demo: true }`; 외부 source 는 비데모 검증 |
+| R2 | `restore-db-verify.mjs` | Important | 실패 경로 `process.exit` 가 `finally`/`db.close` 를 건너뜀 | `VerifyError` + `process.exitCode`; finally 에서 항상 close |
+| R3 | monitor `KEPCO_FAIL_STREAK` | Important | 개수 임계치인데 0/소수 허용 → `streak >= 0` 거짓 경보 | 유한 양의 정수(≥1)만; 시간 임계치는 유한 비음수(0·소수 허용)로 명시 |
+| R4 | migration `011` | Important | orphan guard 가 단일 테이블이라 collection_jobs vs energy_measurements 구분 불가 | named CHECK `ck_011_orphan_collection_jobs` / `ck_011_orphan_energy_measurements` + orphan별 테스트 |
 
-## 4. Residual external blockers (NOT complete)
+## 4. Historical limit — unsafe 011 already applied externally (NOT retroactively repaired)
+
+원격 `bc0a40d` 에 **기존 unsafe 011**(orphan 을 `WHERE EXISTS` 로 조용히 삭제)이 한 번 공개됐다.  
+`_migrations` 는 **파일명만** 기록하므로, 이미 그 버전의 `011_referential_integrity_and_corrections.sql` 을 적용한 외부 DB에서는 **이번 수정된 011 이 재실행되지 않는다**.
+
+- 과거에 삭제된 orphan 행은 **현재 DB만으로 복원할 수 없다**.
+- 이 패치는 소급 복구를 하지 않는다. 신규/미적용 DB 와 아직 011 을 적용하지 않은 환경에만 안전한 preflight가 적용된다.
+- 해당 외부 환경의 운영 확인 항목:
+  1. 배포 기록에서 `bc0a40d` 전후 011 적용 여부 확인
+  2. 011 적용 **전** 백업과 현재 DB 비교
+  3. 필요 시 백업에서 orphan/행 복구 (외부 운영 절차)
+
+## 5. Residual external blockers (NOT complete)
 
 | Blocker | Why incomplete | How to finish |
 |---|---|---|
 | P5-T1 승인 실업체 원본 대조 | 실고객/승인 원본 없음 | 승인 후 원본↔DB↔API↔UI 대조 기록 |
-| 1.15GB DB migrate rehearsal | offline snapshot 경로 미제공 | `--source-db` / `MIGRATE_REHEARSAL_SOURCE_DB` 에 WAL 없는 사본 |
+| 1.15GB DB migrate rehearsal | ≥1GB offline snapshot 미제공 | `--source-db` / `MIGRATE_REHEARSAL_SOURCE_DB` 에 WAL 없는 ≥1GB 사본 |
 | 7일 파일럿 관찰 | 시간·운영 환경 외부 | 예정 실행/성공·실패·지연 작업 기록 |
 | 실 webhook 알림 경로 | 의도적으로 HTTP 송신 금지 | injectable/file sink 검증 후 운영 sink만 별도 연결 |
+| 기적용 unsafe-011 외부 DB | 파일명만 기록·소급 재실행 불가 | §4 배포 기록 + 적용 전 백업 비교/복구 |
 
-## 5. Honest checkbox policy
+## 6. Honest checkbox policy
 
 - `[x]` = 이 브랜치에서 자동 검증으로 합격 기준을 증명한 항목만
 - Phase5 T1 및 실데이터 승인 항목 = `[ ]`
-- Phase7 large DB / 7일 관찰 = `[ ]` 또는 문서상 `unverified`
+- Phase7 large DB / 7일 관찰 / 실 webhook = `[ ]` 또는 문서상 `unverified`
+- 기적용 unsafe-011 외부 복구 = 외부 운영 확인 (완료 체크 금지)
 
-## 6. E2E evidence note
+## 7. E2E evidence note
 
-UI/Playwright 계약 자체는 이번 후속에서 바꾸지 않았다(서버 권한·저장소·스크립트·마이그레이션 중심).  
-관련 E2E `e2e/firm-mobile-a11y.spec.ts` + `e2e/watt-firm.spec.ts` **18 passed**.  
-전체 83-pass 스위트는 UI 미변경으로 이전 최종 증거가 적용되나, 통합 후 GitHub Actions `e2e-core` 로 재확인한다.
+UI/Playwright 계약을 이번 패스에서 바꾸지 않았다(스크립트·마이그레이션·모니터 중심).  
+로컬 전체 E2E 83-pass 반복은 생략하고, 통합 후 GitHub Actions `e2e-core` 로 최종 확인한다.
 
-## 7. Post-fix verification (this pass)
+## 8. Verification (this pass)
 
 | Check | Result |
 |---|---|
-| `npm test` (158) | pass |
+| related vitest (011 orphan / restore / rehearsal / monitor) | pass |
+| `npm test` | **161 passed** |
 | `npm run lint` | 0 errors (기존 research warnings만) |
 | `npm run typecheck` | pass |
 | `npm run build` | pass |
 | `npm run check:public-data` | pass |
 | `npm audit --omit=dev` | 0 vulnerabilities |
-| `npm run db:migrate-rehearsal` | empty/seeded pass; `largeDbRehearsal=unverified`; `failed=false` |
-| temp DB clean migrate + seed + `kepco-worker.mjs` | pass (`processed 0`) |
-| orphan preflight 011 (자동 테스트) | fail + 원본 보존 |
-| related E2E (firm mobile + watt-firm) | 18 passed |
-| GitHub Actions `feat/fit-clone` run `34059247760` | **success** — `quality` ✓, `e2e-core` ✓ |
-
-Merge SHA on `origin/feat/fit-clone`: `4b95315826c4b363f6afe7aacf3f52eb09619927`
-
-## 8. Prior round summary (bc0a40d)
-
-Worker CLI, jobs retry/stale, monitor streak, restore/rehearsal 기초, energy UTC/corrections, firm least-privilege 기본, CSS/E2E 83-pass.  
-이번 패스가 그 위의 잔여 데이터 안전 결함을 닫는다.
+| 합성 비데모 offline snapshot `--source-db` | pass — `externalSourceMigrated=true`, `externalSourceBackupRestore=true`, `largeDbRehearsal=unverified`, `failed=false`; `--demo` 직접 검증은 동일 사본에서 fail |
+| orphan collection_jobs / energy_measurements 각각 | named CHECK fail + 원본 스키마·행·`_migrations` 미기록 보존 |
+| 로컬 전체 E2E | 생략(UI 미변경) — 원격 `e2e-core` 대기 |
 
 ## 9. Commits / merge path
 
-`phase/final-data-safety-audit` → push → `--no-ff` merge into root `feat/fit-clone` → push `origin/feat/fit-clone` → Actions 대기.
+`phase/final-ops-rehearsal-audit` → push → root `feat/fit-clone` `--no-ff` merge → push `origin/feat/fit-clone` → Actions `quality`/`e2e-core` 대기.
+
+## 10. Post-merge CI (fill after push)
+
+| Item | Value |
+|---|---|
+| Final merge SHA on `origin/feat/fit-clone` | _(pending)_ |
+| New GitHub Actions run | _(pending)_ |
+| `quality` / `e2e-core` | _(pending)_ |

@@ -166,14 +166,14 @@
   - 담당: database/devops
   - Depends On: P5-T3
   - 완료 기준: 운영 DB 사본 마이그레이션, 백업 무결성, 복구 후 핵심 데이터 대조가 재현 가능하다.
-  - 내부 진행: 빈/시드 DB 리허설·backup/restore(인증 해시 형식·integrity_check·업체·한전요약) 자동화됨. orphan preflight(011)·offline snapshot/WAL 거부·정직한 JSON 보고.
-  - 미완: ≥1GB 운영 사본 경로 미제공 → `largeDbRehearsal=unverified`.
+  - 내부 진행: 빈/시드 DB 리허설·backup/restore(인증 해시 형식·integrity_check·업체·한전요약) 자동화됨. orphan preflight(011 named CHECK)·offline snapshot/WAL 거부·seeded만 `--demo`/외부 source 비데모 검증·정직한 JSON 보고. 합성 비데모 `--source-db` 성공 검증.
+  - 미완: ≥1GB 운영 사본 경로 미제공 → `largeDbRehearsal=unverified`. 기적용 unsafe-011 외부 DB 소급 복구 불가(배포기록+적용전 백업 비교는 외부 운영 항목).
 
 - [ ] **P7-T3 수집 지연·실패·스케줄 누락 감시**
   - 담당: backend/devops
   - Depends On: P4-T3
   - 완료 기준: 마지막 실행, 최신 측정, 연속 실패, 지연 임계치가 기록되고 시험 경고·복구가 검증된다.
-  - 내부 진행: streak 수정, `lastJobActivityAt`(스케줄 전용 아님)·success/measurement/queueStall, 숫자 env 거부, file alert sink·복구 테스트.
+  - 내부 진행: streak 수정, `lastJobActivityAt`(스케줄 전용 아님)·success/measurement/queueStall, `KEPCO_FAIL_STREAK` 양의 정수(≥1)만·시간 임계치는 유한 비음수, file alert sink·복구 테스트.
   - 미완: 실 webhook 송신·7일 파일럿 관찰.
 
 ## 전체 완료 조건

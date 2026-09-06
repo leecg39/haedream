@@ -5,9 +5,9 @@
  * 사용: node scripts/monitor-collection-jobs.mjs
  * 환경:
  *   DATABASE_PATH
- *   KEPCO_STALE_MINUTES (기본 30, 유한 비음수)
- *   KEPCO_FAIL_STREAK (기본 3, 유한 비음수)
- *   KEPCO_QUEUE_STALL_MINUTES (기본 20, 유한 비음수)
+ *   KEPCO_STALE_MINUTES (기본 30, 유한 비음수 — 시간 임계치, 0=즉시 stale)
+ *   KEPCO_FAIL_STREAK (기본 3, 유한 양의 정수 ≥1 — 개수 기준, 0/소수 거부)
+ *   KEPCO_QUEUE_STALL_MINUTES (기본 20, 유한 비음수 — 시간 임계치, 0=즉시 stall)
  *   KEPCO_ALERT_SINK=file|none (기본 none; file 은 KEPCO_ALERT_PATH)
  *   KEPCO_ALERT_PATH (file sink 경로)
  *
@@ -20,11 +20,28 @@ import { appendFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+/** 시간 임계치: 유한 비음수(0 허용). 분 단위이므로 소수는 허용. */
 function requireNonNegativeNumber(name, raw, fallback) {
   if (raw === undefined || raw === "") return fallback;
   const value = Number(raw);
   if (!Number.isFinite(value) || value < 0) {
     console.error(`[monitor] invalid ${name}=${JSON.stringify(raw)} (need finite >= 0)`);
+    process.exit(1);
+  }
+  return value;
+}
+
+/**
+ * 실패 연속 개수 임계치: 유한 양의 정수만 (≥1).
+ * 0 이면 streak>=0 이 항상 참이 되어 거짓 경보가 난다. 소수/NaN/음수도 거부.
+ */
+function requirePositiveInteger(name, raw, fallback) {
+  if (raw === undefined || raw === "") return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || !Number.isInteger(value) || value < 1) {
+    console.error(
+      `[monitor] invalid ${name}=${JSON.stringify(raw)} (need positive integer >= 1)`,
+    );
     process.exit(1);
   }
   return value;
@@ -36,7 +53,7 @@ const staleMinutes = requireNonNegativeNumber(
   process.env.KEPCO_STALE_MINUTES,
   30,
 );
-const failStreak = requireNonNegativeNumber(
+const failStreak = requirePositiveInteger(
   "KEPCO_FAIL_STREAK",
   process.env.KEPCO_FAIL_STREAK,
   3,

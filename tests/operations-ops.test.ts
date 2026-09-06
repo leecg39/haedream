@@ -103,7 +103,7 @@ describe("operations scripts", () => {
     expect(JSON.stringify(report)).not.toContain("kepcoPasswd");
   });
 
-  it("모니터 숫자 환경변수 NaN/음수를 거부한다", () => {
+  it("모니터 숫자 환경변수 NaN/음수/0·소수를 거부한다", () => {
     const bad = spawnSync("node", ["scripts/monitor-collection-jobs.mjs"], {
       cwd: root,
       encoding: "utf8",
@@ -126,5 +126,47 @@ describe("operations scripts", () => {
       },
     });
     expect(negative.status).toBe(1);
+    expect(negative.stderr).toMatch(/invalid KEPCO_FAIL_STREAK/);
+
+    // 개수 임계치 0 은 streak>=0 거짓 경보를 만들므로 거부
+    const zero = spawnSync("node", ["scripts/monitor-collection-jobs.mjs"], {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        DATABASE_PATH: dbPath,
+        KEPCO_FAIL_STREAK: "0",
+      },
+    });
+    expect(zero.status).toBe(1);
+    expect(zero.stderr).toMatch(/positive integer/);
+
+    const fractional = spawnSync("node", ["scripts/monitor-collection-jobs.mjs"], {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        DATABASE_PATH: dbPath,
+        KEPCO_FAIL_STREAK: "2.5",
+      },
+    });
+    expect(fractional.status).toBe(1);
+    expect(fractional.stderr).toMatch(/invalid KEPCO_FAIL_STREAK/);
+
+    // 시간 임계치는 유한 비음수(0 허용) — 소수 허용
+    const zeroMinutes = spawnSync("node", ["scripts/monitor-collection-jobs.mjs"], {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        DATABASE_PATH: dbPath,
+        KEPCO_STALE_MINUTES: "0",
+        KEPCO_QUEUE_STALL_MINUTES: "0.5",
+        KEPCO_FAIL_STREAK: "3",
+      },
+    });
+    // seeded DB 에는 실패 streak 가 없을 수 있어 0 또는 2
+    expect([0, 2]).toContain(zeroMinutes.status);
+    expect(zeroMinutes.stderr).not.toMatch(/invalid/);
   });
 });

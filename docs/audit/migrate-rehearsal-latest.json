@@ -1,15 +1,15 @@
 {
-  "checkedAt": "2026-09-06T20:48:57.891Z",
+  "checkedAt": "2026-09-06T21:04:20.251Z",
   "emptyDb": true,
   "seededDb": true,
   "seededBackupRestore": true,
-  "externalSourceDb": null,
+  "externalSourceDb": "/var/folders/04/y54015w94szby3vf2k72l9wr0000gp/T/solarsimz-rehearsal-n90hBp/live.db",
   "externalSourceMigrated": false,
   "externalSourceBackupRestore": false,
   "largeDbRehearsal": "unverified",
   "largeDbBytes": null,
-  "failed": false,
+  "failed": true,
   "notes": [
-    "1.15GB-class DB copy was not provided. Pass --source-db <offline-snapshot> or MIGRATE_REHEARSAL_SOURCE_DB."
+    "source /var/folders/04/y54015w94szby3vf2k72l9wr0000gp/T/solarsimz-rehearsal-n90hBp/live.db has -wal/-shm sidecars; pass an offline snapshot (SQLite backup/VACUUM INTO copy), not a live DB path"
   ]
 }
