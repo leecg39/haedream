@@ -105,6 +105,7 @@
   - 담당: backend
   - Depends On: P4-T1
   - 완료 기준: QUEUED부터 종료 상태까지 기록하며 같은 업체·기간의 활성 작업은 하나만 존재한다.
+  - 적대적 재검증(2026-09-07): fresh temp DB CLI worker, max_attempts 재시도/고착 복구, fid FK(`011`) 통과.
 
 - [x] **P4-T3 화면 작업 상태와 데이터 최신성 분리**
   - 담당: frontend/test
@@ -113,7 +114,7 @@
 
 ## Phase 5 — 한 업체 실데이터 흐름과 품질 표기
 
-> Phase 5 상태: 합성 measurement/quality DTO·중복 방지 기반은 `phase/5-real-data`로 병합됨.
+> Phase 5 상태: 합성 measurement/quality DTO·UTC 정규화·정정 이력·API/UI 품질 배지는 내부 검증됨.
 > 승인된 실업체 원본 대조(P5-T1)와 7일 관찰은 외부 데이터 이용 승인 후에 완료한다.
 
 - [ ] **P5-T1 승인된 업체·계측점의 원본→정규 DB 흐름 연결**
@@ -127,11 +128,13 @@
   - 담당: backend/frontend
   - Depends On: P5-T1
   - 완료 기준: `DEMO/MEASURED/ESTIMATED/STALE/NO_DATA`가 실제 상태와 함께 전달·표시된다.
+  - 내부 진행: `/api/energy/[fid]` + peak 품질 배지(합성/데모 disclaimer). 실데이터 연결 전 완료 표시 금지.
 
 - [ ] **P5-T3 지연·누락·정정·단위 회귀 검증**
   - 담당: test
   - Depends On: P5-T2
   - 완료 기준: kW/kWh, 15분 간격, KST/UTC, 누적값 리셋, 누락, 정정 이력이 자동 검증된다.
+  - 내부 진행: 합성 fixture 자동 테스트 통과. 승인 실데이터 회귀는 미완.
 
 ## Phase 6 — 모바일·접근성·업무 완주
 
@@ -141,6 +144,7 @@
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-6-mobile-a11y`
   - Branch: `phase/6-mobile-a11y`
   - 완료 기준: 360·390·768·1280px에서 조회→수정→저장→재조회가 가능하고 페이지 전체 가로 넘침이 없다.
+  - 적대적 재검증: `overflow-x:hidden` 제거, E2E 생성→저장→재조회·scrollWidth 포함.
 
 - [x] **P6-T2 키보드·포커스·모달 접근성 보완**
   - 담당: frontend/test
@@ -155,22 +159,29 @@
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-7-operations`
   - Branch: `phase/7-operations`
   - 완료 기준: lint, typecheck, unit/API, build, 핵심 E2E, 정보 노출 검사, 의존성 감사가 PR에서 자동 실행된다.
+  - 참고: 워크플로 YAML 존재. 원격 Actions 결과는 push 후 확인.
 
-- [x] **P7-T2 마이그레이션 리허설과 백업 복구 자동화**
+- [ ] **P7-T2 마이그레이션 리허설과 백업 복구 자동화**
   - 담당: database/devops
   - Depends On: P5-T3
   - 완료 기준: 운영 DB 사본 마이그레이션, 백업 무결성, 복구 후 핵심 데이터 대조가 재현 가능하다.
+  - 내부 진행: 빈/시드 DB 리허설·backup/restore(인증·업체·한전요약) 자동화됨.
+  - 미완: ≥1GB 운영 사본 경로 미제공 → `largeDbRehearsal=unverified`.
 
-- [x] **P7-T3 수집 지연·실패·스케줄 누락 감시**
+- [ ] **P7-T3 수집 지연·실패·스케줄 누락 감시**
   - 담당: backend/devops
   - Depends On: P4-T3
   - 완료 기준: 마지막 실행, 최신 측정, 연속 실패, 지연 임계치가 기록되고 시험 경고·복구가 검증된다.
+  - 내부 진행: streak 수정, schedule/success/measurement/queueStall, file alert sink·복구 테스트.
+  - 미완: 실 webhook 송신·7일 파일럿 관찰.
 
 ## 전체 완료 조건
 
-- [ ] 보호 데이터의 익명 접근, VIEWER 쓰기, 교차 업체 접근이 차단된다.
-- [ ] 공개 빌드에서 고객정보와 수집 자격증명이 검출되지 않는다.
-- [ ] 업체 등록·수정이 DB에 영속되고 충돌·감사 이력이 검증된다.
-- [ ] 수집 API와 worker가 분리되고 데이터 출처·최신성·품질이 화면에 표시된다.
-- [ ] 모바일 핵심 업무, CI, 마이그레이션, 백업 복구, 운영 감시 검증이 통과한다.
+- [x] 보호 데이터의 익명 접근, VIEWER 쓰기, 교차 업체 접근이 차단된다.
+- [x] 공개 빌드에서 고객정보와 수집 자격증명이 검출되지 않는다. (최종 검증에서 `check:public-data` 재확인)
+- [x] 업체 등록·수정이 DB에 영속되고 충돌·감사 이력이 검증된다.
+- [ ] 수집 API와 worker가 분리되고 데이터 출처·최신성·품질이 화면에 표시된다. (worker 분리·품질 배지 내부 완료, 실데이터 출처는 P5-T1 후)
+- [ ] 모바일 핵심 업무, CI, 마이그레이션, 백업 복구, 운영 감시 검증이 통과한다. (모바일/CI/시드급 backup·monitor 내부 통과, 1.15GB·7일 관찰 미완)
 - [ ] 모든 Phase 브랜치가 적대적 검토와 수정 후 통합 기준 브랜치에 병합·push되어 있다.
+
+감사 보고서: `docs/audit/2026-09-07-final-adversarial-audit.md`
