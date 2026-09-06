@@ -31,7 +31,7 @@
 
 ## Phase 1 — FIT 인증·업체 범위·API 기본 거부
 
-- [ ] **P1-T1 세션 권한과 업체 접근 모델 구현**
+- [x] **P1-T1 세션 권한과 업체 접근 모델 구현**
   - 담당: backend/database
   - Depends On: P0-T2
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-1-auth-scope`
@@ -39,7 +39,7 @@
   - 범위: `007_tenant_firm_access.sql`, demo seed, 업체·한전 권한 문자열, 서버 접근 검사
   - 완료 기준: 익명 401, VIEWER 쓰기 403, 교차 업체 403/404, 허가 업체 정상 성공, 거부 요청의 부수 효과 0건.
 
-- [ ] **P1-T2 FIT 실제 로그인과 보호 API 연결**
+- [x] **P1-T2 FIT 실제 로그인과 보호 API 연결**
   - 담당: frontend/backend
   - Depends On: P1-T1
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-1-auth-scope`
@@ -47,7 +47,7 @@
   - 범위: FIT 로그인, 업체 API, 한전 status/detail/collect, 보호 응답 캐시 정책
   - 완료 기준: 올바른 계정만 이동하고 HttpOnly 세션을 만들며, 보호 API가 역할·업체 범위를 일관되게 적용한다.
 
-- [ ] **P1-T3 권한 회귀·브라우저 검증**
+- [x] **P1-T3 권한 회귀·브라우저 검증**
   - 담당: test/security
   - Depends On: P1-T2
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-1-auth-scope`
