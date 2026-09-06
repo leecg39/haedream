@@ -1,19 +1,22 @@
 #!/usr/bin/env node
 /**
- * 빈 DB·시드 DB·(선택) 외부 지정 기존 DB 사본에 마이그레이션 리허설.
+ * 빈 DB·시드 DB·(선택) 외부 지정 offline snapshot 에 마이그레이션 리허설.
  *
  * 사용:
  *   node scripts/migrate-rehearsal.mjs
- *   node scripts/migrate-rehearsal.mjs --source-db /path/to/existing-copy.db
+ *   node scripts/migrate-rehearsal.mjs --source-db /path/to/offline-snapshot.db
  *   MIGRATE_REHEARSAL_SOURCE_DB=/path/to/copy node scripts/migrate-rehearsal.mjs
+ *
+ * --source-db 는 live WAL DB 가 아니라 offline/consistent snapshot 이어야 한다.
+ * 복사에는 SQLite backup API 를 쓰고 integrity_check 로 검증한다.
  *
  * 1.15GB급 운영 사본이 없으면 largeDbRehearsal=unverified 로 기록하고
  * 완료(complete)처럼 꾸미지 않는다. 외부 HTTP/한전 호출은 하지 않는다.
  */
+import Database from "better-sqlite3";
 import {
   mkdtempSync,
   rmSync,
-  copyFileSync,
   existsSync,
   statSync,
   writeFileSync,
@@ -21,10 +24,18 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LARGE_DB_BYTES = 1_000_000_000; // ~1GB 이상이면 large copy 로 본다.
+
+class RehearsalError extends Error {
+  constructor(message, exitCode = 1) {
+    super(message);
+    this.exitCode = exitCode;
+  }
+}
 
 function parseArgs(argv) {
   let sourceDb = process.env.MIGRATE_REHEARSAL_SOURCE_DB ?? "";
@@ -45,14 +56,51 @@ function run(label, env) {
   });
   const elapsedMs = Date.now() - started;
   if (result.status !== 0) {
-    console.error(
-      `[migrate-rehearsal] ${label} failed`,
-      result.stderr || result.stdout,
+    throw new RehearsalError(
+      `${label} failed: ${result.stderr || result.stdout}`,
+      result.status ?? 1,
     );
-    process.exit(result.status ?? 1);
   }
   console.log(`[migrate-rehearsal] ${label} ok in ${elapsedMs}ms`);
   return elapsedMs;
+}
+
+function assertOfflineSnapshot(sourcePath) {
+  const wal = `${sourcePath}-wal`;
+  const shm = `${sourcePath}-shm`;
+  if (existsSync(wal) || existsSync(shm)) {
+    throw new RehearsalError(
+      `source ${sourcePath} has -wal/-shm sidecars; pass an offline snapshot (SQLite backup/VACUUM INTO copy), not a live DB path`,
+    );
+  }
+}
+
+async function consistentCopy(sourcePath, destPath) {
+  assertOfflineSnapshot(sourcePath);
+  const source = new Database(sourcePath, {
+    readonly: true,
+    fileMustExist: true,
+  });
+  try {
+    await source.backup(destPath);
+  } finally {
+    source.close();
+  }
+  const verify = new Database(destPath, { readonly: true, fileMustExist: true });
+  try {
+    const integrity = verify.pragma("integrity_check");
+    const ok =
+      Array.isArray(integrity) &&
+      integrity.length === 1 &&
+      integrity[0]?.integrity_check === "ok";
+    if (!ok) {
+      throw new RehearsalError(
+        `integrity_check failed after backup copy of ${sourcePath}: ${JSON.stringify(integrity)}`,
+      );
+    }
+  } finally {
+    verify.close();
+  }
 }
 
 function backupAndRestore(label, dbPath, workDir) {
@@ -63,20 +111,21 @@ function backupAndRestore(label, dbPath, workDir) {
     { cwd: root, encoding: "utf8" },
   );
   if (backup.status !== 0) {
-    console.error(`[migrate-rehearsal] ${label} backup failed`, backup.stderr);
-    process.exit(backup.status ?? 1);
+    throw new RehearsalError(
+      `${label} backup failed: ${backup.stderr || backup.stdout}`,
+      backup.status ?? 1,
+    );
   }
   const verify = spawnSync(
     "node",
-    ["scripts/restore-db-verify.mjs", backupPath],
+    ["scripts/restore-db-verify.mjs", backupPath, "--demo"],
     { cwd: root, encoding: "utf8" },
   );
   if (verify.status !== 0) {
-    console.error(
-      `[migrate-rehearsal] ${label} restore-verify failed`,
-      verify.stderr || verify.stdout,
+    throw new RehearsalError(
+      `${label} restore-verify failed: ${verify.stderr || verify.stdout}`,
+      verify.status ?? 1,
     );
-    process.exit(verify.status ?? 1);
   }
   console.log(`[migrate-rehearsal] ${label} backup/restore ok`);
 }
@@ -87,9 +136,13 @@ const report = {
   checkedAt: new Date().toISOString(),
   emptyDb: false,
   seededDb: false,
+  seededBackupRestore: false,
   externalSourceDb: args.sourceDb || null,
+  externalSourceMigrated: false,
+  externalSourceBackupRestore: false,
   largeDbRehearsal: "unverified",
   largeDbBytes: null,
+  failed: false,
   notes: [],
 };
 
@@ -107,40 +160,41 @@ try {
     encoding: "utf8",
   });
   if (seed.status !== 0) {
-    console.error("[migrate-rehearsal] seed failed", seed.stderr || seed.stdout);
-    process.exit(seed.status ?? 1);
+    throw new RehearsalError(
+      `seed failed: ${seed.stderr || seed.stdout}`,
+      seed.status ?? 1,
+    );
   }
   run("seeded-rerun", { DATABASE_PATH: seededDb });
   backupAndRestore("seeded", seededDb, directory);
   report.seededDb = true;
+  report.seededBackupRestore = true;
 
   const candidates = [];
   if (args.sourceDb) candidates.push(args.sourceDb);
-  const localApp = path.join(root, "data/app.db");
-  if (existsSync(localApp)) candidates.push(localApp);
+  // local data/app.db 는 live WAL 위험이 있어 자동 후보에 넣지 않는다.
+  // 명시적 --source-db / env 만 offline snapshot 으로 허용한다.
 
   let largeVerified = false;
   for (const source of candidates) {
     if (!existsSync(source)) {
       report.notes.push(`source missing: ${source}`);
-      continue;
+      report.failed = true;
+      throw new RehearsalError(`source missing: ${source}`);
     }
     const bytes = statSync(source).size;
     const copyPath = path.join(
       directory,
       `copy-${path.basename(source).replace(/[^\w.-]+/g, "_")}`,
     );
-    copyFileSync(source, copyPath);
+    await consistentCopy(source, copyPath);
     run(`source-copy:${path.basename(source)}`, { DATABASE_PATH: copyPath });
     run(`source-copy-rerun:${path.basename(source)}`, {
       DATABASE_PATH: copyPath,
     });
-    // 시드가 있는 사본만 backup/restore 전체 검증. 빈/부분 사본은 migrate만.
-    try {
-      backupAndRestore(`source:${path.basename(source)}`, copyPath, directory);
-    } catch {
-      report.notes.push(`backup/restore skipped or failed for ${source}`);
-    }
+    report.externalSourceMigrated = true;
+    backupAndRestore(`source:${path.basename(source)}`, copyPath, directory);
+    report.externalSourceBackupRestore = true;
     if (bytes >= LARGE_DB_BYTES) {
       report.largeDbBytes = bytes;
       report.largeDbRehearsal = "verified";
@@ -155,10 +209,10 @@ try {
   if (!largeVerified) {
     report.largeDbRehearsal = "unverified";
     report.notes.push(
-      "1.15GB-class DB copy was not provided. Pass --source-db <path> or MIGRATE_REHEARSAL_SOURCE_DB.",
+      "1.15GB-class DB copy was not provided. Pass --source-db <offline-snapshot> or MIGRATE_REHEARSAL_SOURCE_DB.",
     );
     console.log(
-      "[migrate-rehearsal] large DB rehearsal UNVERIFIED (no >=1GB source copy)",
+      "[migrate-rehearsal] large DB rehearsal UNVERIFIED (no >=1GB offline snapshot)",
     );
   }
 
@@ -170,6 +224,19 @@ try {
   console.log(
     `[migrate-rehearsal] finished empty=${report.emptyDb} seeded=${report.seededDb} large=${report.largeDbRehearsal}`,
   );
+} catch (error) {
+  report.failed = true;
+  report.notes.push(error instanceof Error ? error.message : String(error));
+  const outDir = path.join(root, "docs/audit");
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(
+    path.join(outDir, "migrate-rehearsal-latest.json"),
+    `${JSON.stringify(report, null, 2)}\n`,
+  );
+  console.error(
+    `[migrate-rehearsal] FAILED: ${error instanceof Error ? error.message : error}`,
+  );
+  process.exitCode = error instanceof RehearsalError ? error.exitCode : 1;
 } finally {
   rmSync(directory, { recursive: true, force: true });
 }

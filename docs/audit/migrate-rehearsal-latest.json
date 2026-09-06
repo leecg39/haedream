@@ -1,11 +1,15 @@
 {
-  "checkedAt": "2026-09-06T20:12:37.767Z",
+  "checkedAt": "2026-09-06T20:48:57.891Z",
   "emptyDb": true,
   "seededDb": true,
+  "seededBackupRestore": true,
   "externalSourceDb": null,
+  "externalSourceMigrated": false,
+  "externalSourceBackupRestore": false,
   "largeDbRehearsal": "unverified",
   "largeDbBytes": null,
+  "failed": false,
   "notes": [
-    "1.15GB-class DB copy was not provided. Pass --source-db <path> or MIGRATE_REHEARSAL_SOURCE_DB."
+    "1.15GB-class DB copy was not provided. Pass --source-db <offline-snapshot> or MIGRATE_REHEARSAL_SOURCE_DB."
   ]
 }

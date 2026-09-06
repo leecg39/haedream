@@ -12,6 +12,7 @@ import {
   getCollectionJob,
   processQueuedJobs,
   recoverStaleRunningJobs,
+  runCollectionJob,
 } from "@/features/kepco/jobs.repository";
 
 const root = process.cwd();
@@ -96,7 +97,58 @@ describe("collection jobs adversarial contracts", () => {
       status: "FAILED",
       errorCode: "NO_CREDENTIALS",
       attemptCount: 1,
+      failureCount: 1,
     });
+  });
+
+  it("retryable adapter 실패는 같은 processQueuedJobs 호출에서 max_attempts 를 소진하지 않는다", async () => {
+    const job = enqueueSingleCollectJob(operator, 101, "req-loop", db);
+    const failingCollect = async () => ({
+      fid: 101,
+      status: "error" as const,
+      message: "transient adapter failure",
+      startedAt: new Date().toISOString(),
+      finishedAt: new Date().toISOString(),
+    });
+
+    const processed = await processQueuedJobs(10, db, failingCollect);
+    expect(processed).toBe(1);
+    const after = getCollectionJob(job.id, db)!;
+    expect(after.status).toBe("QUEUED");
+    expect(after.attemptCount).toBe(1);
+    expect(after.failureCount).toBe(1);
+    expect(after.nextAttemptAt).toBeTruthy();
+    expect(Date.parse(after.nextAttemptAt!)).toBeGreaterThan(Date.now());
+
+    // backoff 이전에는 재claim 되지 않는다
+    expect(claimNextQueuedJob(db)).toBeNull();
+
+    // backoff 시각이 지나면 두 번째 시도 후 max_attempts 소진으로 FAILED
+    const ready = claimNextQueuedJob(
+      db,
+      new Date(Date.now() + 60_000).toISOString(),
+    );
+    expect(ready?.id).toBe(job.id);
+    expect(ready?.attemptCount).toBe(2);
+    await runCollectionJob(ready!, db, failingCollect);
+    const terminal = getCollectionJob(job.id, db)!;
+    expect(terminal.status).toBe("FAILED");
+    expect(terminal.errorCode).toBe("COLLECT_ERROR");
+    expect(terminal.attemptCount).toBe(2);
+    expect(terminal.failureCount).toBe(2);
+  });
+
+  it("finishJob 은 RUNNING 이 아닌 작업의 종료 전이를 거부한다", async () => {
+    const job = enqueueSingleCollectJob(operator, 101, "req-finish", db);
+    await processQueuedJobs(1, db);
+    expect(getCollectionJob(job.id, db)?.status).toBe("FAILED");
+    // 이미 FAILED 인 작업에 stale recover 가 다시 finish 하지 않는다
+    db.prepare(
+      `UPDATE collection_jobs
+       SET status = 'SUCCEEDED', updated_at = '2000-01-01T00:00:00.000Z'
+       WHERE id = ?`,
+    ).run(job.id);
+    expect(recoverStaleRunningJobs(60_000, db)).toBe(0);
   });
 });
 
@@ -186,7 +238,8 @@ describe("monitor failure streak semantics", () => {
     const report = JSON.parse(monitor.stdout);
     expect(report.failureStreaks).toEqual([]);
     expect(report.latestSuccessfulCollection).toBe("2026-01-04T00:00:00.000Z");
-    expect(report.lastScheduledRun).toBeTruthy();
+    expect(report.lastJobActivityAt).toBeTruthy();
+    expect(report).not.toHaveProperty("lastScheduledRun");
   });
 
   it("연속 실패 streak 와 복구 시 alert sink 가 동작한다", () => {

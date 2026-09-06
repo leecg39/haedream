@@ -40,7 +40,7 @@ describe("operations scripts", () => {
     );
     expect(verify.status, verify.stderr).toBe(0);
     expect(verify.stdout).toContain("[restore-verify] ok");
-    expect(verify.stdout).toContain("authHashOk");
+    expect(verify.stdout).toContain("authHashFormatOk");
     expect(verify.stdout).not.toContain('"demo"');
   });
 
@@ -95,10 +95,36 @@ describe("operations scripts", () => {
     const report = JSON.parse(monitor.stdout);
     expect(report.staleRunning).toBe(1);
     expect(report.latestSuccessfulCollection).toBeNull();
-    expect(report.lastScheduledRun).toBeTruthy();
+    expect(report.lastJobActivityAt).toBeTruthy();
+    expect(report).not.toHaveProperty("lastScheduledRun");
     expect(report.failureStreaks.some((row: { fid: number }) => row.fid === 101)).toBe(
       true,
     );
     expect(JSON.stringify(report)).not.toContain("kepcoPasswd");
+  });
+
+  it("모니터 숫자 환경변수 NaN/음수를 거부한다", () => {
+    const bad = spawnSync("node", ["scripts/monitor-collection-jobs.mjs"], {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        DATABASE_PATH: dbPath,
+        KEPCO_STALE_MINUTES: "NaN",
+      },
+    });
+    expect(bad.status).toBe(1);
+    expect(bad.stderr).toMatch(/invalid KEPCO_STALE_MINUTES/);
+
+    const negative = spawnSync("node", ["scripts/monitor-collection-jobs.mjs"], {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        DATABASE_PATH: dbPath,
+        KEPCO_FAIL_STREAK: "-1",
+      },
+    });
+    expect(negative.status).toBe(1);
   });
 });

@@ -106,6 +106,7 @@
   - Depends On: P4-T1
   - 완료 기준: QUEUED부터 종료 상태까지 기록하며 같은 업체·기간의 활성 작업은 하나만 존재한다.
   - 적대적 재검증(2026-09-07): fresh temp DB CLI worker, max_attempts 재시도/고착 복구, fid FK(`011`) 통과.
+  - 후속(2026-09-07 Cursor): `next_attempt_at` backoff·한 실행당 1회 처리·failure_count 누적·RUNNING 전이 강제·실패 어댑터 tight-loop 회귀 테스트.
 
 - [x] **P4-T3 화면 작업 상태와 데이터 최신성 분리**
   - 담당: frontend/test
@@ -134,7 +135,7 @@
   - 담당: test
   - Depends On: P5-T2
   - 완료 기준: kW/kWh, 15분 간격, KST/UTC, 누적값 리셋, 누락, 정정 이력이 자동 검증된다.
-  - 내부 진행: 합성 fixture 자동 테스트 통과. 승인 실데이터 회귀는 미완.
+  - 내부 진행: 합성 fixture 자동 테스트 통과(타임존 명시·tenant_firm_access 검증·calculation_version 이력 포함). 승인 실데이터 회귀는 미완.
 
 ## Phase 6 — 모바일·접근성·업무 완주
 
@@ -165,14 +166,14 @@
   - 담당: database/devops
   - Depends On: P5-T3
   - 완료 기준: 운영 DB 사본 마이그레이션, 백업 무결성, 복구 후 핵심 데이터 대조가 재현 가능하다.
-  - 내부 진행: 빈/시드 DB 리허설·backup/restore(인증·업체·한전요약) 자동화됨.
+  - 내부 진행: 빈/시드 DB 리허설·backup/restore(인증 해시 형식·integrity_check·업체·한전요약) 자동화됨. orphan preflight(011)·offline snapshot/WAL 거부·정직한 JSON 보고.
   - 미완: ≥1GB 운영 사본 경로 미제공 → `largeDbRehearsal=unverified`.
 
 - [ ] **P7-T3 수집 지연·실패·스케줄 누락 감시**
   - 담당: backend/devops
   - Depends On: P4-T3
   - 완료 기준: 마지막 실행, 최신 측정, 연속 실패, 지연 임계치가 기록되고 시험 경고·복구가 검증된다.
-  - 내부 진행: streak 수정, schedule/success/measurement/queueStall, file alert sink·복구 테스트.
+  - 내부 진행: streak 수정, `lastJobActivityAt`(스케줄 전용 아님)·success/measurement/queueStall, 숫자 env 거부, file alert sink·복구 테스트.
   - 미완: 실 webhook 송신·7일 파일럿 관찰.
 
 ## 전체 완료 조건

@@ -1,5 +1,23 @@
 PRAGMA foreign_keys = ON;
 
+-- FK 도입 전 orphan 이 있으면 조용히 버리지 않고 CHECK 제약으로 명확히 실패한다.
+-- (SQLite RAISE() 는 트리거 밖에서 사용할 수 없다.)
+CREATE TEMP TABLE _011_orphan_guard (
+  orphan_count INTEGER NOT NULL CHECK (orphan_count = 0)
+);
+
+INSERT INTO _011_orphan_guard (orphan_count)
+SELECT COUNT(*)
+FROM collection_jobs
+WHERE NOT EXISTS (SELECT 1 FROM firms WHERE firms.fid = collection_jobs.fid);
+
+INSERT INTO _011_orphan_guard (orphan_count)
+SELECT COUNT(*)
+FROM energy_measurements
+WHERE NOT EXISTS (SELECT 1 FROM firms WHERE firms.fid = energy_measurements.fid);
+
+DROP TABLE _011_orphan_guard;
+
 -- collection_jobs.fid → firms(fid) 참조 무결성.
 CREATE TABLE collection_jobs_v2 (
   id TEXT PRIMARY KEY,
@@ -27,10 +45,10 @@ CREATE TABLE collection_jobs_v2 (
   updated_at TEXT NOT NULL
 );
 
+-- preflight 통과 후에만 전량 복사. WHERE EXISTS 로 orphan 을 버리지 않는다.
 INSERT INTO collection_jobs_v2
 SELECT *
-FROM collection_jobs
-WHERE EXISTS (SELECT 1 FROM firms WHERE firms.fid = collection_jobs.fid);
+FROM collection_jobs;
 
 DROP TABLE collection_jobs;
 ALTER TABLE collection_jobs_v2 RENAME TO collection_jobs;
@@ -67,8 +85,7 @@ CREATE TABLE energy_measurements_v2 (
 
 INSERT INTO energy_measurements_v2
 SELECT *
-FROM energy_measurements
-WHERE EXISTS (SELECT 1 FROM firms WHERE firms.fid = energy_measurements.fid);
+FROM energy_measurements;
 
 DROP TABLE energy_measurements;
 ALTER TABLE energy_measurements_v2 RENAME TO energy_measurements;

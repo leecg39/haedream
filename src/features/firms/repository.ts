@@ -280,6 +280,27 @@ export function createFirm(
   return created;
 }
 
+const FIRM_PII_CREATE_KEYS = [
+  "kepcoNo",
+  "kepcoCyber",
+  "manager",
+  "phone",
+  "addressText",
+  "pass",
+  "boss",
+  "mapGeo",
+  "memo",
+  "bone",
+] as const;
+
+function hasNonEmptyPiiFields(input: FirmCreateInput): boolean {
+  const values = firmCreateSchema.parse(input);
+  return FIRM_PII_CREATE_KEYS.some((key) => {
+    const value = values[key];
+    return typeof value === "string" && value.trim().length > 0;
+  });
+}
+
 /** 업체와 현재 조직의 접근 매핑을 같은 트랜잭션에서 생성한다. */
 export function createFirmForUser(
   user: SessionUser,
@@ -290,15 +311,26 @@ export function createFirmForUser(
   if (!hasPermission(user.role, "firm:create")) {
     throw new AppError(403, "FORBIDDEN", "이 작업을 수행할 권한이 없습니다.");
   }
+
+  const writesPii = hasNonEmptyPiiFields(input);
+  if (writesPii && !hasPermission(user.role, "firm:pii:read")) {
+    throw new AppError(
+      403,
+      "FIRM_PII_DENIED",
+      "고객정보(PII)를 저장할 권한이 없습니다.",
+    );
+  }
+  // 명시적 허용: PII 를 쓰는 생성만 can_view_pii=1.
+  // PII 없는 생성은 최소권한(can_view_pii=0)을 유지한다.
+  const canViewPii = writesPii ? 1 : 0;
+
   return db.transaction(() => {
     const firm = createFirm(input, db, user.id);
-    // 최소권한: 생성만으로 PII/수집 권한을 부여하지 않는다.
-    // 역할의 firm:pii:read 와 별도로 access.can_view_pii 가 필요하다.
     db.prepare(
       `INSERT INTO tenant_firm_access
        (tenant_id, fid, can_view_pii, can_collect, created_at)
-       VALUES (?, ?, 0, 0, ?)`,
-    ).run(user.tenantId, firm.fid, new Date().toISOString());
+       VALUES (?, ?, ?, 0, ?)`,
+    ).run(user.tenantId, firm.fid, canViewPii, new Date().toISOString());
     writeFirmAudit(db, user, firm.fid, "CREATE", requestId, null, firm);
     return firm;
   })();

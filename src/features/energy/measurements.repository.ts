@@ -17,7 +17,6 @@ export interface UpsertMeasurementInput {
   readonly meterPoint: string;
   readonly observedAt: string;
   readonly source: EnergySource;
-  readonly quality?: EnergyQuality;
   readonly unit: EnergyUnit;
   readonly value: number | null;
   readonly calculationVersion?: string;
@@ -29,12 +28,22 @@ export interface UpsertMeasurementInput {
 const METER_POINT_RE = /^[A-Za-z0-9_./:-]{1,64}$/;
 const SOURCES = new Set<EnergySource>(["DEMO", "MEASURED", "ESTIMATED"]);
 const UNITS = new Set<EnergyUnit>(["kW", "kWh"]);
+/** Z 또는 명시적 ±hh:mm 오프셋만 허용. timezone 없는 로컬 시각은 환경별 해석이 달라진다. */
+const OBSERVED_AT_RE =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
 
 /** 동일 순간의 +09:00 / Z 입력이 한 키로 모이도록 UTC canonical ISO(Z)로 정규화한다. */
 export function canonicalizeObservedAt(input: string): string {
   const trimmed = input.trim();
   if (!trimmed) {
     throw new AppError(422, "INVALID_OBSERVED_AT", "측정 시각이 필요합니다.");
+  }
+  if (!OBSERVED_AT_RE.test(trimmed)) {
+    throw new AppError(
+      422,
+      "INVALID_OBSERVED_AT",
+      "측정 시각은 Z 또는 ±hh:mm 오프셋이 있는 ISO-8601 이어야 합니다.",
+    );
   }
   const ms = Date.parse(trimmed);
   if (!Number.isFinite(ms)) {
@@ -63,6 +72,10 @@ function staleThresholdMs() {
   return Number(process.env.ENERGY_STALE_MS ?? 6 * 60 * 60 * 1000);
 }
 
+/**
+ * quality 는 입력으로 덮어쓰지 않는다. source·observedAt·value 로부터만 유도한다.
+ * 파싱 불가 observedAt 은 MEASURED 로 위장하지 않고 NO_DATA 이다.
+ */
 export function deriveQuality(
   source: EnergySource,
   observedAt: string | null,
@@ -71,16 +84,31 @@ export function deriveQuality(
   if (value == null || !observedAt) return "NO_DATA";
   if (source === "DEMO") return "DEMO";
   if (source === "ESTIMATED") return "ESTIMATED";
-  const age = Date.now() - new Date(observedAt).getTime();
-  if (Number.isFinite(age) && age > staleThresholdMs()) return "STALE";
+  const observedMs = Date.parse(observedAt);
+  if (!Number.isFinite(observedMs)) return "NO_DATA";
+  const age = Date.now() - observedMs;
+  if (age > staleThresholdMs()) return "STALE";
   return "MEASURED";
 }
 
-function requireFirm(fid: number, db: AppDatabase) {
-  const row = db.prepare(`SELECT 1 AS ok FROM firms WHERE fid = ?`).get(fid) as
+function requireTenantFirmAccess(tenantId: string, fid: number, db: AppDatabase) {
+  const access = db
+    .prepare(
+      `SELECT 1 AS ok FROM tenant_firm_access
+       WHERE tenant_id = ? AND fid = ?`,
+    )
+    .get(tenantId, fid) as { ok: number } | undefined;
+  if (!access) {
+    throw new AppError(
+      403,
+      "FIRM_ACCESS_DENIED",
+      "해당 조직에 연결되지 않은 업체에는 계측값을 저장할 수 없습니다.",
+    );
+  }
+  const firm = db.prepare(`SELECT 1 AS ok FROM firms WHERE fid = ?`).get(fid) as
     | { ok: number }
     | undefined;
-  if (!row) {
+  if (!firm) {
     throw new AppError(404, "FIRM_NOT_FOUND", "업체를 찾을 수 없습니다.");
   }
 }
@@ -95,7 +123,8 @@ function findExistingRow(
 ) {
   return db
     .prepare(
-      `SELECT id, value_real AS value, source, quality, ingested_at AS ingestedAt
+      `SELECT id, value_real AS value, source, quality, ingested_at AS ingestedAt,
+              calculation_version AS calculationVersion
        FROM energy_measurements
        WHERE tenant_id = ? AND fid = ? AND meter_point = ? AND observed_at = ? AND unit = ?`,
     )
@@ -106,6 +135,7 @@ function findExistingRow(
         source: EnergySource;
         quality: EnergyQuality;
         ingestedAt: string;
+        calculationVersion: string;
       }
     | undefined;
 }
@@ -125,7 +155,7 @@ export function upsertMeasurement(
   const meterPoint = assertValidMeterPoint(input.meterPoint);
   const observedAt = canonicalizeObservedAt(input.observedAt);
   const value = assertValidValue(input.value);
-  requireFirm(input.fid, db);
+  requireTenantFirmAccess(input.tenantId, input.fid, db);
 
   const ingestedAt = new Date().toISOString();
   const quality = deriveQuality(input.source, observedAt, value);
@@ -141,18 +171,21 @@ export function upsertMeasurement(
       db,
     );
 
-    if (
+    const changed =
       existing &&
       (existing.value !== value ||
         existing.source !== input.source ||
-        existing.quality !== quality)
-    ) {
+        existing.quality !== quality ||
+        existing.calculationVersion !== calculationVersion);
+
+    if (changed && existing) {
       db.prepare(
         `INSERT INTO energy_measurement_corrections
          (id, measurement_id, tenant_id, fid, meter_point, observed_at,
           previous_value, previous_source, previous_quality, previous_unit,
-          previous_ingested_at, corrected_at, corrected_by, reason)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          previous_ingested_at, previous_calculation_version,
+          corrected_at, corrected_by, reason)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       ).run(
         randomUUID(),
         existing.id,
@@ -165,9 +198,15 @@ export function upsertMeasurement(
         existing.quality,
         input.unit,
         existing.ingestedAt,
+        existing.calculationVersion,
         ingestedAt,
         input.correctedBy ?? null,
-        input.correctionReason ?? "value correction",
+        input.correctionReason ??
+          (existing.calculationVersion !== calculationVersion &&
+          existing.value === value &&
+          existing.source === input.source
+            ? `calculation_version ${existing.calculationVersion} → ${calculationVersion}`
+            : "value correction"),
       );
     }
 
@@ -245,7 +284,9 @@ export function listCorrections(
     .prepare(
       `SELECT id, measurement_id AS measurementId, observed_at AS observedAt,
               previous_value AS previousValue, previous_source AS previousSource,
-              previous_quality AS previousQuality, corrected_at AS correctedAt,
+              previous_quality AS previousQuality,
+              previous_calculation_version AS previousCalculationVersion,
+              corrected_at AS correctedAt,
               reason
        FROM energy_measurement_corrections
        WHERE tenant_id = ? AND fid = ? AND meter_point = ?
