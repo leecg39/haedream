@@ -25,7 +25,7 @@ describe("operations scripts", () => {
     rmSync(directory, { recursive: true, force: true });
   });
 
-  it("백업 후 복원 검증이 핵심 테이블을 통과한다", () => {
+  it("백업 후 복원 검증이 인증·업체·한전 요약을 통과한다", () => {
     const backupPath = path.join(directory, "backup.db");
     const backup = spawnSync(
       "node",
@@ -40,6 +40,8 @@ describe("operations scripts", () => {
     );
     expect(verify.status, verify.stderr).toBe(0);
     expect(verify.stdout).toContain("[restore-verify] ok");
+    expect(verify.stdout).toContain("authHashOk");
+    expect(verify.stdout).not.toContain('"demo"');
   });
 
   it("수집 감시는 실패 연속과 stale RUNNING 을 보고한다", () => {
@@ -92,6 +94,8 @@ describe("operations scripts", () => {
     expect(monitor.status).toBe(2);
     const report = JSON.parse(monitor.stdout);
     expect(report.staleRunning).toBe(1);
+    expect(report.latestSuccessfulCollection).toBeNull();
+    expect(report.lastScheduledRun).toBeTruthy();
     expect(report.failureStreaks.some((row: { fid: number }) => row.fid === 101)).toBe(
       true,
     );
