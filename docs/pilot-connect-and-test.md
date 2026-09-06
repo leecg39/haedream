@@ -57,11 +57,20 @@ npm run test:e2e
 
 1. collector가 kWh/kW/V/A로 정규화
 2. `createRtuProvider()`만 연결 (`src/features/pilot/source.ts`)
-3. DB 행 `source`: `mock` → `rtu`
-4. `DATA_SOURCE=rtu` 또는 query `source=rtu`
+3. 같은 변경에서 스텁 단언 교체 — `tests/pilot-mockdb.test.ts`의
+   `getReadings({ source: "rtu" })` → `RTU_NOT_IMPLEMENTED`,
+   `/api/pilot/readings?source=rtu` → 501 기대를
+   collector 계약(또는 mocked-RTU) 테스트로 바꾼다.
+   provider만 연결하고 단언을 남기면 스위트가 깨진다.
+4. DB 행 `source`: `mock` → `rtu`
+5. `DATA_SOURCE=rtu` 또는 query `source=rtu`
+6. `/hub`의 `RTU_NOT_IMPLEMENTED` 폴백 UI가 실측 성공 경로와 맞는지 확인
 
-주의: 지금 `rtu`는 501 스텁. 수집기 없이 `rtu`로 돌리면 API 테스트가 깨집니다.  
-허용 `source`는 `mock` | `rtu`만. 포털성 alias는 422.
+지금(스텁 유지): `rtu`는 501을 **의도적으로** 반환한다. `npm test`는 그 501을
+단언하므로 스텁만으로는 깨지지 않는다. 런타임에서 수집기 없이 `source=rtu`를
+쓰면 API·화면만 501/폴백이다(테스트 실패와 혼동하지 말 것).
+컷오버 후: 위 1–3을 한 PR/커밋으로 끝내야 `source=rtu` 성공 경로와 스위트가
+함께 맞는다. 허용 `source`는 `mock` | `rtu`만. 포털성 alias는 422.
 
 ## 4. 현장 검수 체크리스트 (사람)
 
