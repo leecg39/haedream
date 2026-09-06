@@ -40,6 +40,13 @@ export interface CollectionJob {
   readonly updatedAt: string;
 }
 
+const NON_RETRYABLE_CODES = new Set([
+  "NO_CREDENTIALS",
+  "LOGIN_FAILED",
+  "FORBIDDEN",
+  "FIRM_NOT_FOUND",
+]);
+
 const jobSelect = `
   SELECT
     id,
@@ -116,7 +123,13 @@ export function enqueueSingleCollectJob(
   requestId: string,
   db: AppDatabase = getDb(),
 ): CollectionJob {
-  // 권한·업체 범위는 호출 전에 확인한다. 여기서는 행만 만든다.
+  const firmExists = db
+    .prepare(`SELECT 1 AS ok FROM firms WHERE fid = ?`)
+    .get(fid) as { ok: number } | undefined;
+  if (!firmExists) {
+    throw new AppError(404, "FIRM_NOT_FOUND", "업체를 찾을 수 없습니다.");
+  }
+
   const now = new Date().toISOString();
   const id = randomUUID();
   try {
@@ -133,6 +146,9 @@ export function enqueueSingleCollectJob(
         "KEPCO_FIRM_COLLECTION_ACTIVE",
         "이 업체의 한전 수집이 이미 진행 중입니다.",
       );
+    }
+    if (isSqliteConstraint(error, "SQLITE_CONSTRAINT_FOREIGNKEY")) {
+      throw new AppError(404, "FIRM_NOT_FOUND", "업체를 찾을 수 없습니다.");
     }
     throw error;
   }
@@ -183,6 +199,31 @@ function finishJob(
   );
 }
 
+/** 재시도 가능한 실패는 QUEUED 로 되돌린다. attempt_count 는 claim 시 증가한다. */
+function requeueForRetry(
+  db: AppDatabase,
+  job: CollectionJob,
+  errorCode: string,
+  errorMessage: string,
+) {
+  const now = new Date().toISOString();
+  db.prepare(
+    `UPDATE collection_jobs SET
+       status = 'QUEUED',
+       error_code = ?,
+       error_message = ?,
+       failure_count = failure_count + 1,
+       finished_at = NULL,
+       updated_at = ?
+     WHERE id = ? AND status = 'RUNNING'`,
+  ).run(errorCode, errorMessage, now, job.id);
+}
+
+function shouldRetry(job: CollectionJob, errorCode: string): boolean {
+  if (NON_RETRYABLE_CODES.has(errorCode)) return false;
+  return job.attemptCount < job.maxAttempts;
+}
+
 /** QUEUED 작업을 하나 가져와 RUNNING 으로 전환한다. */
 export function claimNextQueuedJob(
   db: AppDatabase = getDb(),
@@ -228,6 +269,19 @@ export async function runCollectionJob(
     name: "worker",
     role: "OPERATOR" as const,
   };
+
+  const failOrRetry = (errorCode: string, errorMessage: string) => {
+    if (shouldRetry(job, errorCode)) {
+      requeueForRetry(db, job, errorCode, errorMessage);
+      return;
+    }
+    finishJob(db, job.id, "FAILED", {
+      errorCode,
+      errorMessage,
+      failureCount: 1,
+    });
+  };
+
   try {
     const firm = findFirmForCollection(actor, job.fid, db);
     const result = await collectFirm({
@@ -243,33 +297,17 @@ export async function runCollectionJob(
         successCount: 1,
       });
     } else if (result.status === "no_credentials") {
-      finishJob(db, job.id, "FAILED", {
-        errorCode: "NO_CREDENTIALS",
-        errorMessage: result.message,
-        failureCount: 1,
-      });
+      failOrRetry("NO_CREDENTIALS", result.message);
     } else if (result.status === "login_failed") {
-      finishJob(db, job.id, "FAILED", {
-        errorCode: "LOGIN_FAILED",
-        errorMessage: result.message,
-        failureCount: 1,
-      });
+      failOrRetry("LOGIN_FAILED", result.message);
     } else {
-      finishJob(db, job.id, "FAILED", {
-        errorCode: "COLLECT_ERROR",
-        errorMessage: result.message,
-        failureCount: 1,
-      });
+      failOrRetry("COLLECT_ERROR", result.message);
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const code =
       error instanceof AppError ? error.code : "COLLECT_ERROR";
-    finishJob(db, job.id, "FAILED", {
-      errorCode: code,
-      errorMessage: message,
-      failureCount: 1,
-    });
+    failOrRetry(code, message);
   }
   return getCollectionJob(job.id, db)!;
 }
@@ -289,24 +327,44 @@ export async function processQueuedJobs(
   return processed;
 }
 
-/** worker 재시작 시 오래된 RUNNING 을 QUEUED 로 되돌린다. */
+/**
+ * worker 재시작 시 오래된 RUNNING 을 복구한다.
+ * max_attempts 를 소진한 작업은 FAILED, 나머지는 QUEUED.
+ */
 export function recoverStaleRunningJobs(
   olderThanMs = 15 * 60 * 1000,
   db: AppDatabase = getDb(),
 ): number {
   const cutoff = new Date(Date.now() - olderThanMs).toISOString();
   const now = new Date().toISOString();
-  const result = db
-    .prepare(
-      `UPDATE collection_jobs SET
-         status = 'QUEUED',
-         updated_at = ?,
-         error_message = COALESCE(error_message, 'worker restarted; re-queued')
-       WHERE status = 'RUNNING'
-         AND updated_at < ?`,
-    )
-    .run(now, cutoff);
-  return result.changes;
+  return db.transaction(() => {
+    const stale = db
+      .prepare(
+        `${jobSelect}
+         WHERE status = 'RUNNING' AND updated_at < ?`,
+      )
+      .all(cutoff) as CollectionJob[];
+    let changes = 0;
+    for (const job of stale) {
+      if (job.attemptCount >= job.maxAttempts) {
+        finishJob(db, job.id, "FAILED", {
+          errorCode: "STALE_RUNNING",
+          errorMessage: "worker restarted after max attempts; marked failed",
+          failureCount: Math.max(1, job.failureCount),
+        });
+      } else {
+        db.prepare(
+          `UPDATE collection_jobs SET
+             status = 'QUEUED',
+             updated_at = ?,
+             error_message = COALESCE(error_message, 'worker restarted; re-queued')
+           WHERE id = ? AND status = 'RUNNING'`,
+        ).run(now, job.id);
+      }
+      changes += 1;
+    }
+    return changes;
+  })();
 }
 
 export function toJobPublicDto(job: CollectionJob) {
@@ -315,6 +373,7 @@ export function toJobPublicDto(job: CollectionJob) {
     fid: job.fid,
     status: job.status,
     attemptCount: job.attemptCount,
+    maxAttempts: job.maxAttempts,
     errorCode: job.errorCode,
     errorMessage: job.errorMessage,
     resultSummary: job.resultSummary,
