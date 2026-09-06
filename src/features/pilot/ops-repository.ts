@@ -217,18 +217,27 @@ export function acknowledgePilotAlarm(
     return mapAlarm(existing);
   }
   const stamped = new Date().toISOString();
-  db.prepare(
-    `UPDATE pilot_alarms
-     SET acknowledged_at = ?, acknowledged_by = ?
-     WHERE id = ? AND tenant_id = ? AND acknowledged_at IS NULL`,
-  ).run(stamped, user.id, alarmId, user.tenantId);
+  const acknowledged = db
+    .prepare(
+      `UPDATE pilot_alarms
+       SET acknowledged_at = ?, acknowledged_by = ?
+       WHERE id = ? AND tenant_id = ? AND acknowledged_at IS NULL
+       RETURNING id, tenant_id, gateway_id, point_id, type, severity, title, message,
+                 observed_at, source, acknowledged_at, acknowledged_by, created_at`,
+    )
+    .get(stamped, user.id, alarmId, user.tenantId) as AlarmRow | undefined;
+  if (acknowledged) return mapAlarm(acknowledged);
+  // 다른 연결에서 먼저 확인한 경우 최초 확인자와 시각을 다시 읽는다.
   const updated = db
     .prepare(
       `SELECT id, tenant_id, gateway_id, point_id, type, severity, title, message,
               observed_at, source, acknowledged_at, acknowledged_by, created_at
-       FROM pilot_alarms WHERE id = ?`,
+       FROM pilot_alarms WHERE id = ? AND tenant_id = ?`,
     )
-    .get(alarmId) as AlarmRow;
+    .get(alarmId, user.tenantId) as AlarmRow | undefined;
+  if (!updated) {
+    throw new AppError(404, "ALARM_NOT_FOUND", "알람을 찾을 수 없습니다.");
+  }
   return mapAlarm(updated);
 }
 
