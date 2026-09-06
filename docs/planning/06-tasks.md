@@ -172,8 +172,8 @@
   - Depends On: P5-T3
   - 완료 기준: 운영 DB 사본 마이그레이션, 백업 무결성, 복구 후 핵심 데이터 대조가 재현 가능하다.
   - 내부 진행: 빈/시드 DB 리허설·backup/restore(인증 해시 형식·integrity_check·업체·한전요약) 자동화됨. orphan preflight(011 named CHECK)·offline snapshot/WAL 거부·seeded만 `--demo`/외부 source 비데모 검증·정직한 JSON 보고. 합성 비데모 `--source-db` 성공 검증.
-  - 미완: 승인된 비식별 **운영** 사본 증거 전 P7-T2 체크 금지. 합성 크기 경로(2026-09-07): `largeDbRehearsal=verified`, `largeDbBytes=1051475968`, source basename `synth-1gb.db`(git 밖). 기적용 unsafe-011 외부 DB 소급 복구 불가.
-  - 준비(2026-09-07): `npm run db:offline-snapshot`, `npm run db:synthetic-large`, `npm run ops:audit-migration-011`(read-only).
+  - 미완: 승인된 비식별 **운영** 사본 attestation 전 P7-T2 체크 금지. 합성 크기 + local deid offline 리허설(2026-09-07): `largeDbRehearsal=verified`, `largeDbBytes=1149865984`, source basename `local-live-post-011.deid.db`(git 밖). 기적용 unsafe-011 외부 DB 소급 복구 불가.
+  - 준비(2026-09-07): `npm run db:offline-snapshot`, `npm run db:synthetic-large`, `npm run db:deid-snapshot`, `npm run ops:audit-migration-011`, `npm run ops:external-input`.
 
 - [ ] **P7-T3 수집 지연·실패·스케줄 누락 감시**
   - 담당: backend/devops

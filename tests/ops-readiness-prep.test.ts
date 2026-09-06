@@ -260,4 +260,109 @@ describe("ops readiness prep scripts", () => {
     expect(report.steps.audit011.migration011Applied).toBe(true);
     expect(JSON.stringify(report)).not.toMatch(/solarsimz\.db/);
   });
+
+  it("deid snapshot requires operator gate and redacts firm/user PII at 0600", () => {
+    const source = path.join(directory, "src-offline.db");
+    const out = path.join(directory, "deid.db");
+    runNode("scripts/migrate.mjs", [], { DATABASE_PATH: source });
+    runNode("scripts/seed.mjs", [], {
+      DATABASE_PATH: source,
+      ALLOW_DEMO_SEED: "true",
+    });
+    const db = new Database(source);
+    db.prepare(
+      `UPDATE firms SET phone = '01012345678', address_text = '서울시 테스트', firm_name = '실명업체' WHERE fid = 2000000001`,
+    ).run();
+    db.pragma("journal_mode = DELETE");
+    db.close();
+    for (const suffix of ["-wal", "-shm", "-journal"]) {
+      const p = `${source}${suffix}`;
+      if (existsSync(p)) rmSync(p, { force: true });
+    }
+
+    const denied = runNode(
+      "scripts/create-deidentified-offline-snapshot.mjs",
+      ["--source", source, "--out", out],
+      {},
+    );
+    expect(denied.status).toBe(1);
+
+    const ok = runNode(
+      "scripts/create-deidentified-offline-snapshot.mjs",
+      ["--source", source, "--out", out, "--i-approve-deidentify"],
+      { ALLOW_DEIDENTIFY: "1" },
+    );
+    expect(ok.status, ok.stderr || ok.stdout).toBe(0);
+    expect(statSync(out).mode & 0o777).toBe(0o600);
+    expect(statSync(`${out}.meta.json`).mode & 0o777).toBe(0o600);
+    const verify = new Database(out, { readonly: true, fileMustExist: true });
+    try {
+      const firm = verify
+        .prepare(
+          `SELECT firm_name AS name, phone, address_text AS addr FROM firms WHERE fid = 2000000001`,
+        )
+        .get() as { name: string; phone: string; addr: string };
+      expect(firm.name).toBe("DEID-FIRM-2000000001");
+      expect(firm.phone).toBe("");
+      expect(firm.addr).toBe("");
+      const user = verify
+        .prepare(`SELECT username, name FROM users WHERE role = 'OPERATOR'`)
+        .get() as { username: string; name: string };
+      expect(user.username.startsWith("deid-")).toBe(true);
+      expect(user.name).toContain("DEID");
+    } finally {
+      verify.close();
+    }
+    const meta = JSON.parse(readFileSync(`${out}.meta.json`, "utf8"));
+    expect(meta.attestationRequiredForP7T2).toBe(true);
+    expect(JSON.stringify(meta)).not.toMatch(/Users\//);
+  });
+
+  it("ops-external-input-runner refuses in-repo manifests and redacts webhook secrets", () => {
+    const inRepo = path.join(root, "docs/ops/external-input-manifest.example.json");
+    const refuse = runNode("scripts/ops-external-input-runner.mjs", [
+      "--manifest",
+      inRepo,
+    ]);
+    expect(refuse.status).toBe(1);
+    expect(refuse.stderr).toMatch(/outside the git worktree/i);
+
+    const manifestPath = path.join(directory, "manifest.json");
+    const evidenceDir = path.join(directory, "evidence");
+    const secret = "manifest-secret-do-not-leak";
+    writeFileSync(
+      manifestPath,
+      `${JSON.stringify(
+        {
+          envAlias: "test-local",
+          evidenceDir,
+          actions: [
+            {
+              type: "verify-webhook-config",
+              url: "https://alerts.example.com/hook",
+              secret,
+              hostAllowlist: "alerts.example.com",
+            },
+          ],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    // directory is under tmp — outside repo worktree
+    const ok = runNode("scripts/ops-external-input-runner.mjs", [
+      "--manifest",
+      manifestPath,
+    ]);
+    expect(ok.status, ok.stderr || ok.stdout).toBe(0);
+    expect(ok.stdout).not.toContain(secret);
+    expect(ok.stdout).not.toContain("https://alerts.example.com/hook");
+    const summary = JSON.parse(
+      readFileSync(path.join(evidenceDir, "runner-summary.json"), "utf8"),
+    );
+    expect(summary.ok).toBe(true);
+    expect(statSync(path.join(evidenceDir, "runner-summary.json")).mode & 0o777).toBe(
+      0o600,
+    );
+  });
 });

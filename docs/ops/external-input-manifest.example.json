@@ -1,0 +1,32 @@
+{
+  "envAlias": "staging-example",
+  "evidenceDir": "/ABS/PATH/OUTSIDE/REPO/solarsimz-ops-artifacts/evidence/YYYY-MM-DD",
+  "actions": [
+    {
+      "type": "import-measurements",
+      "mode": "dry-run",
+      "db": "/ABS/PATH/OUTSIDE/REPO/offline-target.db",
+      "tenant": "REPLACE_TENANT",
+      "fid": "REPLACE_FID",
+      "csv": "/ABS/PATH/OUTSIDE/REPO/approved.csv",
+      "actor": "REPLACE_ACTOR",
+      "calculationVersion": "REPLACE_VERSION",
+      "expectedSha256": "REPLACE_HEX64"
+    },
+    {
+      "type": "verify-webhook-config",
+      "url": "https://REPLACE_HOST/path",
+      "secret": "REPLACE_SECRET_MIN_8",
+      "hostAllowlist": "REPLACE_HOST"
+    },
+    {
+      "type": "audit-migration-011",
+      "db": "/ABS/PATH/OUTSIDE/REPO/env-offline.db",
+      "envAlias": "staging"
+    },
+    {
+      "type": "migrate-rehearsal",
+      "sourceDb": "/ABS/PATH/OUTSIDE/REPO/deid-or-approved-offline.db"
+    }
+  ]
+}
