@@ -41,3 +41,61 @@
  * 편집 모달의 등록 실패 메시지 — 원본에 없는 클론 전용 요소.
  * ------------------------------------------------------------ */
 .editError{margin:0 2rem .6rem;padding:.5rem .8rem;border:1px solid #e2557a;border-radius:.3rem;background:rgba(226,85,122,.12);color:#ffb3c6;font-size:.95rem}
+
+/* 조회 전용 안내 */
+.firmReadonlyNotice{margin:0 0 .8rem;padding:.55rem .8rem;border:1px solid rgba(255,200,80,.35);border-radius:.35rem;background:rgba(255,200,80,.08);color:#ffd27a;font-size:.95rem}
+
+/* 키보드 포커스 표시 */
+.deskAct:focus-visible,
+.modalAct:focus-visible,
+.modalClose:focus-visible,
+.firmCard:focus-visible,
+.desk thead th.sort:focus-visible{
+  outline:2px solid #5b8cff;
+  outline-offset:2px;
+}
+
+/* 표는 좁은 화면에서 페이지 전체를 밀지 않고 영역 안에서만 가로 스크롤 */
+.deskArea{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#deskTable{min-width:64rem}
+
+.firmCardList{display:none;gap:.7rem;margin:0 0 1rem}
+.firmCard{
+  display:grid;gap:.35rem;padding:.85rem .95rem;border:1px solid rgba(255,255,255,.12);
+  border-radius:.45rem;background:rgba(0,0,29,.45);color:#eee;text-align:left;width:100%;
+}
+.firmCardName{font-size:1.05rem;font-weight:600}
+.firmCardMeta{display:flex;flex-wrap:wrap;gap:.45rem .8rem;font-size:.9rem;color:#b7b7c7}
+.firmCardMeta span{min-width:0;overflow-wrap:anywhere}
+
+@media (max-width:768px){
+  html,body{overflow-x:hidden}
+  .firmSearchBar,.deskStat,.deskTool,.deskPages{flex-wrap:wrap}
+  .deskTool{gap:.4rem}
+  .firmCardList{display:grid}
+  #deskTable thead th:nth-child(n+5),
+  #deskTable tbody td:nth-child(n+5){display:none}
+  #deskTable{min-width:0;width:100%}
+  #modal:not(.disable) .editForm{
+    grid-template-columns:minmax(5.5rem,1fr) minmax(0,2.2fr)!important;
+  }
+  #modal:not(.disable) .modalBox{
+    width:min(100vw - 1.2rem,34rem);
+    max-height:calc(100vh - 1.2rem);
+    overflow:auto;
+  }
+  #modal:not(.disable) .editForm input,
+  #modal:not(.disable) .editForm select{
+    max-width:100%;
+  }
+  .editError{margin:0 .8rem .6rem;overflow-wrap:anywhere}
+}
+
+@media (max-width:420px){
+  #modal:not(.disable) .editForm{
+    grid-template-columns:1fr!important;
+  }
+  #modal:not(.disable) .editForm > span:nth-child(odd){
+    margin-top:.35rem;
+  }
+}

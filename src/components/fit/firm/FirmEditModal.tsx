@@ -1,7 +1,8 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { FIRM_EDIT_FIELDS, type FirmEditField } from "@/components/fit/firm/firmEditFields";
+import { pressableProps } from "@/components/fit/firm/pressable";
 import { WEATHER_STATION_GROUPS } from "@/lib/fit-mocks/weather-stations";
 import type { PublicFirm } from "@/features/firms/types";
 
@@ -109,14 +110,22 @@ function FieldControl({
   field,
   value,
   onChange,
+  inputRef,
 }: {
   readonly field: FirmEditField;
   readonly value: string;
   readonly onChange: (value: string) => void;
+  readonly inputRef?: React.Ref<HTMLInputElement | HTMLSelectElement>;
 }) {
   if (field.kind === "select") {
     return (
-      <select className="eSelect" id={field.id} value={value} onChange={(event) => onChange(event.target.value)}>
+      <select
+        ref={inputRef as React.Ref<HTMLSelectElement>}
+        className="eSelect"
+        id={field.id}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      >
         {field.grouped ? (
           <>
             <option value="0">선택</option>
@@ -143,6 +152,7 @@ function FieldControl({
 
   return (
     <input
+      ref={inputRef as React.Ref<HTMLInputElement>}
       className="eInput"
       id={field.id}
       type={field.kind === "text" ? undefined : field.kind}
@@ -175,6 +185,8 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
   const [loadedState, setLoadedState] = useState<FirmModalState>(FIRM_MODAL_CLOSED);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const firstFieldRef = useRef<HTMLInputElement | HTMLSelectElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
   // 상태 객체는 열 때마다 새로 만들어지므로 참조 비교로 전환 시점을 잡는다.
   // create 는 toFormValues(null) 이 빈 객체를 돌려줘 모든 입력이 비워진다.
@@ -183,6 +195,46 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
     setValues(toFormValues(state.mode === "edit" ? state.row : null));
     setError("");
   }
+
+  useEffect(() => {
+    if (state.mode === "closed") return;
+    const focusTimer = window.setTimeout(() => {
+      firstFieldRef.current?.focus();
+    }, 0);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = [
+        ...dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ].filter(
+        (element) =>
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-disabled") !== "true" &&
+          element.tabIndex !== -1,
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [state.mode, onClose]);
 
   /**
    * 확인 버튼. 신규 등록과 기존 업체 수정을 API 로 저장한다.
@@ -231,24 +283,34 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
     setValues((current) => ({ ...current, [id]: value }));
 
   return (
-    <div className={state.mode === "closed" ? "disable" : undefined} id="modal">
+    <div
+      className={state.mode === "closed" ? "disable" : undefined}
+      id="modal"
+      aria-hidden={state.mode === "closed"}
+    >
       <div className="modal">
-        <div className="modalBox">
-          <i className="modalClose" id="modalActClose" role="button" aria-label="닫기" onClick={onClose} />
+        <div className="modalBox" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="firmEditTitle">
+          <i
+            className="modalClose"
+            id="modalActClose"
+            {...pressableProps(onClose)}
+            aria-label="닫기"
+          />
           <div className="modalContent">
-            <div className="editTitle">업체관리</div>
+            <div className="editTitle" id="firmEditTitle">업체관리</div>
             <div className="editForm">
               <input type="hidden" id="edit-mapGeo" maxLength={32} value={values["edit-mapGeo"] ?? ""} readOnly />
-              {FIRM_EDIT_FIELDS.map((field) => (
+              {FIRM_EDIT_FIELDS.map((field, index) => (
                 <Fragment key={field.id}>
                   <span className={field.tip ? "tip" : undefined} data-tip={field.tip}>
-                    {field.label}
+                    <label htmlFor={field.id}>{field.label}</label>
                   </span>
                   <span>
                     <FieldControl
                       field={field}
                       value={values[field.id] ?? ""}
                       onChange={(value) => update(field.id, value)}
+                      inputRef={index === 0 ? firstFieldRef : undefined}
                     />
                   </span>
                 </Fragment>
@@ -259,19 +321,17 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
             <p className="editError" role="alert">{error}</p>
           ) : null}
           <div className="modalTool">
-            <span className="modalAct" role="button" onClick={onOpenMap}>
+            <span className="modalAct" {...pressableProps(onOpenMap)}>
               주소검색
             </span>
             <span
               className="modalAct"
               id="modalActDone"
-              role="button"
-              aria-disabled={saving}
-              onClick={() => { if (!saving) void handleDone(); }}
+              {...pressableProps(() => { void handleDone(); }, saving)}
             >
               {saving ? "저장 중…" : "확인"}
             </span>
-            <span className="modalAct" id="modalActCancel" role="button" onClick={onClose}>
+            <span className="modalAct" id="modalActCancel" {...pressableProps(onClose)}>
               취소
             </span>
           </div>
