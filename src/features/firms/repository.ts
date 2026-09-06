@@ -113,6 +113,8 @@ function maskFirmPii(firm: PublicFirm): PublicFirm {
     pass: "",
     boss: "",
     mapGeo: "",
+    memo: "",
+    bone: "",
   };
 }
 

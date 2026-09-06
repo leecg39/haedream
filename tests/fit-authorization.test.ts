@@ -185,13 +185,22 @@ describe("FIT 업체·한전 접근 제어", () => {
   it("VIEWER와 PII 미허가 매핑은 고객정보 원문을 받지 않는다", async () => {
     const viewerResponse = await firmGET(request("/api/firm", "GET", viewerCookie));
     const viewerBody = (await viewerResponse.json()) as {
-      data: Array<{ fid: number; kepcoNo: string; phone: string; addressText: string }>;
+      data: Array<{
+        fid: number;
+        kepcoNo: string;
+        phone: string;
+        addressText: string;
+        memo: string;
+        bone: string;
+      }>;
     };
     const viewerFirm = viewerBody.data.find((row) => row.fid === 101);
     expect(viewerFirm).toMatchObject({
       kepcoNo: "******0001",
       phone: "",
       addressText: "",
+      memo: "",
+      bone: "",
     });
 
     const operatorResponse = await firmGET(request("/api/firm", "GET", operatorCookie));
