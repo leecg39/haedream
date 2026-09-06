@@ -60,7 +60,9 @@ UI/Playwright 계약 자체는 이번 후속에서 바꾸지 않았다(서버 �
 | temp DB clean migrate + seed + `kepco-worker.mjs` | pass (`processed 0`) |
 | orphan preflight 011 (자동 테스트) | fail + 원본 보존 |
 | related E2E (firm mobile + watt-firm) | 18 passed |
-| GitHub Actions remote | push 후 `quality` / `e2e-core` 확인 |
+| GitHub Actions `feat/fit-clone` run `34059247760` | **success** — `quality` ✓, `e2e-core` ✓ |
+
+Merge SHA on `origin/feat/fit-clone`: `4b95315826c4b363f6afe7aacf3f52eb09619927`
 
 ## 8. Prior round summary (bc0a40d)
 
