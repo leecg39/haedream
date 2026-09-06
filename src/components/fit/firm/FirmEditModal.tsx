@@ -185,31 +185,43 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
   }
 
   /**
-   * 확인 버튼. 신규 등록일 때만 저장한다.
-   * 기존 업체 수정 저장은 아직 범위 밖이라 예전처럼 닫기만 한다.
+   * 확인 버튼. 신규 등록과 기존 업체 수정을 API 로 저장한다.
+   * 성공 응답을 받기 전에는 모달을 닫지 않는다.
    */
   const handleDone = async () => {
-    if (state.mode !== "create") {
-      onClose();
-      return;
-    }
+    if (state.mode === "closed") return;
     setSaving(true);
     setError("");
     try {
-      const response = await fetch("/api/firm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(toCreateBody(values)),
-      });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new Error(payload?.error?.message ?? `등록에 실패했습니다. (HTTP ${response.status})`);
+      if (state.mode === "create") {
+        const response = await fetch("/api/firm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(toCreateBody(values)),
+        });
+        if (!response.ok) {
+          const payload = await response.json().catch(() => null);
+          throw new Error(payload?.error?.message ?? `등록에 실패했습니다. (HTTP ${response.status})`);
+        }
+      } else {
+        const response = await fetch(`/api/firm/${state.row.fid}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...toCreateBody(values),
+            version: state.row.version,
+          }),
+        });
+        if (!response.ok) {
+          const payload = await response.json().catch(() => null);
+          throw new Error(payload?.error?.message ?? `수정에 실패했습니다. (HTTP ${response.status})`);
+        }
       }
       onCreated();
       onClose();
     } catch (cause) {
-      console.error("업체 등록 실패:", cause);
-      setError(cause instanceof Error ? cause.message : "등록 중 문제가 발생했습니다.");
+      console.error(state.mode === "create" ? "업체 등록 실패:" : "업체 수정 실패:", cause);
+      setError(cause instanceof Error ? cause.message : "저장 중 문제가 발생했습니다.");
     } finally {
       setSaving(false);
     }

@@ -135,7 +135,8 @@ test.describe("Watt 업체관리 /firm.html", () => {
     expect(contentBox!.width).toBeGreaterThanOrEqual(820);
     expect(contentBox!.width).toBeLessThanOrEqual(840);
 
-    await page.locator("#edit-firmName").fill("QA 테스트 업체");
+    const firmName = `QA 테스트 업체 ${Date.now()}`;
+    await page.locator("#edit-firmName").fill(firmName);
     await page.locator("#edit-contract").selectOption("IGL1");
     await page.locator("#edit-kepcoNo").fill("1234567890");
     await page.locator("#edit-bone").fill("QAEMS01");
@@ -145,20 +146,28 @@ test.describe("Watt 업체관리 /firm.html", () => {
     await expect(modalBox).toBeHidden();
     await expect(page.locator(".firmDemoToast")).toContainText("확인 되었습니다.");
 
-    await page.locator("#deskInput").fill("QA 테스트 업체");
+    await page.locator("#deskInput").fill(firmName);
     await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(1);
     const added = page.locator("#deskList tr[data-fid]").first();
     await expect(added).toContainText("1234567890");
     await added.click();
-    await expect(page.locator("#edit-firmName")).toHaveValue("QA 테스트 업체");
+    await expect(page.locator("#edit-firmName")).toHaveValue(firmName);
     await page.locator("#edit-memo").fill("수정 확인");
     await page.locator("#modalActDone").click();
     await expect(page.locator("#deskList tr[data-fid]").first()).toContainText("수정 확인");
 
     await page.locator("#deskList tr[data-fid]").first().click();
+    await expect(page.locator("#edit-firmName")).toHaveValue(firmName);
     await page.locator("#edit-firmName").fill("취소된 이름");
     await page.locator("#modalActCancel").click();
-    await expect(page.locator("#deskList tr[data-fid]").first()).toContainText("QA 테스트 업체");
+    await expect(page.locator("#deskList tr[data-fid]").first()).toContainText(firmName);
+
+    // 새로고침 후에도 DB 영속이 유지되는지 확인한다.
+    await page.reload();
+    await expect(page.locator("body")).toHaveAttribute("data-firm-demo-ready", "true");
+    await page.locator("#deskInput").fill(firmName);
+    await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(1);
+    await expect(page.locator("#deskList tr[data-fid]").first()).toContainText("수정 확인");
   });
 
   test("엑셀·인쇄와 요금표·한전수집 화면 이동이 동작함", async ({ page, context }) => {
@@ -267,5 +276,33 @@ test.describe("/fit/firm steering", () => {
     await expect(page.locator("#deskInput")).toHaveValue("성신금속");
     await expect(page.locator("#deskList tr")).toHaveCount(1);
     await expect(page.locator("#deskList tr td").nth(1)).toHaveText("성신금속");
+  });
+
+  test("FIT 업체 등록·수정이 API 영속 후 새로고침에도 유지됨", async ({ page }) => {
+    await page.setViewportSize({ width: 1904, height: 913 });
+    await page.goto("/fit/firm");
+
+    const firmName = `FIT 영속 업체 ${Date.now()}`;
+    await page.locator("[data-act='add']").click();
+    await expect(page.locator("#modal")).not.toHaveClass(/disable/);
+    await page.locator("#edit-firmName").fill(firmName);
+    await page.locator("#edit-contract").selectOption("IGL1");
+    await page.locator("#edit-serviceType").selectOption("1");
+    await page.locator("#modalActDone").click();
+    await expect(page.locator("#modal")).toHaveClass(/disable/);
+
+    await page.locator(".firmSearchInput").fill(firmName);
+    await expect(page.locator("#deskList tr")).toHaveCount(1);
+    await page.locator("#deskList tr").first().click();
+    await expect(page.locator("#edit-firmName")).toHaveValue(firmName);
+    await page.locator("#edit-memo").fill("FIT 수정 메모");
+    await page.locator("#modalActDone").click();
+    await expect(page.locator("#modal")).toHaveClass(/disable/);
+    await expect(page.locator("#deskList tr").first()).toContainText("FIT 수정 메모");
+
+    await page.reload();
+    await page.locator(".firmSearchInput").fill(firmName);
+    await expect(page.locator("#deskList tr")).toHaveCount(1);
+    await expect(page.locator("#deskList tr").first()).toContainText("FIT 수정 메모");
   });
 });

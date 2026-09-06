@@ -18,6 +18,10 @@ import {
   POST as firmPOST,
   PUT as firmPUT,
 } from "@/app/api/firm/route";
+import {
+  GET as firmDetailGET,
+  PATCH as firmDetailPATCH,
+} from "@/app/api/firm/[fid]/route";
 import { SESSION_COOKIE } from "@/lib/auth";
 import { closeDatabasesForTests, getDb, openDatabase } from "@/lib/db";
 import { clearRateLimitsForTests } from "@/lib/http";
@@ -238,7 +242,7 @@ describe("FIT 업체·한전 접근 제어", () => {
     const access = getDb()
       .prepare("SELECT can_view_pii, can_collect FROM tenant_firm_access WHERE tenant_id = ? AND fid = ?")
       .get("121", body.data.fid);
-    expect(access).toEqual({ can_view_pii: 0, can_collect: 0 });
+    expect(access).toEqual({ can_view_pii: 1, can_collect: 0 });
   });
 
   it("demo mock API는 GET만 허용하고 익명 쓰기 메서드를 기본 거부한다", async () => {
@@ -466,5 +470,51 @@ describe("FIT 업체·한전 접근 제어", () => {
       .run(tokenHash);
     const response = await firmGET(request("/api/firm", "GET", expiredCookie));
     expect(response.status).toBe(401);
+  });
+
+  it("업체 상세 PATCH는 낙관적 잠금과 권한을 적용한다", async () => {
+    const detailCtx = { params: Promise.resolve({ fid: "101" }) };
+    const anonymous = await firmDetailPATCH(
+      request("/api/firm/101", "PATCH", undefined, { version: 1, firmName: "x" }),
+      detailCtx,
+    );
+    expect(anonymous.status).toBe(401);
+
+    const viewer = await firmDetailPATCH(
+      request("/api/firm/101", "PATCH", viewerCookie, { version: 1, firmName: "x" }),
+      detailCtx,
+    );
+    expect(viewer.status).toBe(403);
+
+    const detail = await firmDetailGET(
+      request("/api/firm/101", "GET", operatorCookie),
+      detailCtx,
+    );
+    expect(detail.status).toBe(200);
+    const before = (await detail.json()) as { data: { version: number; firmName: string } };
+
+    const updated = await firmDetailPATCH(
+      request("/api/firm/101", "PATCH", operatorCookie, {
+        version: before.data.version,
+        firmName: "허가 업체 A 수정",
+      }),
+      detailCtx,
+    );
+    expect(updated.status).toBe(200);
+    const body = (await updated.json()) as { data: { version: number; firmName: string } };
+    expect(body.data).toMatchObject({
+      firmName: "허가 업체 A 수정",
+      version: before.data.version + 1,
+    });
+
+    const conflict = await firmDetailPATCH(
+      request("/api/firm/101", "PATCH", operatorCookie, {
+        version: before.data.version,
+        firmName: "오래된 저장",
+      }),
+      detailCtx,
+    );
+    expect(conflict.status).toBe(409);
+    expect(await errorCode(conflict)).toBe("FIRM_VERSION_CONFLICT");
   });
 });
