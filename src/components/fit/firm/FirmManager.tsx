@@ -10,7 +10,7 @@ import { echoNumber } from "@/components/fit/reduce/format";
 import { totalPages } from "@/components/fit/stat/statUtils";
 import type { FirmListItemDto, PublicFirm } from "@/features/firms/types";
 import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { pressableProps } from "@/components/fit/firm/pressable";
 
 const FIRM_SORT_OPTIONS: readonly { readonly key: FirmSortKey; readonly label: string }[] = [
@@ -29,7 +29,6 @@ interface FirmManagerProps {
 
 export function FirmManager({ rows, canCreate = false, canUpdate = false }: FirmManagerProps) {
   const router = useRouter();
-  const addButtonRef = useRef<HTMLSpanElement | null>(null);
   const [serviceType, setServiceType] = useState(0);
   const [query, setQuery] = useState("");
   // 원본 firm.js 는 _sheet.sortTag='registTime', sortAsc=0(내림차순) 으로 시작하되
@@ -42,8 +41,12 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
   const [mapOpen, setMapOpen] = useState(false);
   const [returnFocus, setReturnFocus] = useState<HTMLElement | null>(null);
 
-  const openEdit = async (fid: number, source?: HTMLElement | null) => {
-    setReturnFocus(source ?? (document.activeElement as HTMLElement | null));
+  const captureFocus = () => {
+    setReturnFocus(document.activeElement as HTMLElement | null);
+  };
+
+  const openEdit = async (fid: number) => {
+    captureFocus();
     const response = await fetch(`/api/firm/${fid}`, { cache: "no-store" });
     if (!response.ok) {
       console.error("업체 상세 조회 실패", response.status);
@@ -55,7 +58,7 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
   };
 
   const openCreate = () => {
-    setReturnFocus(addButtonRef.current);
+    captureFocus();
     setModal({ mode: "create" });
   };
 
@@ -132,7 +135,6 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
             <div className="deskTool" id="deskTool">
               {canCreate ? (
                 <span
-                  ref={addButtonRef}
                   className="deskAct act"
                   data-act="add"
                   {...pressableProps(openCreate)}
@@ -179,9 +181,9 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
                   className="firmCard"
                   key={`card-${row.fid}`}
                   disabled={!canUpdate}
-                  onClick={(event) => {
+                  onClick={() => {
                     if (!canUpdate) return;
-                    void openEdit(row.fid, event.currentTarget);
+                    void openEdit(row.fid);
                   }}
                 >
                   <span className="firmCardName">{row.firmName}</span>
@@ -225,13 +227,13 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
                     key={row.fid}
                     tabIndex={canUpdate ? 0 : undefined}
                     aria-label={canUpdate ? `${row.firmName} 편집` : undefined}
-                    onClick={canUpdate ? (event) => void openEdit(row.fid, event.currentTarget) : undefined}
+                    onClick={canUpdate ? () => void openEdit(row.fid) : undefined}
                     onKeyDown={
                       canUpdate
                         ? (event) => {
                             if (event.key === "Enter" || event.key === " ") {
                               event.preventDefault();
-                              void openEdit(row.fid, event.currentTarget);
+                              void openEdit(row.fid);
                             }
                           }
                         : undefined
