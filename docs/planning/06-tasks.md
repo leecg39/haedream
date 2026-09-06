@@ -94,19 +94,19 @@
 
 ## Phase 4 — 한전 수집 작업 큐와 worker
 
-- [ ] **P4-T1 수집 작업 스키마·repository·엄격한 요청 계약**
+- [x] **P4-T1 수집 작업 스키마·repository·엄격한 요청 계약**
   - 담당: database/backend
   - Depends On: P3-T3
   - Worktree: `/Users/user01/Desktop/SolarSimz-worktrees/phase-4-kepco-jobs`
   - Branch: `phase/4-kepco-jobs`
   - 완료 기준: malformed/빈 입력은 전체 수집으로 바뀌지 않고, 단일 요청은 202와 jobId를 반환한다.
 
-- [ ] **P4-T2 별도 worker·중복 방지·재시도 구현**
+- [x] **P4-T2 별도 worker·중복 방지·재시도 구현**
   - 담당: backend
   - Depends On: P4-T1
   - 완료 기준: QUEUED부터 종료 상태까지 기록하며 같은 업체·기간의 활성 작업은 하나만 존재한다.
 
-- [ ] **P4-T3 화면 작업 상태와 데이터 최신성 분리**
+- [x] **P4-T3 화면 작업 상태와 데이터 최신성 분리**
   - 담당: frontend/test
   - Depends On: P4-T2
   - 완료 기준: 접수/실행/부분 성공/완료/실패와 최신 측정 시각을 서로 다르게 표시한다.
