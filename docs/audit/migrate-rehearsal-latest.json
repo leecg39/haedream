@@ -1,15 +1,13 @@
 {
-  "checkedAt": "2026-09-06T21:04:20.251Z",
+  "checkedAt": "2026-09-06T22:50:36.917Z",
   "emptyDb": true,
   "seededDb": true,
   "seededBackupRestore": true,
-  "externalSourceDb": "/var/folders/04/y54015w94szby3vf2k72l9wr0000gp/T/solarsimz-rehearsal-n90hBp/live.db",
-  "externalSourceMigrated": false,
-  "externalSourceBackupRestore": false,
-  "largeDbRehearsal": "unverified",
-  "largeDbBytes": null,
-  "failed": true,
-  "notes": [
-    "source /var/folders/04/y54015w94szby3vf2k72l9wr0000gp/T/solarsimz-rehearsal-n90hBp/live.db has -wal/-shm sidecars; pass an offline snapshot (SQLite backup/VACUUM INTO copy), not a live DB path"
-  ]
+  "externalSourceDb": "synth-1gb.db",
+  "externalSourceMigrated": true,
+  "externalSourceBackupRestore": true,
+  "largeDbRehearsal": "verified",
+  "largeDbBytes": 1051475968,
+  "failed": false,
+  "notes": []
 }

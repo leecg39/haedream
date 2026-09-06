@@ -118,6 +118,7 @@
 > Phase 5 상태: 합성 measurement/quality DTO·UTC 정규화·정정 이력·API/UI 품질 배지는 내부 검증됨.
 > Phase 8: 승인 측정 CSV dry-run/apply/reconcile **도구·합성 계약** 준비 완료 (`docs/ops/phase-8-measurement-csv-and-alerts.md`).
 > 승인된 실업체 원본 대조(P5-T1)와 7일 관찰은 외부 데이터 이용 승인 후에 완료한다.
+> 잔여 blocker·필요 입력: `docs/ops/remaining-blockers-status.md` (2026-09-07 prep).
 
 - [ ] **P5-T1 승인된 업체·계측점의 원본→정규 DB 흐름 연결**
   - 담당: backend/database
@@ -170,7 +171,8 @@
   - Depends On: P5-T3
   - 완료 기준: 운영 DB 사본 마이그레이션, 백업 무결성, 복구 후 핵심 데이터 대조가 재현 가능하다.
   - 내부 진행: 빈/시드 DB 리허설·backup/restore(인증 해시 형식·integrity_check·업체·한전요약) 자동화됨. orphan preflight(011 named CHECK)·offline snapshot/WAL 거부·seeded만 `--demo`/외부 source 비데모 검증·정직한 JSON 보고. 합성 비데모 `--source-db` 성공 검증.
-  - 미완: ≥1GB 운영 사본 경로 미제공 → `largeDbRehearsal=unverified`. 기적용 unsafe-011 외부 DB 소급 복구 불가(배포기록+적용전 백업 비교는 외부 운영 항목).
+  - 미완: 승인된 비식별 **운영** 사본 증거 전 P7-T2 체크 금지. 합성 크기 경로(2026-09-07): `largeDbRehearsal=verified`, `largeDbBytes=1051475968`, source basename `synth-1gb.db`(git 밖). 기적용 unsafe-011 외부 DB 소급 복구 불가.
+  - 준비(2026-09-07): `npm run db:offline-snapshot`, `npm run db:synthetic-large`, `npm run ops:audit-migration-011`(read-only).
 
 - [ ] **P7-T3 수집 지연·실패·스케줄 누락 감시**
   - 담당: backend/devops
@@ -179,6 +181,7 @@
   - 내부 진행: streak 수정, `lastJobActivityAt`(스케줄 전용 아님)·success/measurement/queueStall, `KEPCO_FAIL_STREAK` 양의 정수(≥1)만·시간 임계치는 유한 비음수, file alert sink·복구 테스트.
   - Phase 8: `KEPCO_ALERT_SINK=webhook` — 동기 URL/allowlist/secret 검증, alerting 시에만 DNS→entry 검증→공인 IP pin(`https.request` custom lookup, Node `all` 계약·`family`/`autoSelectFamily:false`·운영 CA 검증·SNI/Host 보존). NAT64/translated IPv6 차단. 로컬 TLS fixture로 pin/Host/SNI 검증. no-alert 시 DNS/TCP/HTTP 0회. inject 모듈은 절대경로+ALLOW_INJECT. 운영 runbook: `docs/ops/phase-8-measurement-csv-and-alerts.md`.
   - 미완: 실 webhook 송신·7일 파일럿 관찰.
+  - 준비(2026-09-07): `npm run ops:verify-webhook-config`(동기·네트워크 0회). 관찰 템플릿 `docs/ops/observation-log-template.md`.
 
 ## 전체 완료 조건
 
@@ -191,3 +194,5 @@
 
 감사 보고서: `docs/audit/2026-09-07-final-adversarial-audit.md`
 잔여 운영 인계(다른 Cursor 패널): `docs/ops/cursor-handoff-remaining-work.md`
+blocker 상태·필요 입력: `docs/ops/remaining-blockers-status.md`
+준비 증거(완료 아님): `docs/audit/2026-09-07-ops-readiness-prep.md`

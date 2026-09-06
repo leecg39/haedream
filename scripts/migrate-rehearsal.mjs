@@ -70,7 +70,7 @@ function assertOfflineSnapshot(sourcePath) {
   const shm = `${sourcePath}-shm`;
   if (existsSync(wal) || existsSync(shm)) {
     throw new RehearsalError(
-      `source ${sourcePath} has -wal/-shm sidecars; pass an offline snapshot (SQLite backup/VACUUM INTO copy), not a live DB path`,
+      `source ${path.basename(sourcePath)} has -wal/-shm sidecars; pass an offline snapshot (SQLite backup/VACUUM INTO copy), not a live DB path`,
     );
   }
 }
@@ -95,7 +95,7 @@ async function consistentCopy(sourcePath, destPath) {
       integrity[0]?.integrity_check === "ok";
     if (!ok) {
       throw new RehearsalError(
-        `integrity_check failed after backup copy of ${sourcePath}: ${JSON.stringify(integrity)}`,
+        `integrity_check failed after backup copy of ${path.basename(sourcePath)}: ${JSON.stringify(integrity)}`,
       );
     }
   } finally {
@@ -148,7 +148,7 @@ const report = {
   emptyDb: false,
   seededDb: false,
   seededBackupRestore: false,
-  externalSourceDb: args.sourceDb || null,
+  externalSourceDb: args.sourceDb ? path.basename(args.sourceDb) : null,
   externalSourceMigrated: false,
   externalSourceBackupRestore: false,
   largeDbRehearsal: "unverified",
@@ -189,9 +189,9 @@ try {
   let largeVerified = false;
   for (const source of candidates) {
     if (!existsSync(source)) {
-      report.notes.push(`source missing: ${source}`);
+      report.notes.push(`source missing: ${path.basename(source)}`);
       report.failed = true;
-      throw new RehearsalError(`source missing: ${source}`);
+      throw new RehearsalError(`source missing: ${path.basename(source)}`);
     }
     const bytes = statSync(source).size;
     const copyPath = path.join(
@@ -215,7 +215,7 @@ try {
       largeVerified = true;
     } else {
       report.notes.push(
-        `source ${source} size=${bytes} < ${LARGE_DB_BYTES}; not counted as 1.15GB rehearsal`,
+        `source ${path.basename(source)} size=${bytes} < ${LARGE_DB_BYTES}; not counted as 1.15GB rehearsal`,
       );
     }
   }

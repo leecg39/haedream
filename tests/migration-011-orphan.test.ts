@@ -311,6 +311,11 @@ describe("migration 011 orphan preflight", () => {
 describe("migrate-rehearsal offline snapshot contract", () => {
   it("live WAL sidecar 가 있으면 source 복사를 거부한다", () => {
     const directory = mkdtempSync(path.join(tmpdir(), "solarsimz-rehearsal-"));
+    const reportPath = path.join(root, "docs/audit/migrate-rehearsal-latest.json");
+    let previousReport: string | null = null;
+    if (existsSync(reportPath)) {
+      previousReport = readFileSync(reportPath, "utf8");
+    }
     try {
       const dbPath = path.join(directory, "live.db");
       const migrate = spawnSync("node", ["scripts/migrate.mjs"], {
@@ -330,6 +335,11 @@ describe("migrate-rehearsal offline snapshot contract", () => {
       expect(rehearsal.status).not.toBe(0);
       expect(rehearsal.stderr + rehearsal.stdout).toMatch(/wal|offline snapshot/i);
     } finally {
+      if (previousReport !== null) {
+        writeFileSync(reportPath, previousReport);
+      } else if (existsSync(reportPath)) {
+        unlinkSync(reportPath);
+      }
       rmSync(directory, { recursive: true, force: true });
     }
   });

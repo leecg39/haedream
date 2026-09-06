@@ -74,6 +74,8 @@ git rev-parse HEAD
 
 관련 코드/문서: `scripts/import-measurement-csv.mjs`, `scripts/lib/kepco-webhook-policy.mjs`, `scripts/lib/measurement-db-guard.mjs`, `scripts/monitor-collection-jobs.mjs`, `tests/measurement-csv-and-webhook.test.ts`, `docs/ops/phase-8-measurement-csv-and-alerts.md`.
 
+추가 준비 도구(2026-09-07, 외부 증거 대체 아님): `scripts/create-offline-db-snapshot.mjs`, `scripts/create-synthetic-large-db.mjs`, `scripts/audit-migration-011.mjs`, `scripts/verify-webhook-config.mjs`, `docs/ops/remaining-blockers-status.md`, `docs/ops/observation-log-template.md`.
+
 ---
 
 ## 4. 실제 남은 blocker와 필요한 입력

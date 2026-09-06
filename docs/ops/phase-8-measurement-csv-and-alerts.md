@@ -12,7 +12,7 @@
 | 승인 **실데이터** 원본 대조 (P5-T1) | **외부 blocker** | 승인 원본 제공 후 |
 | 수집 monitor **webhook sink 코드** | **내부 준비** | loopback·HMAC·로컬 TLS pin 경로 자동 검증 |
 | 실 webhook endpoint · 7일 관찰 (P7-T3) | **외부 blocker** | 운영 URL/비밀·관찰 기간 |
-| ≥1GB migrate rehearsal | **외부 blocker** | `largeDbRehearsal=unverified` |
+| ≥1GB migrate rehearsal | **외부 blocker** | `largeDbRehearsal=unverified` (합성 크기 도구: `db:synthetic-large`, offline: `db:offline-snapshot`) |
 
 P5/P7 체크박스는 외부 검증 없이 `[x]` 로 바꾸지 않는다.
 

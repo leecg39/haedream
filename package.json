@@ -26,8 +26,12 @@
     "db:backup": "node scripts/backup-db.mjs",
     "db:restore-verify": "node scripts/restore-db-verify.mjs",
     "db:migrate-rehearsal": "node scripts/migrate-rehearsal.mjs",
+    "db:offline-snapshot": "node scripts/create-offline-db-snapshot.mjs",
+    "db:synthetic-large": "node scripts/create-synthetic-large-db.mjs",
     "ops:monitor-kepco": "node scripts/monitor-collection-jobs.mjs",
-    "ops:import-measurements": "node scripts/import-measurement-csv.mjs"
+    "ops:import-measurements": "node scripts/import-measurement-csv.mjs",
+    "ops:audit-migration-011": "node scripts/audit-migration-011.mjs",
+    "ops:verify-webhook-config": "node scripts/verify-webhook-config.mjs"
   },
   "dependencies": {
     "agentation": "^3.0.2",
