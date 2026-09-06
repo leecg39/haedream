@@ -103,7 +103,15 @@ async function consistentCopy(sourcePath, destPath) {
   }
 }
 
-function backupAndRestore(label, dbPath, workDir) {
+/**
+ * @param {string} label
+ * @param {string} dbPath
+ * @param {string} workDir
+ * @param {{ demo?: boolean }} [options]
+ * seeded 내부 리허설만 demo 검증(--demo). 외부 --source-db snapshot 은 비데모 검증.
+ */
+function backupAndRestore(label, dbPath, workDir, options = {}) {
+  const demo = options.demo === true;
   const backupPath = path.join(workDir, `${label}-backup.db`);
   const backup = spawnSync(
     "node",
@@ -116,18 +124,21 @@ function backupAndRestore(label, dbPath, workDir) {
       backup.status ?? 1,
     );
   }
-  const verify = spawnSync(
-    "node",
-    ["scripts/restore-db-verify.mjs", backupPath, "--demo"],
-    { cwd: root, encoding: "utf8" },
-  );
+  const verifyArgs = ["scripts/restore-db-verify.mjs", backupPath];
+  if (demo) verifyArgs.push("--demo");
+  const verify = spawnSync("node", verifyArgs, {
+    cwd: root,
+    encoding: "utf8",
+  });
   if (verify.status !== 0) {
     throw new RehearsalError(
       `${label} restore-verify failed: ${verify.stderr || verify.stdout}`,
       verify.status ?? 1,
     );
   }
-  console.log(`[migrate-rehearsal] ${label} backup/restore ok`);
+  console.log(
+    `[migrate-rehearsal] ${label} backup/restore ok (demoVerify=${demo})`,
+  );
 }
 
 const args = parseArgs(process.argv);
@@ -166,7 +177,7 @@ try {
     );
   }
   run("seeded-rerun", { DATABASE_PATH: seededDb });
-  backupAndRestore("seeded", seededDb, directory);
+  backupAndRestore("seeded", seededDb, directory, { demo: true });
   report.seededDb = true;
   report.seededBackupRestore = true;
 
@@ -193,7 +204,10 @@ try {
       DATABASE_PATH: copyPath,
     });
     report.externalSourceMigrated = true;
-    backupAndRestore(`source:${path.basename(source)}`, copyPath, directory);
+    // 외부 offline snapshot 은 operator/"demo" 를 가정하지 않는다.
+    backupAndRestore(`source:${path.basename(source)}`, copyPath, directory, {
+      demo: false,
+    });
     report.externalSourceBackupRestore = true;
     if (bytes >= LARGE_DB_BYTES) {
       report.largeDbBytes = bytes;

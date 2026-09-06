@@ -1,22 +1,31 @@
 PRAGMA foreign_keys = ON;
 
--- FK 도입 전 orphan 이 있으면 조용히 버리지 않고 CHECK 제약으로 명확히 실패한다.
+-- FK 도입 전 orphan 이 있으면 조용히 버리지 않고 named CHECK 로 명확히 실패한다.
 -- (SQLite RAISE() 는 트리거 밖에서 사용할 수 없다.)
-CREATE TEMP TABLE _011_orphan_guard (
-  orphan_count INTEGER NOT NULL CHECK (orphan_count = 0)
+-- 테이블별로 분리해 운영자가 collection_jobs vs energy_measurements 를 구분할 수 있다.
+CREATE TEMP TABLE _011_orphan_collection_jobs (
+  orphan_count INTEGER NOT NULL
+    CONSTRAINT ck_011_orphan_collection_jobs CHECK (orphan_count = 0)
 );
 
-INSERT INTO _011_orphan_guard (orphan_count)
+INSERT INTO _011_orphan_collection_jobs (orphan_count)
 SELECT COUNT(*)
 FROM collection_jobs
 WHERE NOT EXISTS (SELECT 1 FROM firms WHERE firms.fid = collection_jobs.fid);
 
-INSERT INTO _011_orphan_guard (orphan_count)
+DROP TABLE _011_orphan_collection_jobs;
+
+CREATE TEMP TABLE _011_orphan_energy_measurements (
+  orphan_count INTEGER NOT NULL
+    CONSTRAINT ck_011_orphan_energy_measurements CHECK (orphan_count = 0)
+);
+
+INSERT INTO _011_orphan_energy_measurements (orphan_count)
 SELECT COUNT(*)
 FROM energy_measurements
 WHERE NOT EXISTS (SELECT 1 FROM firms WHERE firms.fid = energy_measurements.fid);
 
-DROP TABLE _011_orphan_guard;
+DROP TABLE _011_orphan_energy_measurements;
 
 -- collection_jobs.fid → firms(fid) 참조 무결성.
 CREATE TABLE collection_jobs_v2 (
