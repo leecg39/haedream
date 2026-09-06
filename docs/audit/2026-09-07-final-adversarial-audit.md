@@ -86,8 +86,10 @@ UI/Playwright 계약을 이번 패스에서 바꾸지 않았다(스크립트·�
 
 | Item | Value |
 |---|---|
-| Final merge SHA on `origin/feat/fit-clone` | `2c3d528bb65e403a274528f2655fc51c0f5cbdcc` |
-| New GitHub Actions run | `34059982086` — https://github.com/leecg39/haedream/actions/runs/34059982086 |
-| `quality` / `e2e-core` | **success** / **success** |
+| Code merge SHA | `2c3d528bb65e403a274528f2655fc51c0f5cbdcc` |
+| Code merge CI | `34059982086` — **success** (`quality` ✓, `e2e-core` ✓) |
+| CI-record merge SHA | `5dedfa035dfedb53567116ecc60b48b1ca59b6c0` |
+| CI-record merge CI | `34060200539` — **success** (`quality` ✓, `e2e-core` ✓) |
 
-Phase commits: `fe95704` (fix), `db3dd24` (docs), merge `2c3d528`.
+Phase commits: `fe95704` (fix), `db3dd24` (docs), `d7a012b` (CI record).  
+후속 tip SHA는 이 문서 갱신 병합 커밋을 따르며, 원격 Actions에서 재확인한다.
