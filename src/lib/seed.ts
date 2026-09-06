@@ -7,9 +7,10 @@ const OPERATOR_ID = "22222222-2222-4222-8222-222222222222";
 const VIEWER_ID = "33333333-3333-4333-8333-333333333333";
 const GATEWAY_A_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const GATEWAY_B_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
-const DEMO_FIRMS = [
-  { fid: 0, seq: 0, firmName: "합성 데모 업체 A", kepcoNo: "0000000001" },
-  { fid: 1662, seq: 1, firmName: "합성 데모 업체 B", kepcoNo: "0000000002" },
+export const DEMO_FIRM_ID_START = 2_000_000_000;
+export const DEMO_FIRMS = [
+  { fid: 2_000_000_001, seq: -2, firmName: "합성 데모 업체 A", kepcoNo: "0000000001" },
+  { fid: 2_000_000_002, seq: -1, firmName: "합성 데모 업체 B", kepcoNo: "0000000002" },
 ] as const;
 
 export const DEMO_CREDENTIALS = {
@@ -19,6 +20,9 @@ export const DEMO_CREDENTIALS = {
 } as const;
 
 export function seedDatabase(db: AppDatabase) {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Demo seeding is disabled in production.");
+  }
   const now = new Date().toISOString();
   const passwordHash = hashSync("demo", 10);
 
@@ -73,7 +77,21 @@ export function seedDatabase(db: AppDatabase) {
        (tenant_id, fid, can_view_pii, can_collect, created_at)
        VALUES (?, ?, 1, 1, ?)`,
     );
+    const findFirm = db.prepare(
+      "SELECT seq, firm_name, kepco_no FROM firms WHERE fid = ?",
+    );
     for (const firm of DEMO_FIRMS) {
+      const existing = findFirm.get(firm.fid) as
+        | { seq: number; firm_name: string; kepco_no: string }
+        | undefined;
+      if (
+        existing &&
+        (existing.seq !== firm.seq ||
+          existing.firm_name !== firm.firmName ||
+          existing.kepco_no !== firm.kepcoNo)
+      ) {
+        throw new Error(`reserved demo firm id collision: ${firm.fid}`);
+      }
       insertFirm.run(firm.fid, firm.seq, firm.firmName, firm.kepcoNo);
       grantFirm.run(TENANT_ID, firm.fid, now);
     }

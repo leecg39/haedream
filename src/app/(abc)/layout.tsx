@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Agentation } from "agentation";
+import { redirect } from "next/navigation";
+import { getCurrentSessionUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: { default: "ABC EMS", template: "%s · ABC EMS" },
@@ -18,7 +20,10 @@ export const metadata: Metadata = {
  * 모든 ABC 관리자 페이지가 동일 CSS 세트를 쓰므로 여기서 한 번만 로드한다
  * (fit 처럼 페이지 전환마다 CSS 를 교체할 필요가 없다).
  */
-export default function AbcRootLayout({ children }: { children: React.ReactNode }) {
+export default async function AbcRootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentSessionUser();
+  if (!user) redirect("/");
+
   return (
     <html lang="ko">
       <head>

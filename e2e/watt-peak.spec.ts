@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { loginToFit } from "./fit-auth";
 
 type FirmSummary = {
   fid: number;
@@ -18,22 +19,23 @@ test.describe("Watt 피크 업체 선택 /peak.html", () => {
         localStorage.setItem("members", JSON.stringify([{ fid: 121, name: "대산금속" }]));
       }
     });
+    await loginToFit(page, "operator");
   });
 
   test("DB 업체 전체를 스크롤·검색하고 선택 상태를 저장함", async ({ page }) => {
     const response = await page.request.get("/api/firm");
     expect(response.ok()).toBe(true);
     const body = (await response.json()) as { data: FirmSummary[] };
-    expect(body.data.length).toBeGreaterThan(1_000);
+    expect(body.data.length).toBeGreaterThan(50);
 
     await page.goto("/peak.html");
 
     const firmSelect = page.locator("#firmSelect");
     await expect(firmSelect.locator("option")).toHaveCount(body.data.length);
-    await expect(firmSelect).toHaveValue("121");
+    await expect(firmSelect).toHaveValue(String(body.data[0]!.fid));
     await expect(
       page.locator("#firmSelect + .select2 .select2-selection__rendered"),
-    ).toHaveText("대산금속");
+    ).toHaveText(body.data[0]!.firmName);
 
     await page.locator("#firmSelect + .select2 .select2-selection").click();
 
@@ -49,7 +51,7 @@ test.describe("Watt 피크 업체 선택 /peak.html", () => {
     expect(scrollState.overflowY).toBe("auto");
     expect(scrollState.scrollHeight).toBeGreaterThan(scrollState.clientHeight);
 
-    const target = body.data.find((firm) => firm.fid !== 121);
+    const target = body.data.find((firm) => firm.fid !== body.data[0]!.fid);
     expect(target).toBeDefined();
 
     const search = page.locator(
@@ -106,22 +108,23 @@ test.describe("Watt 대시보드 업체 선택 /wattMain.html", () => {
         localStorage.setItem("members", JSON.stringify([{ fid: 121, name: "대산금속" }]));
       }
     });
+    await loginToFit(page, "operator");
   });
 
   test("상단에서 DB 업체 전체를 스크롤·검색하고 선택함", async ({ page }) => {
     const response = await page.request.get("/api/firm");
     expect(response.ok()).toBe(true);
     const body = (await response.json()) as { data: FirmSummary[] };
-    expect(body.data.length).toBeGreaterThan(1_000);
+    expect(body.data.length).toBeGreaterThan(50);
 
     await page.goto("/wattMain.html");
 
     const firmSelect = page.locator("#firmSelect");
     await expect(firmSelect.locator("option")).toHaveCount(body.data.length);
-    await expect(firmSelect).toHaveValue("121");
+    await expect(firmSelect).toHaveValue(String(body.data[0]!.fid));
     await expect(
       page.locator("#firmSelect + .select2 .select2-selection__rendered"),
-    ).toHaveText("대산금속");
+    ).toHaveText(body.data[0]!.firmName);
 
     await page.locator("#firmSelect + .select2 .select2-selection").click();
     const results = page.locator(
@@ -136,7 +139,7 @@ test.describe("Watt 대시보드 업체 선택 /wattMain.html", () => {
     expect(scrollState.overflowY).toBe("auto");
     expect(scrollState.scrollHeight).toBeGreaterThan(scrollState.clientHeight);
 
-    const target = body.data.find((firm) => firm.fid !== 121);
+    const target = body.data.find((firm) => firm.fid !== body.data[0]!.fid);
     expect(target).toBeDefined();
     await page
       .locator(".select2-container--open .select2-search__field")

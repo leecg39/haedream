@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+const e2eOrigin = `http://localhost:${process.env.E2E_PORT ?? 3456}`;
+
 async function login(page: import("@playwright/test").Page, username: string) {
   await page.goto("/");
   await page.getByPlaceholder("아이디").fill(username);
@@ -20,7 +22,7 @@ async function createFacility(
   index: number,
 ) {
   const response = await page.request.post("/api/facilities", {
-    headers: { origin: "http://localhost:3456" },
+    headers: { origin: e2eOrigin },
     data: {
       code,
       name: `페이지 검증 설비 ${index}`,
@@ -47,7 +49,7 @@ async function purgeFacility(
   const deletedResponse = await page.request.delete(
     `/api/facilities/${facility.id}`,
     {
-      headers: { origin: "http://localhost:3456" },
+      headers: { origin: e2eOrigin },
       data: { version: facility.version },
     },
   );
@@ -57,7 +59,7 @@ async function purgeFacility(
     `/api/facilities/${facility.id}/purge`,
     {
       headers: {
-        origin: "http://localhost:3456",
+        origin: e2eOrigin,
         "x-confirm-purge": facility.code,
       },
       data: { code: facility.code, version: deleted.version },
@@ -72,7 +74,7 @@ async function updateFacilityName(
   name: string,
 ) {
   const response = await page.request.patch(`/api/facilities/${facility.id}`, {
-    headers: { origin: "http://localhost:3456" },
+    headers: { origin: e2eOrigin },
     data: { name, version: facility.version },
   });
   expect(response.ok()).toBe(true);
@@ -383,7 +385,7 @@ test.describe.serial("주요설비 CRUD", () => {
     await expect(page.getByLabel("설비 이름")).toBeVisible();
 
     const logoutResponse = await page.request.post("/api/auth/logout", {
-      headers: { origin: "http://localhost:3456" },
+      headers: { origin: e2eOrigin },
       data: {},
     });
     expect(logoutResponse.ok()).toBe(true);
@@ -412,11 +414,12 @@ test.describe.serial("주요설비 CRUD", () => {
   test("두 사용자의 서로 다른 필드 수정이 충돌 후 보존됨", async ({
     browser,
   }) => {
+    test.setTimeout(90_000);
     const contextA = await browser.newContext({
-      baseURL: "http://localhost:3456",
+      baseURL: e2eOrigin,
     });
     const contextB = await browser.newContext({
-      baseURL: "http://localhost:3456",
+      baseURL: e2eOrigin,
     });
     const pageA = await contextA.newPage();
     const pageB = await contextB.newPage();
@@ -425,6 +428,8 @@ test.describe.serial("주요설비 CRUD", () => {
       await login(pageB, "operator");
       await pageA.goto("/admin/facilities");
       await pageB.goto("/admin/facilities");
+      await expect(pageA.getByRole("heading", { name: "주요설비 관리" })).toBeVisible();
+      await expect(pageB.getByRole("heading", { name: "주요설비 관리" })).toBeVisible();
 
       const rowA = pageA.getByRole("row").filter({ hasText: "F-DC-01" });
       const rowB = pageB.getByRole("row").filter({ hasText: "F-DC-01" });

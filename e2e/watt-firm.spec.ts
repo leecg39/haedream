@@ -1,27 +1,29 @@
 import { expect, test } from "@playwright/test";
+import { loginToFit } from "./fit-auth";
 
 test.describe("Watt 업체관리 /firm.html", () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1904, height: 913 });
+    await loginToFit(page, "operator");
     await page.goto("/firm.html");
     await expect(page.locator("body")).toHaveAttribute("data-firm-demo-ready", "true");
   });
 
-  test("로그인 리다이렉트 없이 영상의 1,654건 업체관리 화면을 렌더링함", async ({ page }) => {
+  test("로그인 세션에서 명시적으로 허가된 합성 업체 화면을 렌더링함", async ({ page }) => {
     await expect(page).toHaveURL(/\/firm\.html$/);
     await expect(page).toHaveTitle("업체관리");
     await expect(page.locator("#leftnav .leftNav")).toBeVisible();
     await expect(page.locator("#topBar .topRightArea")).toBeVisible();
     await expect(page.locator("#firm")).toHaveClass(/active/);
     await expect(page.locator("#contentsArea")).toBeVisible();
-    await expect(page.locator("#deskLimit")).toHaveText("1 - 50 / 1,654");
+    await expect(page.locator("#deskLimit")).toHaveText("1 - 50 / 62");
     await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(50);
 
     const first = page.locator("#deskList tr[data-fid]").first();
-    await expect(first.locator("td").nth(0)).toHaveText("1661");
-    await expect(first.locator("td").nth(1)).toHaveText("(주)알앤텍_2");
-    await expect(first.locator("td").nth(2)).toHaveText("IGL1");
-    await expect(first.locator("td").nth(3)).toHaveText("0927031098");
+    await expect(first.locator("td").nth(0)).toHaveText("2000000001");
+    await expect(first.locator("td").nth(1)).toHaveText("합성 데모 업체 A");
+    await expect(first.locator("td").nth(2)).toHaveText("");
+    await expect(first.locator("td").nth(3)).toHaveText("0000000001");
     await expect(page.locator("#chargeLink")).toHaveAttribute("href", "/fit/rate-plan");
     await expect(page.locator("#researchLink")).toHaveAttribute("href", "/fit/research");
   });
@@ -50,7 +52,7 @@ test.describe("Watt 업체관리 /firm.html", () => {
     expect(scrollState.overflowY).toBe("auto");
     expect(scrollState.scrollHeight).toBeGreaterThan(scrollState.clientHeight);
 
-    const target = body.data.find((firm) => firm.fid === 1660);
+    const target = body.data.find((firm) => firm.firmName === "합성 QA 업체 001");
     expect(target).toBeDefined();
     await page
       .locator(".select2-container--open .select2-search__field")
@@ -107,7 +109,7 @@ test.describe("Watt 업체관리 /firm.html", () => {
     await page.locator("#deskInput").fill("");
     await page.locator("#serviceType").selectOption("3");
     const lowRows = page.locator("#deskList tr[data-fid]");
-    await expect(lowRows).toHaveCount(50);
+    await expect(lowRows).toHaveCount(20);
     expect(await lowRows.evaluateAll((rows) => rows.every((row) => row.children.item(11)?.textContent === "저압"))).toBe(true);
 
     await page.locator("#serviceType").selectOption("0");
@@ -118,8 +120,8 @@ test.describe("Watt 업체관리 /firm.html", () => {
     expect(ids).toEqual([...ids].sort((a, b) => a - b));
 
     await page.locator("#deskPages .deskPage").filter({ hasText: /^2$/ }).click();
-    await expect(page.locator("#deskLimit")).toHaveText("51 - 100 / 1,654");
-    await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(50);
+    await expect(page.locator("#deskLimit")).toHaveText("51 - 62 / 62");
+    await expect(page.locator("#deskList tr[data-fid]")).toHaveCount(12);
   });
 
   test("추가·수정·취소 업체관리 모달이 영상 크기와 필드 구성을 유지함", async ({ page }) => {
@@ -192,6 +194,10 @@ test.describe("Watt 업체관리 /firm.html", () => {
 });
 
 test.describe("/fit/firm steering", () => {
+  test.beforeEach(async ({ page }) => {
+    await loginToFit(page, "operator");
+  });
+
   // 이전에는 편집 팝업을 뷰포트 1/3 폭·1열로 좁히는 override 를 두고 그 값을
   // 검증했다. 이후 레퍼런스 이미지 피드백으로 원본 deskLib.css 의 넓은 2열
   // 그리드(`.editForm{grid-template-columns:1fr 2.4fr 1fr 2.4fr}`)로 되돌렸으므로

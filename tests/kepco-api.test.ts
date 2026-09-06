@@ -73,6 +73,8 @@ describe("kepco API", () => {
     expect(body.cat).toBe(1);
     expect(Array.isArray(body.data)).toBe(true);
     expect(body.data.length).toBeGreaterThan(0);
+    expect(body.data.every((row: { kepcoNo: string }) => String(row.kepcoNo).trim() !== "")).toBe(true);
+    expect(body.data.some((row: { fid: number }) => row.fid === 1655)).toBe(false);
     const row = body.data[0];
     expect(row).toHaveProperty("fid");
     expect(row).toHaveProperty("firmName");

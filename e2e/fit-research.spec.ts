@@ -48,4 +48,47 @@ test.describe("한전데이터 수집 (/fit/research)", () => {
     // E2E DB는 fresh 하므로 어떤 업체도 수집 내역이 없다.
     await expect(page.locator("#researchData")).toContainText("수집된 데이터가 없습니다");
   });
+
+  test("보호 API 403은 패널 오류 상태로 표시한다", async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.route("**/api/kepco/status**", (route) => route.fulfill({
+      status: 403,
+      contentType: "application/json",
+      body: JSON.stringify({ error: { message: "조회 권한이 없습니다." } }),
+    }));
+    const statusResponse = page.waitForResponse((response) =>
+      response.url().includes("/api/kepco/status"),
+    );
+    await page.goto("/fit/research");
+    expect((await statusResponse).status()).toBe(403);
+    await expect(page.locator("#researchError")).toContainText("조회 권한이 없습니다", {
+      timeout: 15_000,
+    });
+    await expect(page.locator("#researchInfo select option")).toHaveCount(0);
+  });
+
+  test("보호 API 500 비 JSON 응답도 패널 오류 상태로 표시한다", async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.route("**/api/kepco/status**", (route) => route.fulfill({
+      status: 500,
+      contentType: "text/plain",
+      body: "upstream unavailable",
+    }));
+    await page.goto("/fit/research");
+    await expect(page.locator("#researchError")).toContainText("업체 수집 상태를 불러오지 못했습니다", {
+      timeout: 15_000,
+    });
+    await expect(page.locator("#researchInfo select option")).toHaveCount(0);
+  });
+
+  test("보호 API 401은 로그인 만료 화면으로 이동한다", async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.route("**/api/kepco/status**", (route) => route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: JSON.stringify({ error: { message: "로그인이 필요합니다." } }),
+    }));
+    await page.goto("/fit/research");
+    await expect(page).toHaveURL(/\/fit\/login$/, { timeout: 15_000 });
+  });
 });

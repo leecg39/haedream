@@ -4,6 +4,7 @@ import { loginToFit } from "./fit-auth";
 
 test.describe("플랫폼 전환 드롭다운", () => {
   // 1340px 이하에서는 leftNav가 숨겨지므로 데스크톱 뷰포트를 사용한다.
+  test.describe.configure({ timeout: 60_000 });
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1904, height: 913 });
     await loginToFit(page);

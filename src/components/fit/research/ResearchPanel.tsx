@@ -2,6 +2,7 @@
 
 import { LIB_STYLES, PageStyles } from "@/components/fit/shared/PageStyles";
 import { echoNumber } from "@/components/fit/reduce/format";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface KepcoFirmStatus {
@@ -61,51 +62,127 @@ function withCommas(value: string) {
   return Number.isFinite(num) && value !== "" ? echoNumber(num) : value || "-";
 }
 
+class ProtectedApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+interface ProtectedPayload<T> {
+  readonly data?: T;
+  readonly error?: { readonly message?: string };
+}
+
+async function readProtectedData<T>(response: Response, fallback: string): Promise<T> {
+  let payload: ProtectedPayload<T> | null = null;
+  try {
+    payload = (await response.json()) as ProtectedPayload<T>;
+  } catch {
+    payload = null;
+  }
+  if (!response.ok) {
+    throw new ProtectedApiError(
+      response.status,
+      payload?.error?.message ?? fallback,
+    );
+  }
+  if (!payload || payload.data === undefined) {
+    throw new ProtectedApiError(500, fallback);
+  }
+  return payload.data;
+}
+
+function messageOf(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
 export function ResearchPanel({ canCollect = false }: { readonly canCollect?: boolean }) {
+  const router = useRouter();
   const [tab, setTab] = useState<"charges" | "quarter">("charges");
   const [firms, setFirms] = useState<KepcoFirmStatus[]>([]);
   const [selectedFid, setSelectedFid] = useState<number | null>(null);
   const [firmData, setFirmData] = useState<KepcoFirmData | null>(null);
   const [collecting, setCollecting] = useState(false);
   const [collectMessage, setCollectMessage] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const loadStatus = useCallback(async () => {
     const res = await fetch("/api/kepco/status", { cache: "no-store" });
-    const body = (await res.json()) as { data: KepcoFirmStatus[] };
-    setFirms(body.data);
-    return body.data;
+    const data = await readProtectedData<unknown>(
+      res,
+      "업체 수집 상태를 불러오지 못했습니다.",
+    );
+    if (!Array.isArray(data)) {
+      throw new ProtectedApiError(500, "업체 수집 상태를 불러오지 못했습니다.");
+    }
+    return data as KepcoFirmStatus[];
   }, []);
 
   const loadFirmData = useCallback(async (fid: number) => {
     const res = await fetch(`/api/kepco/firm/${fid}`, { cache: "no-store" });
-    const body = (await res.json()) as { data: KepcoFirmData };
-    setFirmData(body.data);
+    const data = await readProtectedData<KepcoFirmData>(
+      res,
+      "업체 수집 데이터를 불러오지 못했습니다.",
+    );
+    return data;
   }, []);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      const list = await loadStatus();
-      if (cancelled || list.length === 0) return;
-      const stored = Number(globalThis.localStorage?.getItem("fid"));
-      const preferred = list.find((row) => row.fid === stored) ?? list[0];
-      setSelectedFid(preferred.fid);
-    })();
+    void loadStatus()
+      .then((list) => {
+        if (cancelled) return;
+        setFirms(list);
+        setLoadError(null);
+        if (list.length === 0) {
+          setSelectedFid(null);
+          return;
+        }
+        const stored = Number(globalThis.localStorage?.getItem("fid"));
+        const preferred = list.find((row) => row.fid === stored) ?? list[0];
+        setSelectedFid(preferred.fid);
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          if (error instanceof ProtectedApiError && error.status === 401) {
+            router.replace("/fit/login");
+          }
+          setFirms([]);
+          setSelectedFid(null);
+          setFirmData(null);
+          setLoadError(messageOf(error, "업체 수집 상태를 불러오지 못했습니다."));
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [loadStatus]);
+  }, [loadStatus, router]);
 
   useEffect(() => {
     if (selectedFid == null) return;
     let cancelled = false;
-    (async () => {
-      if (!cancelled) await loadFirmData(selectedFid);
-    })();
+    void loadFirmData(selectedFid)
+      .then((data) => {
+        if (!cancelled) {
+          setFirmData(data);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          if (error instanceof ProtectedApiError && error.status === 401) {
+            router.replace("/fit/login");
+          }
+          setFirmData(null);
+          setLoadError(messageOf(error, "업체 수집 데이터를 불러오지 못했습니다."));
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [selectedFid, loadFirmData]);
+  }, [selectedFid, loadFirmData, router]);
 
   const selected = useMemo(() => firms.find((row) => row.fid === selectedFid) ?? null, [firms, selectedFid]);
 
@@ -119,11 +196,21 @@ export function ResearchPanel({ canCollect = false }: { readonly canCollect?: bo
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ fid: selectedFid }),
       });
-      const body = (await res.json()) as { data?: { status: string; message: string }[] };
-      const result = body.data?.[0];
+      const data = await readProtectedData<Array<{ status: string; message: string }>>(
+        res,
+        "한전 수집 요청을 처리하지 못했습니다.",
+      );
+      const result = data[0];
       setCollectMessage(result ? `${STATUS_LABEL[result.status as keyof typeof STATUS_LABEL] ?? result.status}: ${result.message}` : null);
-      await loadStatus();
-      await loadFirmData(selectedFid);
+      const firms = await loadStatus();
+      setFirms(firms);
+      setFirmData(await loadFirmData(selectedFid));
+      setLoadError(null);
+    } catch (error) {
+      if (error instanceof ProtectedApiError && error.status === 401) {
+        router.replace("/fit/login");
+      }
+      setCollectMessage(messageOf(error, "한전 수집 요청을 처리하지 못했습니다."));
     } finally {
       setCollecting(false);
     }
@@ -138,6 +225,16 @@ export function ResearchPanel({ canCollect = false }: { readonly canCollect?: bo
       <PageStyles files={[...LIB_STYLES, "/fit/assets/css/deskLib.css", "/fit/assets/css/research.css"]} />
       <main className="contents" id="contentsArea">
         <h1 className="deskTitle">한전데이터 수집</h1>
+        {loadError ? (
+          <div
+            id="researchError"
+            role="alert"
+            className="researchHead"
+            style={{ padding: "10px", color: "#ff8c8c" }}
+          >
+            {loadError}
+          </div>
+        ) : null}
         <div className="researchHead" id="researchInfo">
           <span className="researchLabel">업체</span>
           <select

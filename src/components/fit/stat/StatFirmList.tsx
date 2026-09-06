@@ -66,10 +66,10 @@ function DataRow({
     >
       <StatusIcons firm={firm} />
       <span className="firmName">{firm.firmName}</span>
-      <span>{echoNumber(firm.contractLimit)}</span>
-      <span>{echoNumber(firm.thisPower)}</span>
-      <span>{firm.frugalRatio}</span>
-      <span>{echoNumber(firm.frugalMonth)}</span>
+      <span data-stat-contract>{echoNumber(firm.contractLimit)}</span>
+      <span data-stat-power>{echoNumber(firm.thisPower)}</span>
+      <span data-stat-ratio>{firm.frugalRatio}</span>
+      <span data-stat-saving>{echoNumber(firm.frugalMonth)}</span>
     </li>
   );
 }

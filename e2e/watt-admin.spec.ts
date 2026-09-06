@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { loginToFit } from "./fit-auth";
 
 const pages = [
   ["/widget-set", "대시보드 화면설정"],
@@ -14,6 +15,10 @@ const pages = [
 ] as const;
 
 test.describe("WATT 관리 화면 클론", () => {
+  test.beforeEach(async ({ page }) => {
+    await loginToFit(page);
+  });
+
   for (const [path, title] of pages) {
     test(`${title} 화면을 렌더링함`, async ({ page }) => {
       await page.goto(path);

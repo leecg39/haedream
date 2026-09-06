@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiError, assertSameOrigin, enforceRateLimit, readJson, requestId } from "@/lib/http";
 import { createFirmForUser, listFirmsForUser } from "@/features/firms/repository";
 import { firmCreateSchema } from "@/features/firms/schema";
-import { requirePermission } from "@/lib/auth";
+import { hasPermission, requirePermission } from "@/lib/auth";
 import { AppError } from "@/lib/errors";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,14 @@ export async function GET(request: NextRequest) {
   try {
     const user = requirePermission(request, "firm:read");
     enforceRateLimit(`firm:list:${user.id}`);
-    return NextResponse.json({ cat: 1, data: listFirmsForUser(user) }, {
+    return NextResponse.json({
+      cat: 1,
+      data: listFirmsForUser(user),
+      permissions: {
+        canCreate: hasPermission(user.role, "firm:create"),
+        canUpdate: hasPermission(user.role, "firm:update"),
+      },
+    }, {
       headers: { "Cache-Control": "private, no-store", "X-Request-Id": id },
     });
   } catch (error) {

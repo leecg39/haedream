@@ -33,8 +33,9 @@ const rootSettings = [
 async function openSettingsMenu(page: Page) {
   const button = page.locator(".tb-set");
   const nav = page.locator(".tbSetNav");
+  // mouseenter로 열고, click 후 mouseleave로 바로 닫히는 레이스를 피한다.
   await expect(async () => {
-    await button.click();
+    await button.hover();
     await expect(nav).toBeVisible({ timeout: 1_500 });
   }).toPass({ timeout: 15_000 });
 }
@@ -79,7 +80,6 @@ test.describe("EggFit 환경설정 셸 유지", () => {
 
   test("root 대시보드 환경설정 메뉴도 404 없이 각 플랫폼 화면으로 이동함", async ({
     page,
-    request,
   }) => {
     test.setTimeout(120_000);
     await loginToFit(page);
@@ -98,7 +98,7 @@ test.describe("EggFit 환경설정 셸 유지", () => {
       for (const [label, path] of rootSettings) {
         const link = menu.locator(`a[href="${path}"]`).filter({ hasText: label });
         await expect(link).toHaveCount(1);
-        const response = await request.get(path);
+        const response = await page.request.get(path);
         expect(response.status(), `${rootPage} → ${path}`).toBe(200);
       }
     }

@@ -162,13 +162,20 @@ export async function loginUser(
   };
 }
 
+function sessionCookieSecure() {
+  // E2E/local `next start` 는 NODE_ENV=production 이지만 http://localhost 다.
+  // Secure 쿠키를 강제하면 브라우저가 세션을 버려 /fit/peak 직후 로그인으로 튕긴다.
+  if (process.env.COOKIE_INSECURE === "true") return false;
+  return process.env.NODE_ENV === "production";
+}
+
 export function setSessionCookie(response: NextResponse, token: string) {
   response.cookies.set({
     name: SESSION_COOKIE,
     value: token,
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: sessionCookieSecure(),
     path: "/",
     maxAge: SESSION_TTL_SECONDS,
   });
@@ -274,7 +281,7 @@ export function logoutUser(
     value: "",
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: sessionCookieSecure(),
     path: "/",
     maxAge: 0,
   });

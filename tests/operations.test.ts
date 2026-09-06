@@ -68,6 +68,55 @@ describe("database operations", () => {
     }
   });
 
+  it("refuses demo seeding in production even with explicit opt-in and writes nothing", () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "solarsimz-prod-seed-"));
+    const databasePath = path.join(directory, "seed.db");
+    try {
+      const empty = openDatabase(databasePath);
+      empty.close();
+      const result = spawnSync(process.execPath, ["scripts/seed.mjs"], {
+        cwd: root,
+        env: {
+          ...process.env,
+          NODE_ENV: "production",
+          DATABASE_PATH: databasePath,
+          ALLOW_DEMO_SEED: "true",
+        },
+        encoding: "utf8",
+      });
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain("Demo seeding is disabled in production");
+
+      const verify = new Database(databasePath, { readonly: true });
+      const users = verify.prepare("SELECT COUNT(*) AS count FROM users").get() as { count: number };
+      const grants = verify.prepare("SELECT COUNT(*) AS count FROM tenant_firm_access").get() as { count: number };
+      verify.close();
+      expect(users.count).toBe(0);
+      expect(grants.count).toBe(0);
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
+  it("refuses a colliding reserved demo firm id before granting access", () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "solarsimz-seed-collision-"));
+    const databasePath = path.join(directory, "collision.db");
+    try {
+      const db = openDatabase(databasePath);
+      db.prepare(
+        "INSERT INTO firms (fid, seq, firm_name, kepco_no) VALUES (?, ?, ?, ?)",
+      ).run(2_000_000_001, 1, "기존 운영 업체", "9999999999");
+      expect(() => seedDatabase(db)).toThrow("reserved demo firm id collision");
+      const users = db.prepare("SELECT COUNT(*) AS count FROM users").get() as { count: number };
+      const grants = db.prepare("SELECT COUNT(*) AS count FROM tenant_firm_access").get() as { count: number };
+      expect(users.count).toBe(0);
+      expect(grants.count).toBe(0);
+      db.close();
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+
   it("requires an explicit persistent database path in production", () => {
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -110,7 +159,7 @@ describe("database operations", () => {
           "--tenant",
           "121",
           "--fids",
-          "0,1662",
+          "2000000001,2000000002",
           "--can-view-pii",
         ],
         { cwd: root, env: { ...process.env }, encoding: "utf8" },
@@ -125,8 +174,8 @@ describe("database operations", () => {
         .all();
       verify.close();
       expect(rows).toEqual([
-        { fid: 0, can_view_pii: 1, can_collect: 0 },
-        { fid: 1662, can_view_pii: 1, can_collect: 0 },
+        { fid: 2_000_000_001, can_view_pii: 1, can_collect: 0 },
+        { fid: 2_000_000_002, can_view_pii: 1, can_collect: 0 },
       ]);
     } finally {
       rmSync(directory, { recursive: true, force: true });

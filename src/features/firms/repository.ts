@@ -5,6 +5,7 @@ import type { PublicFirm } from "@/features/firms/types";
 import type { SessionUser } from "@/features/facilities/types";
 import { hasPermission } from "@/lib/auth";
 import { requireFirmAccess } from "@/features/firms/authorization.server";
+import { DEMO_FIRM_ID_START } from "@/lib/seed";
 
 /**
  * 업체 마스터 조회/등록.
@@ -163,8 +164,12 @@ export function createFirm(input: FirmCreateInput, db: AppDatabase = getDb()): P
   const values = firmCreateSchema.parse(input);
 
   const next = db
-    .prepare("SELECT COALESCE(MAX(fid), 0) + 1 AS fid, COALESCE(MAX(seq), 0) + 1 AS seq FROM firms")
-    .get() as { fid: number; seq: number };
+    .prepare(
+      `SELECT COALESCE(MAX(CASE WHEN fid < ? THEN fid END), 0) + 1 AS fid,
+              COALESCE(MAX(seq), 0) + 1 AS seq
+       FROM firms`,
+    )
+    .get(DEMO_FIRM_ID_START) as { fid: number; seq: number };
 
   db.prepare(
     `INSERT INTO firms (
@@ -211,7 +216,7 @@ export function createFirmForUser(
     db.prepare(
       `INSERT INTO tenant_firm_access
        (tenant_id, fid, can_view_pii, can_collect, created_at)
-       VALUES (?, ?, 1, 1, ?)`,
+       VALUES (?, ?, 0, 0, ?)`,
     ).run(user.tenantId, firm.fid, new Date().toISOString());
     return firm;
   })();

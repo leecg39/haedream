@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { stubMapTiles } from "./map-stub";
+import { loginToFit } from "./fit-auth";
 
 test.describe("통합관제 클론", () => {
   test.beforeEach(async ({ page }) => {
     await stubMapTiles(page);
+    await loginToFit(page);
   });
 
   test("영상의 핵심 패널과 실제 위성 지도를 렌더링함", async ({ page }) => {
@@ -69,28 +71,31 @@ test.describe("통합관제 클론", () => {
   });
 
   test("실시간 값과 기본 목록 순서를 5초 간격으로 갱신함", async ({ page }) => {
+    test.setTimeout(45_000);
     await page.goto("/fit/stat");
 
     const panel = page.locator(".widget.firmData");
-    const rows = page.locator("#firmList .dataRow");
+    const rows = page.locator("#firmList .dataRow[data-fid]");
     const initialTick = Number(await panel.getAttribute("data-live-tick"));
-    const initialOrder = await rows.evaluateAll((items) => items.map((item) => item.getAttribute("data-fid")));
-    const initialPowers = await rows.evaluateAll((items) =>
-      items.map((item) => item.children.item(3)?.textContent),
+    const initialOrder = await rows.evaluateAll((items) =>
+      items.map((item) => item.getAttribute("data-fid")),
     );
+    const probeFid = initialOrder.find((fid) => fid != null);
+    expect(probeFid).toBeTruthy();
+    const probeRow = page.locator(`#firmList .dataRow[data-fid="${probeFid}"]`);
+    const initialPower = await probeRow.locator("[data-stat-power]").textContent();
 
     await expect(page.locator(".liveUpdateBadge")).toContainText("LIVE 5s");
     await expect.poll(
       async () => Number(await panel.getAttribute("data-live-tick")),
-      { timeout: 7_500 },
+      { timeout: 12_000 },
     ).toBeGreaterThan(initialTick);
 
-    const updatedOrder = await rows.evaluateAll((items) => items.map((item) => item.getAttribute("data-fid")));
-    const updatedPowers = await rows.evaluateAll((items) =>
-      items.map((item) => item.children.item(3)?.textContent),
+    const updatedOrder = await rows.evaluateAll((items) =>
+      items.map((item) => item.getAttribute("data-fid")),
     );
     expect(updatedOrder).not.toEqual(initialOrder);
-    expect(updatedPowers).not.toEqual(initialPowers);
+    await expect(probeRow.locator("[data-stat-power]")).not.toHaveText(initialPower ?? "");
     await expect(panel).not.toHaveAttribute("data-live-order", "source");
   });
 

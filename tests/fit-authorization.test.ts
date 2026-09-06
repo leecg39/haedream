@@ -4,7 +4,13 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { NextRequest } from "next/server";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { GET as catchAllGET, PATCH as catchAllPATCH, POST as catchAllPOST } from "@/app/api/[...path]/route";
+import {
+  DELETE as catchAllDELETE,
+  GET as catchAllGET,
+  PATCH as catchAllPATCH,
+  POST as catchAllPOST,
+  PUT as catchAllPUT,
+} from "@/app/api/[...path]/route";
 import {
   DELETE as firmDELETE,
   GET as firmGET,
@@ -131,10 +137,10 @@ describe("FIT 업체·한전 접근 제어", () => {
       .prepare("SELECT tenant_id, fid FROM tenant_firm_access ORDER BY tenant_id, fid")
       .all();
     expect(grants).toEqual([
-      { tenant_id: "121", fid: 0 },
       { tenant_id: "121", fid: 101 },
       { tenant_id: "121", fid: 202 },
-      { tenant_id: "121", fid: 1662 },
+      { tenant_id: "121", fid: 2_000_000_001 },
+      { tenant_id: "121", fid: 2_000_000_002 },
       { tenant_id: "999", fid: 303 },
     ]);
   });
@@ -164,10 +170,10 @@ describe("FIT 업체·한전 접근 제어", () => {
     expect(response.status).toBe(200);
     const body = (await response.json()) as { data: Array<{ fid: number }> };
     expect(body.data.map((row) => row.fid).sort((a, b) => a - b)).toEqual([
-      0,
       101,
       202,
-      1662,
+      2_000_000_001,
+      2_000_000_002,
     ]);
     expect(response.headers.get("cache-control")).toBe("private, no-store");
 
@@ -217,7 +223,40 @@ describe("FIT 업체·한전 접근 제어", () => {
     const access = getDb()
       .prepare("SELECT can_view_pii, can_collect FROM tenant_firm_access WHERE tenant_id = ? AND fid = ?")
       .get("121", body.data.fid);
-    expect(access).toEqual({ can_view_pii: 1, can_collect: 1 });
+    expect(access).toEqual({ can_view_pii: 0, can_collect: 0 });
+  });
+
+  it("demo mock API는 GET만 허용하고 익명 쓰기 메서드를 기본 거부한다", async () => {
+    const cases = [
+      [catchAllPOST, "POST"],
+      [catchAllPUT, "PUT"],
+      [catchAllPATCH, "PATCH"],
+      [catchAllDELETE, "DELETE"],
+    ] as const;
+
+    for (const [handler, method] of cases) {
+      for (const pathname of ["/api/controls/121", "/api/acp/121", "/api/peak-set/121"]) {
+        const response = await handler(request(pathname, method), routeFor(pathname));
+        expect(response.status, `${method} ${pathname}`).toBe(405);
+        expect(await errorCode(response)).toBe("METHOD_NOT_ALLOWED");
+      }
+    }
+  });
+
+  it("인코딩된 firm 별칭도 인증·권한 검사를 우회하지 못한다", async () => {
+    for (const encoded of ["%66irm", "f%69rm", "fir%6d"]) {
+      const pathname = `/api/${encoded}`;
+      const anonymous = await catchAllGET(request(pathname), routeFor(pathname));
+      expect(anonymous.status, pathname).toBe(401);
+      expect(await errorCode(anonymous)).toBe("AUTH_REQUIRED");
+
+      const viewerWrite = await catchAllPATCH(
+        request(pathname, "PATCH", viewerCookie, undefined, "{malformed"),
+        routeFor(pathname),
+      );
+      expect(viewerWrite.status, pathname).toBe(403);
+      expect(await errorCode(viewerWrite)).toBe("FORBIDDEN");
+    }
   });
 
   it("업체 catch-all은 인증 후 업체 범위를 검사하고 쓰기 메서드를 기본 거부한다", async () => {
@@ -248,6 +287,24 @@ describe("FIT 업체·한전 접근 제어", () => {
     expect(unsupported.status).toBe(405);
   });
 
+  it("업체 catch-all은 정확한 root 또는 단일 fid 형태만 허용한다", async () => {
+    const detail = await catchAllGET(
+      request("/api/firm/101", "GET", operatorCookie),
+      routeFor("/api/firm/101"),
+    );
+    expect(detail.status).toBe(200);
+    const detailBody = (await detail.json()) as { data: { fid: number } };
+    expect(detailBody.data).toMatchObject({ fid: 101 });
+    expect(Array.isArray(detailBody.data)).toBe(false);
+
+    const deep = await catchAllGET(
+      request("/api/firm/101/extra", "GET", operatorCookie),
+      routeFor("/api/firm/101/extra"),
+    );
+    expect(deep.status).toBe(404);
+    expect(await errorCode(deep)).toBe("API_NOT_FOUND");
+  });
+
   it("KEPCO 상태와 상세는 세션과 업체 범위를 적용한다", async () => {
     const anonymousStatus = await catchAllGET(
       request("/api/kepco/status"),
@@ -262,10 +319,10 @@ describe("FIT 업체·한전 접근 제어", () => {
     expect(status.status).toBe(200);
     const body = (await status.json()) as { data: Array<{ fid: number }> };
     expect(body.data.map((row) => row.fid).sort((a, b) => a - b)).toEqual([
-      0,
       101,
       202,
-      1662,
+      2_000_000_001,
+      2_000_000_002,
     ]);
 
     const allowed = await catchAllGET(
@@ -346,6 +403,44 @@ describe("FIT 업체·한전 접근 제어", () => {
       .prepare("SELECT fid FROM kepco_collect_log ORDER BY id DESC LIMIT ?")
       .all((db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count - before) as Array<{ fid: number }>;
     expect(logs).toEqual([{ fid: 101 }]);
+  });
+
+  it("같은 업체의 동시 수집은 하나만 실행하고 나머지는 409로 거부한다", async () => {
+    const db = getDb();
+    const before = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    const responses = await Promise.all([
+      catchAllPOST(
+        request("/api/kepco/collect", "POST", operatorCookie, { fid: 101 }),
+        routeFor("/api/kepco/collect"),
+      ),
+      catchAllPOST(
+        request("/api/kepco/collect", "POST", operatorCookie, { fid: 101 }),
+        routeFor("/api/kepco/collect"),
+      ),
+    ]);
+    expect(responses.map((response) => response.status).sort()).toEqual([200, 409]);
+    const after = (db.prepare("SELECT COUNT(*) AS count FROM kepco_collect_log").get() as { count: number }).count;
+    expect(after - before).toBe(1);
+  });
+
+  it("업체별 수집 속도 제한은 권한·본문·범위 검사 뒤 적용된다", async () => {
+    process.env.RATE_LIMIT_DISABLED = "false";
+    clearRateLimitsForTests();
+    try {
+      const responses = [];
+      for (let index = 0; index < 6; index += 1) {
+        responses.push(await catchAllPOST(
+          request("/api/kepco/collect", "POST", operatorCookie, { fid: 101 }),
+          routeFor("/api/kepco/collect"),
+        ));
+      }
+      expect(responses.slice(0, 5).every((response) => response.status === 200)).toBe(true);
+      expect(responses[5]?.status).toBe(429);
+      expect(await errorCode(responses[5]!)).toBe("RATE_LIMITED");
+    } finally {
+      process.env.RATE_LIMIT_DISABLED = "true";
+      clearRateLimitsForTests();
+    }
   });
 
   it("만료된 세션은 보호 API에서 401이다", async () => {
