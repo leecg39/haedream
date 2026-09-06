@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { loginToFit } from "./fit-auth";
 
 test.describe("한전데이터 수집 (/fit/research)", () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1904, height: 913 });
+    await loginToFit(page);
   });
 
   test("업체 선택·탭 전환·수집 상태 표시가 동작한다", async ({ page }) => {
@@ -13,7 +15,7 @@ test.describe("한전데이터 수집 (/fit/research)", () => {
     await expect(select).toBeVisible();
     await expect(select.locator("option").first()).toBeAttached();
     const optionCount = await select.locator("option").count();
-    expect(optionCount).toBeGreaterThan(1000);
+    expect(optionCount).toBe(2);
 
     // 헤더 정보 영역
     await expect(page.locator('[data-name="kepcoCyber"]')).not.toBeEmpty();

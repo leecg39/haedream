@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 let cachedPasswords: Readonly<Record<string, string>> | null = null;
@@ -7,6 +7,10 @@ function loadKepcoPasswords(): Readonly<Record<string, string>> {
   if (cachedPasswords) return cachedPasswords;
   const credentialsPath = process.env.KEPCO_PASSWORDS_PATH
     ?? path.join(process.cwd(), "src/lib/fit-mocks/kepco-passwds.json");
+  if (!existsSync(/* turbopackIgnore: true */ credentialsPath)) {
+    cachedPasswords = Object.freeze({});
+    return cachedPasswords;
+  }
   cachedPasswords = Object.freeze(JSON.parse(
     readFileSync(/* turbopackIgnore: true */ credentialsPath, "utf8"),
   ) as Record<string, string>);

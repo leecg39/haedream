@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { buildDemoLoginResponse, buildRealMenu } from "@/lib/watt-demo";
 import peakInfoFixture from "@/lib/fixtures/peak-info-121.json";
-import { loginUser, setSessionCookie } from "@/lib/auth";
+import { loginUser, requirePermission, setSessionCookie } from "@/lib/auth";
 import { AppError } from "@/lib/errors";
 import {
   apiError,
@@ -20,9 +20,9 @@ import {
   mockWattMain,
   mockWidgets,
 } from "@/lib/watt-mocks";
-import { FIRM_ROWS } from "@/lib/fit-mocks/firm";
 import { getDb } from "@/lib/db";
-import { listFirms } from "@/features/firms/repository";
+import { findFirmForCollection, listFirmsForUser } from "@/features/firms/repository";
+import { requireFirmAccess } from "@/features/firms/authorization.server";
 import { collectFirms } from "@/lib/kepco/collect.ts";
 import { getKepcoPassword } from "@/lib/kepco/credentials.server";
 import { isKepcoBatchActive } from "@/lib/kepco/batch-lock.server";
@@ -33,6 +33,10 @@ const loginSchema = z.strictObject({
   cf: z.literal("login"),
   id: z.string().trim().min(1).max(80),
   pw: z.string().min(1).max(256),
+});
+
+const collectSchema = z.strictObject({
+  fid: z.number().int().nonnegative(),
 });
 
 const demoApiPrefixes = new Set([
@@ -85,7 +89,10 @@ const demoApiPrefixes = new Set([
 ]);
 
 function json(data: unknown, status = 200) {
-  return NextResponse.json(data, { status });
+  return NextResponse.json(data, {
+    status,
+    headers: { "Cache-Control": "private, no-store" },
+  });
 }
 
 async function handle(req: NextRequest, path: string[]) {
@@ -148,40 +155,85 @@ async function handle(req: NextRequest, path: string[]) {
   // 업체관리 목록 서브경로. `/api/firm` 자체는 src/app/api/firm/route.ts 가
   // 정적 세그먼트 우선순위로 가져가므로 여기 오지 않는다.
   if (joined.startsWith("firm/")) {
-    return json({ cat: 1, data: listFirms() });
+    try {
+      if (method === "GET") {
+        const user = requirePermission(req, "firm:read");
+        const fid = z.coerce.number().int().nonnegative().parse(path[1]);
+        requireFirmAccess(user, fid);
+        return json({ cat: 1, data: listFirmsForUser(user) });
+      }
+      requirePermission(req, "firm:update");
+      throw new AppError(
+        405,
+        "METHOD_NOT_ALLOWED",
+        "지원하지 않는 요청 방식입니다.",
+      );
+    } catch (error) {
+      return apiError(error, id);
+    }
   }
 
   // 한전 파워플래너 연동 — 업체별 수집 상태
   if (joined === "kepco/status") {
-    const db = getDb();
-    const latestLog = db.prepare(
-      `SELECT fid, started_at, finished_at, status, message
-       FROM kepco_collect_log
-       WHERE id IN (SELECT MAX(id) FROM kepco_collect_log GROUP BY fid)`,
-    ).all() as { fid: number; started_at: string; finished_at: string; status: string; message: string }[];
-    const logByFid = new Map(latestLog.map((row) => [row.fid, row]));
-    const summaries = db.prepare("SELECT fid, collected_at FROM kepco_summary").all() as {
-      fid: number;
-      collected_at: string;
-    }[];
-    const summaryByFid = new Map(summaries.map((row) => [row.fid, row]));
-    const data = FIRM_ROWS.filter((row) => row.kepcoNo).map((row) => ({
-      fid: row.fid,
-      firmName: row.firmName,
-      kepcoNo: row.kepcoNo,
-      hasPasswd: Boolean(getKepcoPassword(row.fid)),
-      lastStatus: logByFid.get(row.fid)?.status ?? null,
-      lastMessage: logByFid.get(row.fid)?.message ?? null,
-      lastCollectedAt: summaryByFid.get(row.fid)?.collected_at ?? null,
-    }));
-    return json({ cat: 1, data });
+    try {
+      if (method !== "GET") {
+        requirePermission(req, "kepco:collect");
+        throw new AppError(405, "METHOD_NOT_ALLOWED", "지원하지 않는 요청 방식입니다.");
+      }
+      const user = requirePermission(req, "kepco:read");
+      const db = getDb();
+      const firms = listFirmsForUser(user).filter((row) => row.kepcoNo);
+      const accessible = new Set(firms.map((row) => row.fid));
+      const latestLog = db.prepare(
+        `SELECT log.fid, log.started_at, log.finished_at, log.status, log.message
+         FROM kepco_collect_log log
+         INNER JOIN tenant_firm_access access
+           ON access.fid = log.fid AND access.tenant_id = ?
+         WHERE log.id IN (
+           SELECT MAX(scoped.id)
+           FROM kepco_collect_log scoped
+           INNER JOIN tenant_firm_access scoped_access
+             ON scoped_access.fid = scoped.fid AND scoped_access.tenant_id = ?
+           GROUP BY scoped.fid
+         )`,
+      ).all(user.tenantId, user.tenantId) as { fid: number; started_at: string; finished_at: string; status: string; message: string }[];
+      const logByFid = new Map(latestLog.map((row) => [row.fid, row]));
+      const summaries = db.prepare(
+        `SELECT summary.fid, summary.collected_at
+         FROM kepco_summary summary
+         INNER JOIN tenant_firm_access access
+           ON access.fid = summary.fid AND access.tenant_id = ?`,
+      ).all(user.tenantId) as { fid: number; collected_at: string }[];
+      const summaryByFid = new Map(
+        summaries.filter((row) => accessible.has(row.fid)).map((row) => [row.fid, row]),
+      );
+      const data = firms.map((row) => ({
+        fid: row.fid,
+        firmName: row.firmName,
+        kepcoNo: row.kepcoNo,
+        hasPasswd: Boolean(getKepcoPassword(row.fid)),
+        lastStatus: logByFid.get(row.fid)?.status ?? null,
+        lastMessage: logByFid.get(row.fid)?.message ?? null,
+        lastCollectedAt: summaryByFid.get(row.fid)?.collected_at ?? null,
+      }));
+      return json({ cat: 1, data });
+    } catch (error) {
+      return apiError(error, id);
+    }
   }
 
   // 한전 파워플래너 연동 — 업체별 수집 데이터 조회
   const kepcoFirmMatch = joined.match(/^kepco\/firm\/(\d+)$/);
   if (kepcoFirmMatch) {
-    const fid = Number(kepcoFirmMatch[1]);
-    const db = getDb();
+    try {
+      if (method !== "GET") {
+        requirePermission(req, "kepco:collect");
+        throw new AppError(405, "METHOD_NOT_ALLOWED", "지원하지 않는 요청 방식입니다.");
+      }
+      const user = requirePermission(req, "kepco:read");
+      const fid = Number(kepcoFirmMatch[1]);
+      requireFirmAccess(user, fid);
+      const db = getDb();
     // raw_json 에는 파워플래너 원문(고객번호 등)이 포함될 수 있어 API로 반환하지 않는다.
     const summary = db
       .prepare(
@@ -229,36 +281,37 @@ async function handle(req: NextRequest, path: string[]) {
     const contract = db
       .prepare("SELECT collected_at, cntr_knd_cd, selbill_cd FROM kepco_contract WHERE fid = ?")
       .get(fid) ?? null;
-    return json({
-      cat: 1,
-      data: { summary, contract, dailyTotal, hourly, interval, intervalMonth: month, monthly, billing },
-    });
+      return json({
+        cat: 1,
+        data: { summary, contract, dailyTotal, hourly, interval, intervalMonth: month, monthly, billing },
+      });
+    } catch (error) {
+      return apiError(error, id);
+    }
   }
 
   // 한전 파워플래너 연동 — 수동 수집 트리거 (원본의 '수집 요청' 버튼)
   if (joined === "kepco/collect") {
     try {
       if (method !== "POST") {
+        requirePermission(req, "kepco:collect");
         throw new AppError(405, "METHOD_NOT_ALLOWED", "지원하지 않는 요청 방식입니다.");
       }
+      const user = requirePermission(req, "kepco:collect");
       assertSameOrigin(req);
+      const body = collectSchema.parse(await readJson(req));
+      requireFirmAccess(user, body.fid, { collect: true });
       if (isKepcoBatchActive()) {
         throw new AppError(409, "KEPCO_BATCH_ACTIVE", "전체 한전 수집이 진행 중입니다. 완료 후 다시 요청하세요.");
       }
-      const body = (await readJson(req).catch(() => ({}))) as { fid?: number };
-      const targetRows = body.fid != null
-        ? FIRM_ROWS.filter((row) => row.fid === body.fid)
-        : FIRM_ROWS.filter((row) => row.kepcoNo && getKepcoPassword(row.fid));
-      if (targetRows.length === 0) {
-        throw new AppError(404, "NOT_FOUND", "수집 대상 업체가 없습니다.");
-      }
+      const target = findFirmForCollection(user, body.fid);
       const results = await collectFirms(
-        targetRows.map((row) => ({
-          fid: row.fid,
-          kepcoNo: row.kepcoNo,
-          kepcoPasswd: getKepcoPassword(row.fid),
-          checkDay: row.checkDay,
-        })),
+        [{
+          fid: target.fid,
+          kepcoNo: target.kepcoNo,
+          kepcoPasswd: getKepcoPassword(target.fid),
+          checkDay: target.checkDay,
+        }],
       );
       return json({ cat: 1, data: results });
     } catch (error) {

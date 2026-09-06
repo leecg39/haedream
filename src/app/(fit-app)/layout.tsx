@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Agentation } from "agentation";
+import { redirect } from "next/navigation";
 import "leaflet/dist/leaflet.css";
+import { getCurrentSessionUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: { default: "피크상태", template: "%s" },
@@ -17,7 +19,10 @@ export const metadata: Metadata = {
  * 원본 CSS 는 public/fit/assets 에서 무변환으로 서빙되어 url(../img/...) 상대경로가
  * 그대로 해석된다.
  */
-export default function FitAppRootLayout({ children }: { children: React.ReactNode }) {
+export default async function FitAppRootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentSessionUser();
+  if (!user) redirect("/fit/login");
+
   return (
     <html lang="ko">
       <head>

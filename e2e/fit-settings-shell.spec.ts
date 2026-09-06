@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { loginToFit } from "./fit-auth";
 
 const eggfitSettings = [
   ["사용자관리", "/fit/user"],
@@ -43,6 +44,7 @@ test.describe("EggFit 환경설정 셸 유지", () => {
     // 9개 페이지를 순회하므로 병렬 부하를 고려해 넉넉한 제한을 둔다.
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1904, height: 913 });
+    await loginToFit(page);
 
     for (const [label, path] of eggfitSettings) {
       await page.goto("/fit/peak");
@@ -80,6 +82,7 @@ test.describe("EggFit 환경설정 셸 유지", () => {
     request,
   }) => {
     test.setTimeout(120_000);
+    await loginToFit(page);
     const rootPages = ["/stat.html", "/firm.html", "/main.html"] as const;
 
     for (const rootPage of rootPages) {
@@ -105,6 +108,7 @@ test.describe("EggFit 환경설정 셸 유지", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1904, height: 913 });
+    await loginToFit(page);
     await page.goto("/widget-set");
 
     await expect(page).toHaveURL(/\/widget-set$/);

@@ -61,7 +61,7 @@ function withCommas(value: string) {
   return Number.isFinite(num) && value !== "" ? echoNumber(num) : value || "-";
 }
 
-export function ResearchPanel() {
+export function ResearchPanel({ canCollect = false }: { readonly canCollect?: boolean }) {
   const [tab, setTab] = useState<"charges" | "quarter">("charges");
   const [firms, setFirms] = useState<KepcoFirmStatus[]>([]);
   const [selectedFid, setSelectedFid] = useState<number | null>(null);
@@ -163,15 +163,17 @@ export function ResearchPanel() {
             {collecting ? "수집 중…" : collectionStatusLabel(selected)}
           </span>
           <span className="researchInfoText" data-name="kepcoTime">{formatCollectedAt(selected?.lastCollectedAt ?? null)}</span>
-          <button
-            className="researchAct"
-            id="researchRequest"
-            type="button"
-            disabled={collecting || !selected?.hasPasswd}
-            onClick={() => void requestCollect()}
-          >
-            {collecting ? "수집 중…" : "수집 요청"}
-          </button>
+          {canCollect ? (
+            <button
+              className="researchAct"
+              id="researchRequest"
+              type="button"
+              disabled={collecting || !selected?.hasPasswd}
+              onClick={() => void requestCollect()}
+            >
+              {collecting ? "수집 중…" : "수집 요청"}
+            </button>
+          ) : null}
         </div>
         {collectMessage && (
           <div className="researchHead" style={{ padding: "4px 10px", fontSize: 12 }}>

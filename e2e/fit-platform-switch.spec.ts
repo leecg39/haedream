@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { stubMapTiles } from "./map-stub";
+import { loginToFit } from "./fit-auth";
 
 test.describe("플랫폼 전환 드롭다운", () => {
   // 1340px 이하에서는 leftNav가 숨겨지므로 데스크톱 뷰포트를 사용한다.
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1904, height: 913 });
+    await loginToFit(page);
   });
 
   test("에그핏 셸에서 상단 로고 드롭다운으로 두 플랫폼을 오감", async ({ page }) => {

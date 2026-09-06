@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { compare } from "bcryptjs";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { AppError } from "@/lib/errors";
@@ -8,14 +9,20 @@ import type { SessionUser, UserRole } from "@/features/facilities/types";
 export const SESSION_COOKIE = "solar_session";
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 
-type Permission =
+export type Permission =
   | "facility:read"
   | "facility:create"
   | "facility:update"
   | "facility:delete"
   | "facility:restore"
   | "facility:purge"
-  | "deleted:read";
+  | "deleted:read"
+  | "firm:read"
+  | "firm:pii:read"
+  | "firm:create"
+  | "firm:update"
+  | "kepco:read"
+  | "kepco:collect";
 
 const permissions: Record<UserRole, ReadonlySet<Permission>> = {
   ADMIN: new Set([
@@ -26,6 +33,12 @@ const permissions: Record<UserRole, ReadonlySet<Permission>> = {
     "facility:restore",
     "facility:purge",
     "deleted:read",
+    "firm:read",
+    "firm:pii:read",
+    "firm:create",
+    "firm:update",
+    "kepco:read",
+    "kepco:collect",
   ]),
   OPERATOR: new Set([
     "facility:read",
@@ -34,8 +47,14 @@ const permissions: Record<UserRole, ReadonlySet<Permission>> = {
     "facility:delete",
     "facility:restore",
     "deleted:read",
+    "firm:read",
+    "firm:pii:read",
+    "firm:create",
+    "firm:update",
+    "kepco:read",
+    "kepco:collect",
   ]),
-  VIEWER: new Set(["facility:read"]),
+  VIEWER: new Set(["facility:read", "firm:read", "kepco:read"]),
 };
 
 function hashToken(token: string) {
@@ -155,8 +174,7 @@ export function setSessionCookie(response: NextResponse, token: string) {
   });
 }
 
-export function getSessionUser(request: NextRequest): SessionUser | null {
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
+export function getSessionUserByToken(token: string | undefined): SessionUser | null {
   if (!token) return null;
   const row = getDb()
     .prepare(
@@ -187,6 +205,16 @@ export function getSessionUser(request: NextRequest): SessionUser | null {
         role: row.role,
       }
     : null;
+}
+
+export function getSessionUser(request: NextRequest): SessionUser | null {
+  return getSessionUserByToken(request.cookies.get(SESSION_COOKIE)?.value);
+}
+
+/** Server Component/layout 전용 현재 세션 조회. */
+export async function getCurrentSessionUser(): Promise<SessionUser | null> {
+  const cookieStore = await cookies();
+  return getSessionUserByToken(cookieStore.get(SESSION_COOKIE)?.value);
 }
 
 export function requirePermission(

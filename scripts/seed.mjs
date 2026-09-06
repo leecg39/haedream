@@ -16,6 +16,10 @@ const viewerId = "33333333-3333-4333-8333-333333333333";
 const gatewayA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const gatewayB = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const passwordHash = hashSync("demo", 10);
+const demoFirms = [
+  { fid: 0, seq: 0, firmName: "합성 데모 업체 A", kepcoNo: "0000000001" },
+  { fid: 1662, seq: 1, firmName: "합성 데모 업체 B", kepcoNo: "0000000002" },
+];
 
 db.transaction(() => {
   db.prepare(
@@ -44,6 +48,20 @@ db.transaction(() => {
       now,
     );
   });
+
+  const insertFirm = db.prepare(
+    `INSERT OR IGNORE INTO firms (fid, seq, firm_name, kepco_no)
+     VALUES (?, ?, ?, ?)`,
+  );
+  const grantFirm = db.prepare(
+    `INSERT OR IGNORE INTO tenant_firm_access
+     (tenant_id, fid, can_view_pii, can_collect, created_at)
+     VALUES (?, ?, 1, 1, ?)`,
+  );
+  for (const firm of demoFirms) {
+    insertFirm.run(firm.fid, firm.seq, firm.firmName, firm.kepcoNo);
+    grantFirm.run(tenantId, firm.fid, now);
+  }
 
   const insertGateway = db.prepare(
     `INSERT OR IGNORE INTO gateways
