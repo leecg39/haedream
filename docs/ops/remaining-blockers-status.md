@@ -19,6 +19,8 @@
 | D | 7일 운영 관찰 | **blocked** — 스케줄러 환경·관찰 창 미지정 (`register-observation`으로 Day0 등록 가능, 완료 아님) | 일별 로그 템플릿 + synth rehearsal + registry action |
 | E | 외부 환경 migration 011 감사 | **미확인** — Hostinger의 조사한 프로젝트명·호스트명에서 대상을 식별하지 못함. 미배포로 단정할 수 없음. 실제 호스트 매핑 + offline `audit-migration-011`·pre-011 backup provenance 필요 (local-dev offline 감사 ok) | read-only 감사 CLI + external-input runner |
 
+Hostinger pass 8(커밋 `a4f58ee` 이후): 계정 웹사이트는 Builder 1·Node.js 0, 현재 VPS는 실행 컨테이너 17·Compose 프로젝트 11 중 관련 이름/필수 env 키 0건이다. 이전 VPS는 SSH 호스트 키 변경으로 검사를 중단했다. [읽기 전용 재감사](../audit/2026-09-07-hostinger-readonly-pass8.md). A~E 판정은 그대로다.
+
 2026-09-07 재개 점검: GitHub deployments/environments 각각 0건, 등록 워크플로는 CI 하나. 서버 반복 실행·운영 webhook 설정은 대상 미식별로 미확인이다. 자세한 네 항목 결과와 재개 조건은 [운영 읽기 전용 점검](../audit/2026-09-07-deployment-readonly-review.md)을 따른다.
 
 로컬 `data/solarsimz.db`(약 1.1GB)는 라이브 경로이며 WAL/SHM 이 다시 생길 수 있다. B/E 입력으로 직접 쓰지 말고, 승인 후 `npm run db:offline-snapshot` → (필요 시) `npm run db:deid-snapshot` 만 사용한다.
