@@ -14,6 +14,7 @@ export function toFirmOption(firm: Pick<PublicFirm, "fid" | "firmName">): FirmOp
 export function toFirmListItem(firm: PublicFirm): FirmListItemDto {
   return {
     fid: firm.fid,
+    dataSource: firm.dataSource,
     version: firm.version,
     firmName: firm.firmName,
     registTime: firm.registTime,

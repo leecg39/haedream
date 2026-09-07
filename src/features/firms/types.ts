@@ -5,6 +5,7 @@
  */
 
 export interface FirmRow {
+  readonly dataSource?: "PRIVATE_CSV" | "MANUAL";
   readonly fid: number;
   readonly version: number;
   readonly createdAt: string;
@@ -65,6 +66,7 @@ export interface FirmOptionDto {
  * 목록/표용 최소 필드. 연락처·주소·지도 좌표 등 PII는 넣지 않는다.
  */
 export interface FirmListItemDto {
+  readonly dataSource?: "PRIVATE_CSV" | "MANUAL";
   readonly fid: number;
   readonly version: number;
   readonly firmName: string;

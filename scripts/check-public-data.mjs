@@ -11,7 +11,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const scanRoots = [
-  path.join(root, ".next", "static"),
+  path.resolve(root, process.env.NEXT_DIST_DIR || ".next", "static"),
   path.join(root, "public"),
 ];
 

@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Playwright 보고서의 번들 파일은 생성된 산출물이다. e2e 테스트 소스는 계속 검사한다.
+    "playwright-report/**",
+    "test-results/**",
     // Mirrored production assets and third-party browser bundles.
     "public/**",
     // Vendored third-party libraries (원본 사이트 jsbn 등)는 린트하지 않는다.

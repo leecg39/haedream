@@ -65,7 +65,7 @@ export const FIRM_EDIT_FIELDS: readonly FirmEditField[] = [
   { id: "edit-firmName", label: "이름", kind: "text", maxLength: 32 },
   { id: "edit-degreeCity", label: "기상청지점", kind: "select", tip: "냉방도일/난방도일 측정 위치기준", grouped: true },
   { id: "edit-contract", label: "전력타입", kind: "select", tip: "최대전력관리 사용은 필수", options: CONTRACT_OPTIONS },
-  { id: "edit-kepcoNo", label: "한전고객번호", kind: "number", step: 1, min: 0, max: 4294967295 },
+  { id: "edit-kepcoNo", label: "한전고객번호", kind: "text", maxLength: 20 },
   { id: "edit-bone", label: "EMS 아이디", kind: "text", maxLength: 16 },
   { id: "edit-kepcoCyber", label: "한전 ID", kind: "text", tip: "한전고객번호와 다를경우 입력", maxLength: 32 },
   { id: "edit-passwd", label: "EMS 암호변경", kind: "text", maxLength: 16 },

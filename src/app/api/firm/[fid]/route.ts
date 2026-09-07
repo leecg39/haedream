@@ -5,6 +5,7 @@ import { canWriteFirmPii, findFirmForUser, updateFirmForUser } from "@/features/
 import { firmUpdateSchema } from "@/features/firms/schema";
 import { requirePermission } from "@/lib/auth";
 import { AppError } from "@/lib/errors";
+import { requireFirmAccess } from "@/features/firms/authorization.server";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ export async function PATCH(request: NextRequest, context: Ctx) {
     assertSameOrigin(request);
     enforceRateLimit(`firm:update:${user.id}`, 60);
     const fid = fidParam.parse((await context.params).fid);
+    requireFirmAccess(user, fid);
     const input = firmUpdateSchema.parse(await readJson(request));
     const updated = updateFirmForUser(user, fid, input, id);
     return NextResponse.json({ cat: 1, data: updated }, {

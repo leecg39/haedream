@@ -283,6 +283,11 @@ describe("ops readiness prep scripts", () => {
     db.prepare(
       `UPDATE firms SET phone = '01012345678', address_text = '서울시 테스트', firm_name = '실명업체' WHERE fid = 2000000001`,
     ).run();
+    const credentialMarker = "SYNTHETIC-PRIVATE-CIPHERTEXT-".repeat(400);
+    db.prepare("INSERT INTO firm_credentials (fid, encrypted_password, updated_at) VALUES (2000000001, ?, 'test')").run(credentialMarker);
+    db.exec(`UPDATE firms SET import_source_sha256 = 'synthetic-private-source-hash' WHERE fid = 2000000001;
+      INSERT INTO firm_import_runs (id,tenant_id,actor_id,source_sha256,row_count,created_count,updated_count,created_at)
+      SELECT 'test-import',tenant_id,id,'synthetic-private-source-hash',1,0,1,'test' FROM users WHERE role='ADMIN' LIMIT 1;`);
     db.pragma("journal_mode = DELETE");
     db.close();
     for (const suffix of ["-wal", "-shm", "-journal"]) {
@@ -320,12 +325,38 @@ describe("ops readiness prep scripts", () => {
         .get() as { username: string; name: string };
       expect(user.username.startsWith("deid-")).toBe(true);
       expect(user.name).toContain("DEID");
+      expect(verify.prepare("SELECT COUNT(*) AS n FROM firm_credentials").get()).toEqual({ n: 0 });
+      expect(verify.prepare("SELECT COUNT(*) AS n FROM firm_import_runs").get()).toEqual({ n: 0 });
+      expect(verify.prepare("SELECT import_source_sha256 AS hash FROM firms WHERE fid=2000000001").get()).toEqual({ hash: "" });
     } finally {
       verify.close();
     }
     const meta = JSON.parse(readFileSync(`${out}.meta.json`, "utf8"));
     expect(meta.attestationRequiredForP7T2).toBe(true);
     expect(JSON.stringify(meta)).not.toMatch(/Users\//);
+    expect(readFileSync(out).includes(Buffer.from("SYNTHETIC-PRIVATE-CIPHERTEXT-"))).toBe(false);
+    expect(readFileSync(out).includes(Buffer.from("synthetic-private-source-hash"))).toBe(false);
+    const original = new Database(source, { readonly: true, fileMustExist: true });
+    try {
+      expect(original.prepare("SELECT encrypted_password AS value FROM firm_credentials").get()).toEqual({ value: credentialMarker });
+    } finally { original.close(); }
+  });
+
+  it("deid refusal preserves an existing destination and its metadata", () => {
+    const source = path.join(directory, "source.db");
+    const out = path.join(directory, "existing.db");
+    const db = new Database(source);
+    db.exec("CREATE TABLE t (id INTEGER PRIMARY KEY)");
+    db.close();
+    const existing = Buffer.from("existing destination must survive");
+    const metadata = Buffer.from("existing metadata must survive");
+    writeFileSync(out, existing);
+    writeFileSync(`${out}.meta.json`, metadata);
+    const refused = runNode("scripts/create-deidentified-offline-snapshot.mjs",
+      ["--source", source, "--out", out, "--i-approve-deidentify"], { ALLOW_DEIDENTIFY: "1" });
+    expect(refused.status).toBe(1);
+    expect(readFileSync(out)).toEqual(existing);
+    expect(readFileSync(`${out}.meta.json`)).toEqual(metadata);
   });
 
   it("ops-external-input-runner refuses in-repo manifests and redacts webhook secrets", () => {

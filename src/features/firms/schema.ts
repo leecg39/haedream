@@ -46,7 +46,7 @@ export const firmCreateSchema = z.strictObject({
   memo: text(32),
   pass: text(16),
   boss: text(16),
-  mapGeo: text(32),
+  mapGeo: text(64),
   kepcoContract: text(16),
   registTime: text(24),
   ableLimitTime: text(10),

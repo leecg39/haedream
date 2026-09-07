@@ -40,6 +40,8 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
   const [modal, setModal] = useState<FirmModalState>(FIRM_MODAL_CLOSED);
   const [mapOpen, setMapOpen] = useState(false);
   const [returnFocus, setReturnFocus] = useState<HTMLElement | null>(null);
+  const [detailError, setDetailError] = useState("");
+  const privateCount = rows.filter((row) => row.dataSource === "PRIVATE_CSV").length;
 
   const captureFocus = () => {
     setReturnFocus(document.activeElement as HTMLElement | null);
@@ -47,15 +49,20 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
 
   const openEdit = async (fid: number) => {
     captureFocus();
-    const response = await fetch(`/api/firm/${fid}`, { cache: "no-store" });
-    if (!response.ok) {
-      console.error("업체 상세 조회 실패", response.status);
-      return;
+    setDetailError("");
+    try {
+      const response = await fetch(`/api/firm/${fid}`, { cache: "no-store" });
+      if (!response.ok) {
+        setDetailError(response.status === 403 ? "이 업체를 조회할 권한이 없습니다." : "업체 상세를 불러오지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+      const body = (await response.json()) as { data?: PublicFirm; canWritePii?: boolean };
+      if (!body.data) return;
+      // 플래그 누락은 안전 쪽(false)으로 처리한다 — PII 필드가 잠기는 쪽이 열리는 쪽보다 낫다.
+      setModal({ mode: "edit", row: body.data, canWritePii: body.canWritePii === true });
+    } catch {
+      setDetailError("서버에 연결하지 못했습니다. 다시 시도해 주세요.");
     }
-    const body = (await response.json()) as { data?: PublicFirm; canWritePii?: boolean };
-    if (!body.data) return;
-    // 플래그 누락은 안전 쪽(false)으로 처리한다 — PII 필드가 잠기는 쪽이 열리는 쪽보다 낫다.
-    setModal({ mode: "edit", row: body.data, canWritePii: body.canWritePii === true });
   };
 
   const openCreate = () => {
@@ -109,6 +116,10 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
       <PageStyles files={[...LIB_STYLES, "/fit/assets/css/deskLib.css", "/fit/clone-css/firm-extras.css"]} />
       <main className="contents" id="contentsArea">
         <h1 className="deskTitle">업체관리</h1>
+        {privateCount > 0 ? (
+          <p className="firmReadonlyNotice" role="status">실업체 데이터 {privateCount.toLocaleString("ko-KR")}건 · 관리자 전용 · 변경 사항은 저장 후 반영됩니다.</p>
+        ) : null}
+        {detailError ? <p role="alert">{detailError}</p> : null}
         {!canCreate && !canUpdate ? (
           <p className="firmReadonlyNotice" role="status">
             조회 전용 계정입니다. 업체 추가·수정 권한이 없습니다.

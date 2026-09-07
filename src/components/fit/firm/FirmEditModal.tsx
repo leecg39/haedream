@@ -218,6 +218,10 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
 
   /** 편집에서 PII 쓰기가 막혔을 때. PII 폼 필드(id) 목록과 함께 쓴다. */
   const piiLocked = state.mode === "edit" ? !state.canWritePii : false;
+  const coordinate = (values["edit-mapGeo"] ?? "").split(",").map(Number);
+  const coordinateNeedsReview = Boolean(values["edit-mapGeo"]) &&
+    (coordinate.length !== 2 || coordinate.some((value) => !Number.isFinite(value)) ||
+      Math.abs(coordinate[0]) > 180 || Math.abs(coordinate[1]) > 90);
   const piiFieldIds: readonly string[] = [
     "edit-kepcoNo",
     "edit-bone",
@@ -357,7 +361,6 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
               </p>
             ) : null}
             <div className="editForm">
-              <input type="hidden" id="edit-mapGeo" maxLength={32} value={values["edit-mapGeo"] ?? ""} readOnly />
               {FIRM_EDIT_FIELDS.map((field, index) => (
                 <Fragment key={field.id}>
                   <span className={field.tip ? "tip" : undefined} data-tip={field.tip}>
@@ -369,12 +372,19 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
                       value={values[field.id] ?? ""}
                       onChange={(value) => update(field.id, value)}
                       inputRef={index === 0 ? firstFieldRef : undefined}
-                      disabled={piiLocked && piiFieldIds.includes(field.id)}
+                      disabled={field.id === "edit-kepcoPasswd" || (piiLocked && piiFieldIds.includes(field.id))}
                     />
                   </span>
                 </Fragment>
               ))}
+              <span><label htmlFor="edit-mapGeo" title="경도, 위도 순서">지도 좌표</label></span>
+              <span>
+                <input className="eInput" id="edit-mapGeo" placeholder="경도, 위도" maxLength={64} value={values["edit-mapGeo"] ?? ""}
+                  disabled={piiLocked} onChange={(event) => update("edit-mapGeo", event.target.value)} />
+                {coordinateNeedsReview ? <small role="note">원본 좌표가 지도 범위를 벗어났습니다. 확인 후 수정해 주세요.</small> : null}
+              </span>
             </div>
+            <p className="editNotice">한전 비밀번호는 보안상 화면에 표시하지 않습니다.</p>
           </div>
           {error ? (
             <p className="editError" role="alert">{error}</p>

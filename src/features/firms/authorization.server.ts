@@ -9,6 +9,7 @@ export interface FirmAccess {
   readonly fid: number;
   readonly canViewPii: boolean;
   readonly canCollect: boolean;
+  readonly adminOnly: boolean;
 }
 
 export function getFirmAccess(
@@ -18,9 +19,9 @@ export function getFirmAccess(
 ): FirmAccess | null {
   const row = db
     .prepare(
-      `SELECT tenant_id, fid, can_view_pii, can_collect
-       FROM tenant_firm_access
-       WHERE tenant_id = ? AND fid = ?`,
+      `SELECT access.tenant_id, access.fid, access.can_view_pii, access.can_collect, firms.admin_only
+       FROM tenant_firm_access access JOIN firms ON firms.fid = access.fid
+       WHERE access.tenant_id = ? AND access.fid = ?`,
     )
     .get(tenantId, fid) as
     | {
@@ -28,6 +29,7 @@ export function getFirmAccess(
         fid: number;
         can_view_pii: number;
         can_collect: number;
+        admin_only: number;
       }
     | undefined;
 
@@ -37,6 +39,7 @@ export function getFirmAccess(
         fid: row.fid,
         canViewPii: row.can_view_pii === 1,
         canCollect: row.can_collect === 1,
+        adminOnly: row.admin_only === 1,
       }
     : null;
 }
@@ -48,7 +51,7 @@ export function requireFirmAccess(
   db: AppDatabase = getDb(),
 ): FirmAccess {
   const access = getFirmAccess(user.tenantId, fid, db);
-  if (!access) {
+  if (!access || (access.adminOnly && user.role !== "ADMIN")) {
     throw new AppError(
       403,
       "FIRM_ACCESS_DENIED",

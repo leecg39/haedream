@@ -140,6 +140,12 @@ function parseArgs(argv) {
 
 function deidentify(db) {
   const actions = [];
+  for (const table of ["firm_credentials", "firm_import_runs"]) {
+    if (tableExists(db, table)) {
+      db.exec(`DELETE FROM ${table}`);
+      actions.push(`${table}:cleared`);
+    }
+  }
   if (tableExists(db, "sessions")) {
     db.exec(`DELETE FROM sessions`);
     actions.push("sessions:cleared");
@@ -196,6 +202,7 @@ function deidentify(db) {
       "kepco_cyber",
       "kepco_contract",
       "map_geo",
+      "import_source_sha256",
     ]) {
       if (cols.has(col)) sets.push(`${col} = ''`);
     }
@@ -270,6 +277,12 @@ function deidentify(db) {
 
 function probePiiResidues(db) {
   const findings = [];
+  for (const table of ["firm_credentials", "firm_import_runs"]) {
+    if (tableExists(db, table)) {
+      const n = db.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get().c;
+      if (n > 0) findings.push(`${table}:${n}`);
+    }
+  }
   if (tableExists(db, "firms")) {
     const cols = new Set(columnNames(db, "firms"));
     if (cols.has("phone")) {
@@ -363,9 +376,10 @@ if (!args) {
   );
 } else {
   const metaPath = `${args.outPath}.meta.json`;
+  let ownsSnapshot = false;
   try {
     assertOfflineLeaf(args.sourcePath);
-    if (existsSync(args.outPath)) {
+    if (existsSync(args.outPath) || existsSync(metaPath)) {
       throw new Error("destination already exists; refuse overwrite");
     }
     mkdirSync(path.dirname(args.outPath), { recursive: true });
@@ -383,12 +397,14 @@ if (!args) {
     if (snap.status !== 0) {
       throw new Error(snap.stderr || snap.stdout || "offline snapshot failed");
     }
+    ownsSnapshot = true;
     forceOwnerReadWriteOnly(args.outPath);
 
     const db = new Database(args.outPath);
     let actions;
     try {
       db.pragma("journal_mode = DELETE");
+      db.pragma("secure_delete = ON");
       db.exec("BEGIN IMMEDIATE");
       actions = deidentify(db);
       const residues = probePiiResidues(db);
@@ -453,7 +469,7 @@ if (!args) {
       ),
     );
   } catch (error) {
-    for (const p of [args.outPath, metaPath, `${args.outPath}.meta.json`]) {
+    for (const p of ownsSnapshot ? [args.outPath, metaPath] : []) {
       if (p && existsSync(p)) {
         try {
           rmSync(p, { force: true });

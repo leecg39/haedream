@@ -26,6 +26,7 @@ import { DEMO_FIRM_ID_START } from "@/lib/seed";
 const firmSelect = `
   SELECT
     fid,
+    CASE WHEN import_source_sha256 <> '' THEN 'PRIVATE_CSV' ELSE 'MANUAL' END AS dataSource,
     version,
     created_at AS createdAt,
     created_by AS createdBy,
@@ -89,13 +90,13 @@ export function listFirmsForUser(
   const rows = db
     .prepare(
       `${firmSelect}
-       WHERE EXISTS (
+       WHERE (firms.admin_only = 0 OR ? = 'ADMIN') AND EXISTS (
          SELECT 1 FROM tenant_firm_access access
          WHERE access.fid = firms.fid AND access.tenant_id = ?
        )
        ORDER BY firms.seq`,
     )
-    .all(user.tenantId) as PublicFirm[];
+    .all(user.role, user.tenantId) as PublicFirm[];
   if (!hasPermission(user.role, "firm:pii:read")) {
     return rows.map(maskFirmPii);
   }
@@ -326,6 +327,9 @@ export function createFirmForUser(
 
   return db.transaction(() => {
     const firm = createFirm(input, db, user.id);
+    if (user.role === "ADMIN") {
+      db.prepare("UPDATE firms SET admin_only = 1 WHERE fid = ?").run(firm.fid);
+    }
     db.prepare(
       `INSERT INTO tenant_firm_access
        (tenant_id, fid, can_view_pii, can_collect, created_at)

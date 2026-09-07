@@ -7,6 +7,7 @@ import type { SessionUser } from "@/features/facilities/types";
 import { collectFirm, type CollectResult } from "@/lib/kepco/collect";
 import { getKepcoPassword } from "@/lib/kepco/credentials.server";
 import { findFirmForCollection } from "@/features/firms/repository";
+import { requireFirmAccess } from "@/features/firms/authorization.server";
 
 export type CollectionJobStatus =
   | "QUEUED"
@@ -117,6 +118,7 @@ export function getCollectionJobForUser(
   if (!job || job.tenantId !== user.tenantId) {
     throw new AppError(404, "JOB_NOT_FOUND", "수집 작업을 찾을 수 없습니다.");
   }
+  requireFirmAccess(user, job.fid, {}, db);
   return job;
 }
 
@@ -145,6 +147,7 @@ export function enqueueSingleCollectJob(
   requestId: string,
   db: AppDatabase = getDb(),
 ): CollectionJob {
+  requireFirmAccess(user, fid, { collect: true }, db);
   const firmExists = db
     .prepare(
       `SELECT 1 AS ok
