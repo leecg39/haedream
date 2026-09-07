@@ -17,9 +17,10 @@ Hostinger 인증과 현재 VPS SSH 접속은 정상이다. 그러나 확인 가�
 | Hostinger 계정 웹사이트 | 1개, Builder 유형. Node.js 웹사이트 0개. SolarSimz/haedream 이름 일치 0개. Builder라서 Node.js build·cron API는 적용되지 않아 404 응답 |
 | 현재 VPS `srv1655088` | SSH 정상. 실행 컨테이너 17개, Compose 프로젝트 11개. 컨테이너/이미지/프로젝트명에서 solar·simz·haedream·kepco·rfenms·egfit·watt 일치 0개 |
 | 현재 VPS 설정 단서 | 실행 컨테이너에서 `DATABASE_PATH`, `FIRM_CREDENTIAL_KEY_PATH`, `KEPCO_INLINE_WORKER`, `KEPCO_ALERT_*` 키 일치 0개. `/opt`, `/srv`, `/root` 4단계 이내 관련 디렉터리명 일치 0개 |
+| 현재 VPS 라우팅 | Traefik host 규칙의 고유 호스트 11개를 컨테이너와 대조. 모두 다른 프로젝트에 연결되며 SolarSimz/haedream 관련 일치 0개 |
 | 현재 VPS 용량 | 193G 중 139G 사용, 55G 여유, 72% |
 | 이전 VPS `srv1607352` | 저장된 호스트 키와 현재 제시된 ED25519 키가 달라 SSH가 중단됨. 키를 삭제하거나 우회하지 않았고 서버 검사도 수행하지 않음 |
-| GitHub | deployments 0, environments 0. 이는 별도 플랫폼 배포 부재를 증명하지 않음 |
+| GitHub | deployments 0, environments 0, GitHub Pages 미설정. 이는 별도 플랫폼 배포 부재를 증명하지 않음 |
 
 비밀값은 조회·기록하지 않았다. 컨테이너 환경변수는 지정된 키의 존재 여부만 검사했다. 서버 파일·컨테이너·DNS·환경변수·DB를 변경하지 않았고 webhook도 발송하지 않았다.
 

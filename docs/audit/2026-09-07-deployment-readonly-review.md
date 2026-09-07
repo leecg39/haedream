@@ -42,4 +42,4 @@ migration 실행, 스케줄 등록, env 수정, webhook 테스트 발송은 이 
 
 ## 2026-09-07 pass 8 갱신
 
-실업체 연동 커밋 `a4f58ee` 이후 Hostinger 계정과 현재 VPS를 다시 읽기 전용으로 조사했다. 웹사이트는 Builder 1개·Node.js 0개이며, 현재 VPS는 컨테이너 17개·Compose 프로젝트 11개에서 관련 이름과 필요한 env 키가 0건이었다. 이전 VPS는 SSH 호스트 키 변경으로 중단했다. 판정과 필요한 다음 입력은 [pass 8 감사](2026-09-07-hostinger-readonly-pass8.md)를 따른다.
+실업체 연동 커밋 `a4f58ee` 이후 Hostinger 계정과 현재 VPS를 다시 읽기 전용으로 조사했다. 웹사이트는 Builder 1개·Node.js 0개이며, 현재 VPS는 컨테이너 17개·Compose 프로젝트 11개·Traefik 호스트 11개에서 관련 이름과 필요한 env 키가 0건이었다. GitHub Pages도 설정되지 않았다. 이전 VPS는 SSH 호스트 키 변경으로 중단했다. 판정과 필요한 다음 입력은 [pass 8 감사](2026-09-07-hostinger-readonly-pass8.md)를 따른다.
