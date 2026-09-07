@@ -15,7 +15,9 @@
 | B | ≥1GB migrate/backup rehearsal | **부분** — 합성 크기 verified + local deid `1149865984` bytes rehearsal verified. **운영자 `attest-large-db` attestation 전 P7-T2 체크 금지** | offline/deid/synthetic large 도구 + external-input attestation |
 | C | 실 HTTPS webhook HMAC | **blocked** — endpoint/secret/allowlist/수신자 미제공 (`ops:external-input` 매니페스트로 실행 가능) | config 동기 검증 CLI; 송신 0회 |
 | D | 7일 운영 관찰 | **blocked** — 스케줄러 환경·관찰 창 미지정 (`register-observation`으로 Day0 등록 가능, 완료 아님) | 일별 로그 템플릿 + synth rehearsal + registry action |
-| E | 외부 환경 migration 011 감사 | **blocked** — Hostinger RO + host-rule scan: SolarSimz/haedream 호스트 **없음**; `declare-external-env` + offline `audit-migration-011`·pre-011 backup provenance 필요 (local-dev offline 감사 ok) | read-only 감사 CLI + external-input runner |
+| E | 외부 환경 migration 011 감사 | **미확인** — Hostinger의 조사한 프로젝트명·호스트명에서 대상을 식별하지 못함. 미배포로 단정할 수 없음. 실제 호스트 매핑 + offline `audit-migration-011`·pre-011 backup provenance 필요 (local-dev offline 감사 ok) | read-only 감사 CLI + external-input runner |
+
+2026-09-07 재개 점검: GitHub deployments/environments 각각 0건, 등록 워크플로는 CI 하나. 서버 반복 실행·운영 webhook 설정은 대상 미식별로 미확인이다. 자세한 네 항목 결과와 재개 조건은 [운영 읽기 전용 점검](../audit/2026-09-07-deployment-readonly-review.md)을 따른다.
 
 로컬 `data/solarsimz.db`(약 1.1GB)는 라이브 경로이며 WAL/SHM 이 다시 생길 수 있다. B/E 입력으로 직접 쓰지 말고, 승인 후 `npm run db:offline-snapshot` → (필요 시) `npm run db:deid-snapshot` 만 사용한다.
 

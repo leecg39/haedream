@@ -8,67 +8,48 @@
  * 사용:
  *   node scripts/ops-external-input-runner.mjs --manifest /path/outside/manifest.json
  *
- * actions:
- *   import-measurements | verify-webhook-config | audit-migration-011 | migrate-rehearsal
- *   | attest-large-db | register-observation | declare-external-env
- *
  * 이 runner 는 docs/planning/06-tasks.md 체크박스를 절대 자동으로 바꾸지 않는다.
  */
 import {
-  existsSync,
-  lstatSync,
-  readFileSync,
-  mkdirSync,
-  openSync,
-  closeSync,
-  fsyncSync,
-  writeFileSync,
-  renameSync,
-  chmodSync,
+  ATTEST_MIN_BYTES,
+  SafeInputError,
+  safeInputErrorMessage,
+  assertMode0600,
+  assertOpsSqliteSnapshot,
+  assertOutsideRepoPath,
+  ensureEvidenceDir,
+  force0600,
+  immutableEvidencePath,
+  requireIsoDate,
+  requireNonEmptyString,
+  requireSafeAlias,
+  requireSha256Hex,
+  writeEvidenceAtomic,
+  writeEvidenceTextAtomic,
+} from "./lib/ops-external-input-guard.mjs";
+import {
   createReadStream,
+  existsSync,
+  readFileSync,
 } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
+
+const ACTION_TYPES = new Set([
+  "import-measurements", "verify-webhook-config", "audit-migration-011",
+  "migrate-rehearsal", "attest-large-db", "register-observation", "declare-external-env",
+]);
+
+// Child tools inherit private creation permissions as well.
+process.umask(0o077);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const OWNER_RW = 0o600;
-const DEFAULT_ATTEST_MIN_BYTES = 1_000_000_000;
 
-function attestMinBytes() {
-  const raw = process.env.OPS_ATTEST_MIN_BYTES;
-  if (raw == null || raw === "") return DEFAULT_ATTEST_MIN_BYTES;
-  const n = Number(raw);
-  if (!Number.isFinite(n) || n < 1) {
-    throw new Error("OPS_ATTEST_MIN_BYTES must be a finite number >= 1");
-  }
-  return n;
-}
-
-function assertOutsideRepo(filePath, label) {
-  const resolved = path.resolve(filePath);
-  const rootResolved = path.resolve(root);
-  if (
-    resolved === rootResolved ||
-    resolved.startsWith(`${rootResolved}${path.sep}`)
-  ) {
-    throw new Error(`${label} must live outside the git worktree`);
-  }
-  return resolved;
-}
-
-function assertOfflineLeaf(filePath) {
-  const st = lstatSync(filePath);
-  if (st.isSymbolicLink() || !st.isFile()) {
-    throw new Error("snapshot must be a regular non-symlink file");
-  }
-  for (const suffix of ["-wal", "-shm", "-journal"]) {
-    if (existsSync(`${filePath}${suffix}`)) {
-      throw new Error(`snapshot has sidecar ${suffix}; refuse live/hot DB`);
-    }
-  }
-  return st;
+function die(message, code = 1) {
+  console.error(`[ops-input-runner] ${message}`);
+  process.exitCode = code;
 }
 
 async function sha256File(filePath) {
@@ -82,81 +63,36 @@ async function sha256File(filePath) {
   return hash.digest("hex");
 }
 
-function requireNonEmptyString(value, label) {
-  if (typeof value !== "string" || value.trim() === "") {
-    throw new Error(`${label} must be a non-empty string`);
-  }
-  return value.trim();
-}
-
-function requireIsoDate(value, label) {
-  const s = requireNonEmptyString(value, label);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-    throw new Error(`${label} must be YYYY-MM-DD`);
-  }
-  const t = Date.parse(`${s}T00:00:00Z`);
-  if (!Number.isFinite(t)) throw new Error(`${label} is not a valid date`);
-  return s;
-}
-
-function requireSha256Hex(value, label) {
-  const s = requireNonEmptyString(value, label).toLowerCase();
-  if (!/^[0-9a-f]{64}$/.test(s)) {
-    throw new Error(`${label} must be 64-char lowercase hex sha256`);
-  }
-  return s;
-}
-
-function die(message, code = 1) {
-  console.error(`[ops-input-runner] ${message}`);
-  process.exitCode = code;
-}
-
-function force0600(filePath) {
-  chmodSync(filePath, OWNER_RW);
-}
-
-function writeEvidenceAtomic(filePath, payload) {
-  mkdirSync(path.dirname(filePath), { recursive: true });
-  const tmp = `${filePath}.${process.pid}.${Date.now()}.tmp`;
-  const fd = openSync(tmp, "wx", OWNER_RW);
-  try {
-    writeFileSync(fd, `${JSON.stringify(payload, null, 2)}\n`);
-    fsyncSync(fd);
-  } finally {
-    closeSync(fd);
-  }
-  force0600(tmp);
-  renameSync(tmp, filePath);
-  force0600(filePath);
-}
-
 function redactPath(p) {
   if (!p) return null;
   return path.basename(String(p));
 }
 
 function loadManifest(manifestPath) {
-  const st = lstatSync(manifestPath);
-  if (st.isSymbolicLink() || !st.isFile()) {
-    throw new Error("manifest must be a regular non-symlink file");
+  const { resolved, st } = assertOutsideRepoPath(manifestPath, "manifest", {
+    mustExist: true,
+  });
+  if (!st.isFile()) {
+    throw new SafeInputError("manifest must be a regular non-symlink file");
   }
-  const resolved = path.resolve(manifestPath);
-  const rootResolved = path.resolve(root);
-  if (
-    resolved === rootResolved ||
-    resolved.startsWith(`${rootResolved}${path.sep}`)
-  ) {
-    throw new Error(
-      "manifest must live outside the git worktree (refuse in-repo secrets)",
-    );
+  assertMode0600(st, "manifest");
+  let raw;
+  const manifestText = readFileSync(resolved, "utf8");
+  try {
+    raw = JSON.parse(manifestText);
+  } catch {
+    throw new SafeInputError("manifest must contain valid JSON");
   }
-  const raw = JSON.parse(readFileSync(resolved, "utf8"));
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    throw new Error("manifest must be a JSON object");
+    throw new SafeInputError("manifest must be a JSON object");
   }
   if (!Array.isArray(raw.actions) || raw.actions.length < 1) {
-    throw new Error("manifest.actions must be a non-empty array");
+    throw new SafeInputError("manifest.actions must be a non-empty array");
+  }
+  for (const action of raw.actions) {
+    if (!ACTION_TYPES.has(action?.type)) {
+      throw new SafeInputError("unknown action type");
+    }
   }
   return { resolved, raw };
 }
@@ -169,7 +105,7 @@ function runNode(args, env = {}) {
   });
 }
 
-async function runAction(action, evidenceDir) {
+async function runAction(action, evidenceDir, runId) {
   const type = action?.type;
   if (type === "import-measurements") {
     const required = [
@@ -182,24 +118,37 @@ async function runAction(action, evidenceDir) {
       "expectedSha256",
     ];
     for (const key of required) {
-      if (!action[key]) throw new Error(`import-measurements missing ${key}`);
+      if (!action[key]) throw new SafeInputError(`import-measurements missing ${key}`);
     }
+    const dbLeaf = assertOpsSqliteSnapshot(action.db, "import-measurements.db", {
+      require0600: true,
+    });
+    const csvInfo = assertOutsideRepoPath(action.csv, "import-measurements.csv", {
+      mustExist: true,
+    });
+    if (!csvInfo.st.isFile()) {
+      throw new SafeInputError("import-measurements.csv must be a regular file");
+    }
+    assertMode0600(csvInfo.st, "import-measurements.csv");
     const mode = action.mode === "apply"
       ? "apply"
       : action.mode === "reconcile"
         ? "reconcile"
         : "dry-run";
-    const report = path.join(evidenceDir, `import-${mode}.json`);
+    const report = immutableEvidencePath(
+      evidenceDir,
+      `import-${mode}.${runId}`,
+    );
     const args = [
       "scripts/import-measurement-csv.mjs",
       "--db",
-      action.db,
+      dbLeaf.real,
       "--tenant",
       String(action.tenant),
       "--fid",
       String(action.fid),
       "--csv",
-      action.csv,
+      csvInfo.real,
       "--actor",
       String(action.actor),
       "--calculation-version",
@@ -217,6 +166,9 @@ async function runAction(action, evidenceDir) {
       body = JSON.parse(result.stdout);
     } catch {
       body = {};
+    }
+    if (existsSync(report)) {
+      force0600(report);
     }
     return {
       type,
@@ -255,24 +207,27 @@ async function runAction(action, evidenceDir) {
       errorCode: body.errorCode ?? null,
       hostAllowlistCount: body.hostAllowlistCount ?? null,
       secretLength: body.secretLength ?? null,
-      // never echo url/secret
     };
   }
 
   if (type === "audit-migration-011") {
     if (!action.db || !action.envAlias) {
-      throw new Error("audit-migration-011 requires db and envAlias");
+      throw new SafeInputError("audit-migration-011 requires db and envAlias");
     }
-    const report = path.join(
+    const alias = requireSafeAlias(action.envAlias, "envAlias");
+    const dbLeaf = assertOpsSqliteSnapshot(action.db, "audit-migration-011.db", {
+      require0600: true,
+    });
+    const report = immutableEvidencePath(
       evidenceDir,
-      `audit-011-${String(action.envAlias).replace(/[^\w.-]+/g, "_")}.json`,
+      `audit-011-${alias}.${runId}`,
     );
     const result = runNode([
       "scripts/audit-migration-011.mjs",
       "--db",
-      action.db,
+      dbLeaf.real,
       "--env-alias",
-      String(action.envAlias),
+      alias,
       "--report",
       report,
     ]);
@@ -282,11 +237,14 @@ async function runAction(action, evidenceDir) {
     } catch {
       body = {};
     }
+    if (existsSync(report)) {
+      force0600(report);
+    }
     return {
       type,
-      ok: body.ok === true && (result.status === 0 || result.status === 2),
+      ok: body.ok === true && result.status === 0 && body.stopRecommended === false,
       exitStatus: result.status,
-      envAlias: action.envAlias,
+      envAlias: alias,
       migration011Applied: body.migration011Applied ?? null,
       orphanCollectionJobs: body.orphanCollectionJobs ?? null,
       orphanEnergyMeasurements: body.orphanEnergyMeasurements ?? null,
@@ -296,23 +254,37 @@ async function runAction(action, evidenceDir) {
   }
 
   if (type === "migrate-rehearsal") {
-    if (!action.sourceDb) throw new Error("migrate-rehearsal requires sourceDb");
+    if (!action.sourceDb) throw new SafeInputError("migrate-rehearsal requires sourceDb");
+    const source = assertOpsSqliteSnapshot(
+      action.sourceDb,
+      "migrate-rehearsal.sourceDb",
+      { require0600: true },
+    );
+    const report = immutableEvidencePath(evidenceDir, `migrate-rehearsal.${runId}`);
     const result = runNode([
       "scripts/migrate-rehearsal.mjs",
       "--source-db",
-      action.sourceDb,
+      source.real,
+      "--report",
+      report,
     ]);
     return {
       type,
       ok: result.status === 0,
       exitStatus: result.status,
       sourceBasename: redactPath(action.sourceDb),
+      reportBasename: path.basename(report),
     };
   }
 
   if (type === "attest-large-db") {
     if (action.iApproveAttestation !== true) {
-      throw new Error("attest-large-db requires iApproveAttestation=true");
+      throw new SafeInputError("attest-large-db requires iApproveAttestation=true");
+    }
+    if (process.env.OPS_ATTEST_MIN_BYTES != null) {
+      throw new SafeInputError(
+        "OPS_ATTEST_MIN_BYTES override is forbidden; minimum is fixed at 1000000000",
+      );
     }
     const operator = requireNonEmptyString(action.operator, "operator");
     const statement = requireNonEmptyString(action.statement, "statement");
@@ -321,45 +293,51 @@ async function runAction(action, evidenceDir) {
       "expectedSha256",
     );
     if (!action.snapshotPath) {
-      throw new Error("attest-large-db requires snapshotPath (outside repo)");
+      throw new SafeInputError("attest-large-db requires snapshotPath (outside repo)");
     }
-    const snapshotPath = assertOutsideRepo(action.snapshotPath, "snapshotPath");
-    const st = assertOfflineLeaf(snapshotPath);
-    const minBytes = attestMinBytes();
-    if (st.size < minBytes) {
-      throw new Error(
-        `snapshot bytes ${st.size} < required minimum ${minBytes}`,
+    const leaf = assertOpsSqliteSnapshot(
+      action.snapshotPath,
+      "attest-large-db.snapshotPath",
+      { require0600: true },
+    );
+    if (leaf.st.size < ATTEST_MIN_BYTES) {
+      throw new SafeInputError(
+        `snapshot bytes ${leaf.st.size} < required minimum ${ATTEST_MIN_BYTES}`,
       );
     }
-    const actualSha256 = await sha256File(snapshotPath);
+    const actualSha256 = await sha256File(leaf.real);
     if (actualSha256 !== expectedSha256) {
-      throw new Error("snapshot sha256 does not match expectedSha256");
+      throw new SafeInputError("snapshot sha256 does not match expectedSha256");
     }
-    const mode = (st.mode & 0o777).toString(8).padStart(3, "0");
+    const mode = (leaf.st.mode & 0o777).toString(8).padStart(3, "0");
     const evidence = {
       kind: "operator-attest-large-db",
       checkedAt: new Date().toISOString(),
       operator,
       statement,
-      snapshotBasename: path.basename(snapshotPath),
-      bytes: st.size,
+      snapshotBasename: path.basename(leaf.real),
+      bytes: leaf.st.size,
       sha256: actualSha256,
       mode,
-      minBytesRequired: minBytes,
+      minBytesRequired: ATTEST_MIN_BYTES,
+      sqliteIntegrityOk: true,
       attestationRecorded: true,
       p7t2CheckboxAutoChecked: false,
       notes: [
         "attestation recorded only; docs/planning/06-tasks.md P7-T2 stays unchecked until human updates with this evidence",
       ],
     };
-    const evidencePath = path.join(evidenceDir, "attest-large-db.json");
+    const evidencePath = immutableEvidencePath(
+      evidenceDir,
+      `attest-large-db.${runId}`,
+    );
     writeEvidenceAtomic(evidencePath, evidence);
     return {
       type,
       ok: true,
       exitStatus: 0,
       snapshotBasename: evidence.snapshotBasename,
-      bytes: st.size,
+      bytes: leaf.st.size,
       sha256: actualSha256,
       mode,
       reportBasename: path.basename(evidencePath),
@@ -368,15 +346,15 @@ async function runAction(action, evidenceDir) {
   }
 
   if (type === "register-observation") {
-    const envAlias = requireNonEmptyString(action.envAlias, "envAlias");
+    const envAlias = requireSafeAlias(action.envAlias, "envAlias");
     const startDate = requireIsoDate(action.startDate, "startDate");
-    const alertOwner = requireNonEmptyString(action.alertOwner, "alertOwner");
+    const alertOwner = requireSafeAlias(action.alertOwner, "alertOwner");
     const plannedDays = Number(action.plannedDays);
     if (!Number.isInteger(plannedDays) || plannedDays < 7) {
-      throw new Error("plannedDays must be an integer >= 7");
+      throw new SafeInputError("plannedDays must be an integer >= 7");
     }
     if (typeof action.faultInjectApproved !== "boolean") {
-      throw new Error("faultInjectApproved must be boolean");
+      throw new SafeInputError("faultInjectApproved must be boolean");
     }
     const registry = {
       kind: "observation-window-registry",
@@ -393,9 +371,16 @@ async function runAction(action, evidenceDir) {
         "do not fault-inject unless faultInjectApproved=true",
       ],
     };
-    const registryPath = path.join(evidenceDir, "observation-registry.json");
+    const registryPath = immutableEvidencePath(
+      evidenceDir,
+      `observation-registry.${runId}`,
+    );
     writeEvidenceAtomic(registryPath, registry);
-    const mdPath = path.join(evidenceDir, `observation-day-0-${startDate}.md`);
+    const mdPath = immutableEvidencePath(
+      evidenceDir,
+      `observation-day-0-${startDate}.${runId}`,
+      ".md",
+    );
     const md = `# Observation Day 0 registry
 
 - envAlias: ${envAlias}
@@ -405,8 +390,7 @@ async function runAction(action, evidenceDir) {
 - faultInjectApproved: ${action.faultInjectApproved}
 - observationComplete: false
 `;
-    writeFileSync(mdPath, md, { mode: OWNER_RW });
-    force0600(mdPath);
+    writeEvidenceTextAtomic(mdPath, md);
     writeEvidenceAtomic(`${mdPath}.meta.json`, {
       kind: "observation-day-0-meta",
       envAlias,
@@ -428,19 +412,19 @@ async function runAction(action, evidenceDir) {
 
   if (type === "declare-external-env") {
     if (action.iConfirmInventory !== true) {
-      throw new Error("declare-external-env requires iConfirmInventory=true");
+      throw new SafeInputError("declare-external-env requires iConfirmInventory=true");
     }
     const operator = requireNonEmptyString(action.operator, "operator");
     if (!Array.isArray(action.environments) || action.environments.length < 1) {
-      throw new Error("environments must be a non-empty array");
+      throw new SafeInputError("environments must be a non-empty array");
     }
     const environments = action.environments.map((env, index) => {
-      const alias = requireNonEmptyString(
+      const alias = requireSafeAlias(
         env?.alias,
         `environments[${index}].alias`,
       );
       if (typeof env.hostsSolarSimz !== "boolean") {
-        throw new Error(
+        throw new SafeInputError(
           `environments[${index}].hostsSolarSimz must be boolean`,
         );
       }
@@ -455,17 +439,18 @@ async function runAction(action, evidenceDir) {
       };
       if (env.hostsSolarSimz) {
         if (!env.offlineSnapshotPath) {
-          throw new Error(
+          throw new SafeInputError(
             `environments[${index}] hosts SolarSimz but offlineSnapshotPath missing`,
           );
         }
-        const snap = assertOutsideRepo(
+        const snap = assertOpsSqliteSnapshot(
           env.offlineSnapshotPath,
           `environments[${index}].offlineSnapshotPath`,
+          { require0600: true },
         );
-        assertOfflineLeaf(snap);
-        row.offlineSnapshotBasename = path.basename(snap);
-        row.offlineSnapshotBytes = lstatSync(snap).size;
+        row.offlineSnapshotBasename = path.basename(snap.real);
+        row.offlineSnapshotBytes = snap.st.size;
+        row.sqliteIntegrityOk = true;
       }
       return row;
     });
@@ -483,7 +468,10 @@ async function runAction(action, evidenceDir) {
         "Hostinger RO discovery finding of zero SolarSimz projects is consistent with hostingSolarSimzCount=0 but does not alone close E",
       ],
     };
-    const evidencePath = path.join(evidenceDir, "declare-external-env.json");
+    const evidencePath = immutableEvidencePath(
+      evidenceDir,
+      `declare-external-env.${runId}`,
+    );
     writeEvidenceAtomic(evidencePath, evidence);
     return {
       type,
@@ -496,7 +484,7 @@ async function runAction(action, evidenceDir) {
     };
   }
 
-  throw new Error(`unknown action type ${type}`);
+  throw new SafeInputError("unknown action type");
 }
 
 async function main() {
@@ -511,9 +499,16 @@ async function main() {
     return;
   }
 
+  const runId = randomBytes(4).toString("hex");
+  const results = [];
+  let failedEarly = null;
+
   try {
     const { raw } = loadManifest(manifestArg);
-    const evidenceDir = path.resolve(
+    const envAlias = raw.envAlias == null
+      ? null
+      : requireSafeAlias(raw.envAlias, "envAlias");
+    const evidenceDir = ensureEvidenceDir(
       raw.evidenceDir ||
         path.join(
           path.dirname(path.resolve(manifestArg)),
@@ -521,35 +516,67 @@ async function main() {
           new Date().toISOString().slice(0, 10),
         ),
     );
-    mkdirSync(evidenceDir, { recursive: true });
-    const results = [];
-    for (const action of raw.actions) {
-      results.push(await runAction(action, evidenceDir));
+
+    for (let i = 0; i < raw.actions.length; i += 1) {
+      try {
+        const result = await runAction(raw.actions[i], evidenceDir, `${runId}-${i}`);
+        results.push(result);
+        if (result.ok !== true) {
+          failedEarly = { index: i, type: result.type, error: "action failed; subsequent actions skipped" };
+          break;
+        }
+      } catch (actionError) {
+        failedEarly = {
+          index: i,
+          type: raw.actions[i]?.type ?? "unknown",
+          error: safeInputErrorMessage(actionError),
+        };
+        results.push({
+          type: raw.actions[i]?.type ?? "unknown",
+          ok: false,
+          exitStatus: 1,
+          error: failedEarly.error,
+          partial: true,
+        });
+        break;
+      }
     }
+
     const summary = {
-      ok: results.every((row) => row.ok),
+      ok: results.length > 0 && results.every((row) => row.ok === true),
       checkedAt: new Date().toISOString(),
-      envAlias: raw.envAlias ?? "unspecified",
+      envAliasPresent: Boolean(envAlias),
       actionCount: results.length,
+      plannedActionCount: raw.actions.length,
+      partial: Boolean(failedEarly),
+      failedEarly,
       results,
       notes: [
-        "stdout omits secrets and absolute paths",
+        "stdout omits secrets, absolute paths, and raw envAlias",
         "does not auto-check docs/planning/06-tasks.md boxes",
+        "evidence files are immutable (no overwrite)",
       ],
     };
-    const summaryPath = path.join(evidenceDir, "runner-summary.json");
+    const summaryPath = immutableEvidencePath(
+      evidenceDir,
+      `runner-summary.${runId}`,
+    );
     writeEvidenceAtomic(summaryPath, summary);
     console.log(
       JSON.stringify(
         {
           ok: summary.ok,
-          envAlias: summary.envAlias,
+          envAliasPresent: summary.envAliasPresent,
           actionCount: summary.actionCount,
+          plannedActionCount: summary.plannedActionCount,
+          partial: summary.partial,
           evidenceBasename: path.basename(summaryPath),
           results: results.map((row) => ({
             type: row.type,
             ok: row.ok,
             exitStatus: row.exitStatus,
+            partial: row.partial === true,
+            error: typeof row.error === "string" ? row.error : undefined,
           })),
         },
         null,
@@ -558,9 +585,8 @@ async function main() {
     );
     if (!summary.ok) process.exitCode = 1;
   } catch (error) {
-    die(error instanceof Error ? error.message : String(error));
+    die(safeInputErrorMessage(error));
   }
 }
 
 await main();
-

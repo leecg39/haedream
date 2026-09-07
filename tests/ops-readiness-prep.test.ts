@@ -8,6 +8,10 @@ import {
   chmodSync,
   statSync,
   writeFileSync,
+  symlinkSync,
+  mkdirSync,
+  readdirSync,
+  createReadStream,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -20,11 +24,16 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 function runNode(
   script: string,
   args: string[],
-  env: Record<string, string> = {},
+  env: Record<string, string | undefined> = {},
 ) {
+  const merged: NodeJS.ProcessEnv = { ...process.env, ...env };
+  // Never inherit a forbidden attest override into success paths unless the test sets it.
+  if (!Object.prototype.hasOwnProperty.call(env, "OPS_ATTEST_MIN_BYTES")) {
+    delete merged.OPS_ATTEST_MIN_BYTES;
+  }
   return spawnSync("node", [script, ...args], {
     cwd: root,
-    env: { ...process.env, ...env },
+    env: merged,
     encoding: "utf8",
   });
 }
@@ -349,8 +358,9 @@ describe("ops readiness prep scripts", () => {
         null,
         2,
       )}\n`,
+      { mode: 0o600 },
     );
-    // directory is under tmp — outside repo worktree
+    chmodSync(manifestPath, 0o600);
     const ok = runNode("scripts/ops-external-input-runner.mjs", [
       "--manifest",
       manifestPath,
@@ -358,66 +368,194 @@ describe("ops readiness prep scripts", () => {
     expect(ok.status, ok.stderr || ok.stdout).toBe(0);
     expect(ok.stdout).not.toContain(secret);
     expect(ok.stdout).not.toContain("https://alerts.example.com/hook");
-    const summary = JSON.parse(
-      readFileSync(path.join(evidenceDir, "runner-summary.json"), "utf8"),
+    expect(ok.stdout).not.toContain("test-local");
+    expect(ok.stdout).toMatch(/"envAliasPresent": true/);
+    expect(statSync(evidenceDir).mode & 0o777).toBe(0o700);
+    const summaries = readdirSync(evidenceDir).filter((name) =>
+      name.startsWith("runner-summary."),
     );
-    expect(summary.ok).toBe(true);
-    expect(statSync(path.join(evidenceDir, "runner-summary.json")).mode & 0o777).toBe(
+    expect(summaries.length).toBe(1);
+    expect(statSync(path.join(evidenceDir, summaries[0])).mode & 0o777).toBe(
       0o600,
     );
   });
 
-  it("ops-external-input-runner records B/D/E operator attestations without completing goals", () => {
-    const snapshotPath = path.join(directory, "tiny-offline.db");
-    writeFileSync(snapshotPath, "offline-db-bytes");
-    chmodSync(snapshotPath, 0o600);
-    const sha256 = createHash("sha256")
-      .update(readFileSync(snapshotPath))
-      .digest("hex");
+  it("ops-external-input guards reject symlink, in-repo evidence, overwrite, invalid date, non-sqlite, permissive mode", async () => {
+    const {
+      assertOutsideRepoPath,
+      assertOpsSqliteSnapshot,
+      ensureEvidenceDir,
+      requireIsoDate,
+      writeEvidenceAtomic,
+      writeEvidenceTextAtomic,
+      ATTEST_MIN_BYTES,
+    } = await import("../scripts/lib/ops-external-input-guard.mjs");
 
-    const evidenceDir = path.join(directory, "evidence-attest");
-    const manifestPath = path.join(directory, "attest-manifest.json");
+    expect(ATTEST_MIN_BYTES).toBe(1_000_000_000);
+    expect(() => requireIsoDate("2026-02-31", "startDate")).toThrow(
+      /calendar|real calendar/i,
+    );
+    expect(requireIsoDate("2026-09-07", "startDate")).toBe("2026-09-07");
+
+    const evidenceInside = path.join(root, "docs", "tmp-evidence-should-fail");
+    expect(() => ensureEvidenceDir(evidenceInside)).toThrow(
+      /outside the git worktree/i,
+    );
+
+    const outsideEvidence = ensureEvidenceDir(path.join(directory, "ev-ok"));
+    expect(statSync(outsideEvidence).mode & 0o777).toBe(0o700);
+
+    const target = path.join(directory, "leaf.db");
+    writeFileSync(target, "not-sqlite");
+    chmodSync(target, 0o600);
+    const link = path.join(directory, "leaf-link.db");
+    symlinkSync(target, link);
+    expect(() =>
+      assertOutsideRepoPath(link, "snapshot", { mustExist: true }),
+    ).toThrow(/symlink/i);
+
+    expect(() =>
+      assertOpsSqliteSnapshot(target, "snapshot", { require0600: true }),
+    ).toThrow(/SQLite|integrity/i);
+
+    const tinyDb = path.join(directory, "tiny.sqlite");
+    const db = new Database(tinyDb);
+    db.exec("CREATE TABLE t(x); INSERT INTO t VALUES (1);");
+    db.close();
+    chmodSync(tinyDb, 0o644);
+    expect(() =>
+      assertOpsSqliteSnapshot(tinyDb, "snapshot", { require0600: true }),
+    ).toThrow(/0600/);
+    chmodSync(tinyDb, 0o600);
+
+    const coldWal = path.join(directory, "cold-wal.sqlite");
+    const walDb = new Database(coldWal);
+    walDb.pragma("journal_mode = WAL");
+    walDb.exec("CREATE TABLE t(x)");
+    walDb.close();
+    chmodSync(coldWal, 0o600);
+    expect(existsSync(`${coldWal}-wal`)).toBe(false);
+    expect(() => assertOpsSqliteSnapshot(coldWal, "snapshot")).toThrow(/WAL format refused/);
+    expect(existsSync(`${coldWal}-wal`)).toBe(false);
+    expect(existsSync(`${coldWal}-shm`)).toBe(false);
+
+    const evidenceFile = path.join(outsideEvidence, "fixed.json");
+    writeEvidenceAtomic(evidenceFile, { ok: true });
+    expect(() => writeEvidenceAtomic(evidenceFile, { ok: false })).toThrow(
+      /overwrite/i,
+    );
+    expect(JSON.parse(readFileSync(evidenceFile, "utf8"))).toEqual({ ok: true });
+    const missingTarget = path.join(directory, "missing-target");
+    const dangling = path.join(outsideEvidence, "dangling.md");
+    symlinkSync(missingTarget, dangling);
+    expect(() => writeEvidenceTextAtomic(dangling, "replace")).toThrow(/overwrite/i);
+    expect(existsSync(missingTarget)).toBe(false);
+    expect(readdirSync(outsideEvidence).some((name) => name.endsWith(".tmp"))).toBe(false);
+
+    const dirTarget = path.join(directory, "unchanged-mode");
+    mkdirSync(dirTarget, { mode: 0o755 });
+    chmodSync(dirTarget, 0o755);
+    const dirLink = path.join(directory, "dir-link");
+    symlinkSync(dirTarget, dirLink);
+    expect(() => ensureEvidenceDir(dirLink)).toThrow(/symlink/i);
+    expect(statSync(dirTarget).mode & 0o777).toBe(0o755);
+
+    // Parent symlink into repo must not allow evidenceDir escape.
+    const decoy = path.join(directory, "decoy-parent");
+    mkdirSync(decoy, { recursive: true });
+    const linkIntoRepo = path.join(decoy, "into-repo");
+    symlinkSync(root, linkIntoRepo);
+    expect(() =>
+      ensureEvidenceDir(path.join(linkIntoRepo, "escape-evidence")),
+    ).toThrow(/outside the git worktree/i);
+  });
+
+  it("rejects malformed/unknown input without leaking contents and stops after a returned failure", () => {
+    const canary = "sensitive-canary-do-not-print";
+    const manifest = path.join(directory, "input.json");
+    const evidenceDir = path.join(directory, "evidence");
+    for (const input of [canary, JSON.stringify({ actions: [{ type: canary }] })]) {
+      writeFileSync(manifest, input, { mode: 0o600 });
+      const result = runNode("scripts/ops-external-input-runner.mjs", ["--manifest", manifest]);
+      expect(result.status).toBe(1);
+      expect(result.stdout + result.stderr).not.toContain(canary);
+      expect(existsSync(evidenceDir)).toBe(false);
+    }
+    writeFileSync(manifest, JSON.stringify({
+      evidenceDir,
+      actions: [
+        { type: "verify-webhook-config", url: "", secret: canary },
+        { type: "register-observation", envAlias: "test", startDate: "2026-09-07",
+          plannedDays: 7, alertOwner: "oncall", faultInjectApproved: false },
+      ],
+    }));
+    const failed = runNode("scripts/ops-external-input-runner.mjs", ["--manifest", manifest]);
+    expect(failed.status).toBe(1);
+    expect(failed.stdout + failed.stderr).not.toContain(canary);
+    expect(JSON.parse(failed.stdout)).toMatchObject({
+      ok: false, partial: true, actionCount: 1, plannedActionCount: 2,
+    });
+    const files = readdirSync(evidenceDir);
+    expect(files.some((name) => name.startsWith("observation-"))).toBe(false);
+    const summary = JSON.parse(readFileSync(path.join(evidenceDir, files[0]), "utf8"));
+    expect(summary.failedEarly.index).toBe(0);
+  });
+
+  it("keeps migration rehearsal reports outside the repository and preserves its source", () => {
+    const snapshot = path.join(directory, "source.sqlite");
+    const migrated = runNode("scripts/migrate.mjs", [], { DATABASE_PATH: snapshot });
+    expect(migrated.status, migrated.stderr).toBe(0);
+    const seeded = runNode("scripts/seed.mjs", [], {
+      DATABASE_PATH: snapshot, ALLOW_DEMO_SEED: "true",
+    });
+    expect(seeded.status, seeded.stderr).toBe(0);
+    const sourceDb = new Database(snapshot);
+    sourceDb.pragma("journal_mode = DELETE");
+    sourceDb.close();
+    chmodSync(snapshot, 0o600);
+    const before = readFileSync(snapshot);
+    const repoReport = path.join(root, "docs/audit/migrate-rehearsal-latest.json");
+    const priorReport = existsSync(repoReport) ? readFileSync(repoReport) : null;
+    const evidenceDir = path.join(directory, "rehearsal-evidence");
+    const manifest = path.join(directory, "rehearsal.json");
+    writeFileSync(manifest, JSON.stringify({ evidenceDir, actions: [
+      { type: "migrate-rehearsal", sourceDb: snapshot },
+    ] }), { mode: 0o600 });
+    const result = runNode("scripts/ops-external-input-runner.mjs", ["--manifest", manifest]);
+    const reportName = readdirSync(evidenceDir).find((name) => name.startsWith("migrate-rehearsal."))!;
+    const reportPath = path.join(evidenceDir, reportName);
+    expect(result.status, readFileSync(reportPath, "utf8")).toBe(0);
+    expect(statSync(reportPath).mode & 0o777).toBe(0o600);
+    expect(JSON.parse(readFileSync(reportPath, "utf8"))).toMatchObject({
+      externalSourceMigrated: true, externalSourceBackupRestore: true, largeDbRehearsal: "unverified",
+    });
+    expect(readFileSync(snapshot).equals(before)).toBe(true);
+    expect(existsSync(`${snapshot}-wal`)).toBe(false);
+    expect(existsSync(`${snapshot}-shm`)).toBe(false);
+    expect(existsSync(repoReport) ? readFileSync(repoReport) : null).toEqual(priorReport);
+  }, 60_000);
+
+  it("ops-external-input-runner refuses OPS_ATTEST_MIN_BYTES bypass and undersized/non-sqlite attest", () => {
+    const junk = path.join(directory, "junk-1gb-claim.bin");
+    writeFileSync(junk, "x");
+    chmodSync(junk, 0o600);
+    const sha = createHash("sha256").update("x").digest("hex");
+    const evidenceDir = path.join(directory, "evidence-bypass");
+    const manifestPath = path.join(directory, "bypass-manifest.json");
     writeFileSync(
       manifestPath,
       `${JSON.stringify(
         {
-          envAlias: "ops-attest-test",
+          envAlias: "bypass-test",
           evidenceDir,
           actions: [
             {
               type: "attest-large-db",
               iApproveAttestation: true,
               operator: "test-operator",
-              statement:
-                "Approve this deidentified offline snapshot for P7-T2 rehearsal evidence",
-              snapshotPath,
-              expectedSha256: sha256,
-            },
-            {
-              type: "register-observation",
-              envAlias: "scheduler-staging",
-              startDate: "2026-09-07",
-              plannedDays: 7,
-              alertOwner: "oncall-alias",
-              faultInjectApproved: false,
-            },
-            {
-              type: "declare-external-env",
-              iConfirmInventory: true,
-              operator: "test-operator",
-              environments: [
-                {
-                  alias: "hostinger-vps-1",
-                  hostsSolarSimz: false,
-                  pre011BackupProvenance: "n/a-no-solarsimz-on-host",
-                },
-                {
-                  alias: "local-dev-post-011",
-                  hostsSolarSimz: true,
-                  offlineSnapshotPath: snapshotPath,
-                  pre011BackupProvenance: "alias:pre-011-backup-unknown",
-                },
-              ],
+              statement: "should fail",
+              snapshotPath: junk,
+              expectedSha256: sha,
             },
           ],
         },
@@ -425,47 +563,155 @@ describe("ops readiness prep scripts", () => {
         2,
       )}\n`,
     );
+    chmodSync(manifestPath, 0o600);
 
-    const deniedGate = runNode(
-      "scripts/ops-external-input-runner.mjs",
-      ["--manifest", manifestPath],
-      {},
-    );
-    expect(deniedGate.status).toBe(1);
-    expect(deniedGate.stderr).toMatch(/required minimum/i);
-
-    const ok = runNode(
+    const withOverride = runNode(
       "scripts/ops-external-input-runner.mjs",
       ["--manifest", manifestPath],
       { OPS_ATTEST_MIN_BYTES: "1" },
     );
-    expect(ok.status, ok.stderr || ok.stdout).toBe(0);
-    const summary = JSON.parse(
-      readFileSync(path.join(evidenceDir, "runner-summary.json"), "utf8"),
+    expect(withOverride.status).toBe(1);
+    expect(`${withOverride.stderr}\n${withOverride.stdout}`).toMatch(
+      /OPS_ATTEST_MIN_BYTES override is forbidden/i,
     );
-    expect(summary.ok).toBe(true);
-    expect(summary.results).toHaveLength(3);
-    expect(summary.results.every((row: { ok: boolean }) => row.ok)).toBe(true);
 
-    const attest = JSON.parse(
-      readFileSync(path.join(evidenceDir, "attest-large-db.json"), "utf8"),
+    const undersized = runNode("scripts/ops-external-input-runner.mjs", [
+      "--manifest",
+      manifestPath,
+    ]);
+    expect(undersized.status).toBe(1);
+    expect(`${undersized.stderr}${undersized.stdout}`).toMatch(
+      /SQLite|required minimum|not a readable/i,
     );
-    expect(attest.attestationRecorded).toBe(true);
-    expect(attest.p7t2CheckboxAutoChecked).toBe(false);
-    expect(attest.sha256).toBe(sha256);
-    expect(JSON.stringify(attest)).not.toMatch(/Users\//);
 
-    const observation = JSON.parse(
-      readFileSync(path.join(evidenceDir, "observation-registry.json"), "utf8"),
-    );
-    expect(observation.observationComplete).toBe(false);
-    expect(observation.plannedDays).toBe(7);
-
-    const envDecl = JSON.parse(
-      readFileSync(path.join(evidenceDir, "declare-external-env.json"), "utf8"),
-    );
-    expect(envDecl.migration011AuditComplete).toBe(false);
-    expect(envDecl.hostingSolarSimzCount).toBe(1);
-    expect(envDecl.environments[0].hostsSolarSimz).toBe(false);
+    const smallPath = path.join(directory, "valid-but-small.sqlite");
+    const smallDb = new Database(smallPath);
+    smallDb.exec("CREATE TABLE t(x)");
+    smallDb.close();
+    chmodSync(smallPath, 0o600);
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    manifest.actions[0].snapshotPath = smallPath;
+    manifest.actions[0].expectedSha256 = createHash("sha256").update(readFileSync(smallPath)).digest("hex");
+    writeFileSync(manifestPath, JSON.stringify(manifest));
+    const validButSmall = runNode("scripts/ops-external-input-runner.mjs", ["--manifest", manifestPath]);
+    expect(validButSmall.status).toBe(1);
+    expect(validButSmall.stdout).toMatch(/required minimum 1000000000/);
   });
+
+  it(
+    "ops-external-input-runner records B/D/E attestations with synthetic ≥1GB sqlite and never auto-completes",
+    async () => {
+      const snapshotPath = path.join(directory, "synthetic-1gb.sqlite");
+      const db = new Database(snapshotPath);
+      db.pragma("page_size = 4096");
+      db.exec("CREATE TABLE pad(id INTEGER PRIMARY KEY, b BLOB);");
+      // SQLITE_MAX_LENGTH default is 1e9; split blobs so the file exceeds ATTEST_MIN_BYTES.
+      const insert = db.prepare("INSERT INTO pad(b) VALUES (zeroblob(?))");
+      insert.run(500_000_000);
+      insert.run(500_000_000);
+      db.close();
+      chmodSync(snapshotPath, 0o600);
+      expect(statSync(snapshotPath).size).toBeGreaterThanOrEqual(1_000_000_000);
+      const hash = createHash("sha256");
+      for await (const chunk of createReadStream(snapshotPath)) hash.update(chunk);
+      const sha256 = hash.digest("hex");
+
+      const smallHosting = path.join(directory, "hosting-small.sqlite");
+      const hostDb = new Database(smallHosting);
+      hostDb.exec("CREATE TABLE t(x); INSERT INTO t VALUES (1);");
+      hostDb.close();
+      chmodSync(smallHosting, 0o600);
+
+      const evidenceDir = path.join(directory, "evidence-attest");
+      const manifestPath = path.join(directory, "attest-manifest.json");
+      writeFileSync(
+        manifestPath,
+        `${JSON.stringify(
+          {
+            envAlias: "ops-attest-test",
+            evidenceDir,
+            actions: [
+              {
+                type: "attest-large-db",
+                iApproveAttestation: true,
+                operator: "test-operator",
+                statement:
+                  "Approve this deidentified offline snapshot for P7-T2 rehearsal evidence",
+                snapshotPath,
+                expectedSha256: sha256,
+              },
+              {
+                type: "register-observation",
+                envAlias: "scheduler-staging",
+                startDate: "2026-09-07",
+                plannedDays: 7,
+                alertOwner: "oncall-alias",
+                faultInjectApproved: false,
+              },
+              {
+                type: "declare-external-env",
+                iConfirmInventory: true,
+                operator: "test-operator",
+                environments: [
+                  {
+                    alias: "hostinger-vps-1",
+                    hostsSolarSimz: false,
+                    pre011BackupProvenance: "n-a-no-solarsimz-on-host",
+                  },
+                  {
+                    alias: "local-dev-post-011",
+                    hostsSolarSimz: true,
+                    offlineSnapshotPath: smallHosting,
+                    pre011BackupProvenance: "alias-pre-011-backup-unknown",
+                  },
+                ],
+              },
+            ],
+          },
+          null,
+          2,
+        )}\n`,
+      );
+      chmodSync(manifestPath, 0o600);
+
+      const ok = runNode("scripts/ops-external-input-runner.mjs", [
+        "--manifest",
+        manifestPath,
+      ]);
+      expect(ok.status, ok.stderr || ok.stdout).toBe(0);
+      expect(ok.stdout).not.toContain("ops-attest-test");
+      expect(ok.stdout).not.toMatch(/Users\//);
+
+      const files = readdirSync(evidenceDir);
+      const attestName = files.find((f) => f.startsWith("attest-large-db."));
+      const obsName = files.find((f) => f.startsWith("observation-registry."));
+      const envName = files.find((f) => f.startsWith("declare-external-env."));
+      expect(attestName).toBeTruthy();
+      expect(obsName).toBeTruthy();
+      expect(envName).toBeTruthy();
+
+      const attest = JSON.parse(
+        readFileSync(path.join(evidenceDir, attestName!), "utf8"),
+      );
+      expect(attest.attestationRecorded).toBe(true);
+      expect(attest.p7t2CheckboxAutoChecked).toBe(false);
+      expect(attest.sqliteIntegrityOk).toBe(true);
+      expect(attest.bytes).toBeGreaterThanOrEqual(1_000_000_000);
+      expect(attest.sha256).toBe(sha256);
+      expect(attest.mode).toBe("600");
+
+      const observation = JSON.parse(
+        readFileSync(path.join(evidenceDir, obsName!), "utf8"),
+      );
+      expect(observation.observationComplete).toBe(false);
+
+      const envDecl = JSON.parse(
+        readFileSync(path.join(evidenceDir, envName!), "utf8"),
+      );
+      expect(envDecl.migration011AuditComplete).toBe(false);
+      expect(envDecl.hostingSolarSimzCount).toBe(1);
+      expect(envDecl.environments[1].sqliteIntegrityOk).toBe(true);
+    },
+    180_000,
+  );
 });

@@ -5,10 +5,12 @@
  * 사용:
  *   node scripts/migrate-rehearsal.mjs
  *   node scripts/migrate-rehearsal.mjs --source-db /path/to/offline-snapshot.db
+ *   node scripts/migrate-rehearsal.mjs --source-db /outside/snapshot.db --report /outside/evidence/rehearsal.json
  *   MIGRATE_REHEARSAL_SOURCE_DB=/path/to/copy node scripts/migrate-rehearsal.mjs
  *
  * --source-db 는 live WAL DB 가 아니라 offline/consistent snapshot 이어야 한다.
  * 복사에는 SQLite backup API 를 쓰고 integrity_check 로 검증한다.
+ * 외부 입력 runner는 --report로 저장소 밖 불변 증거를 사용한다.
  *
  * 1.15GB급 운영 사본이 없으면 largeDbRehearsal=unverified 로 기록하고
  * 완료(complete)처럼 꾸미지 않는다. 외부 HTTP/한전 호출은 하지 않는다.
@@ -26,6 +28,11 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import {
+  assertOutsideRepoPath,
+  ensureEvidenceDir,
+  writeEvidenceAtomic,
+} from "./lib/ops-external-input-guard.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LARGE_DB_BYTES = 1_000_000_000; // ~1GB 이상이면 large copy 로 본다.
@@ -39,12 +46,32 @@ class RehearsalError extends Error {
 
 function parseArgs(argv) {
   let sourceDb = process.env.MIGRATE_REHEARSAL_SOURCE_DB ?? "";
+  let reportPath = "";
   for (let index = 2; index < argv.length; index += 1) {
     if (argv[index] === "--source-db") {
       sourceDb = argv[++index] ?? "";
+    } else if (argv[index] === "--report") {
+      reportPath = argv[++index] ?? "";
+      if (!reportPath) throw new RehearsalError("--report requires a path");
     }
   }
-  return { sourceDb: sourceDb ? path.resolve(sourceDb) : "" };
+  if (reportPath) {
+    const target = assertOutsideRepoPath(reportPath, "report", { mustExist: false });
+    ensureEvidenceDir(path.dirname(target.resolved));
+    if (existsSync(target.resolved)) throw new RehearsalError("report already exists");
+    reportPath = target.resolved;
+  }
+  return { sourceDb: sourceDb ? path.resolve(sourceDb) : "", reportPath };
+}
+
+function saveReport(report) {
+  if (args.reportPath) {
+    writeEvidenceAtomic(args.reportPath, report);
+    return;
+  }
+  const outDir = path.join(root, "docs/audit");
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(path.join(outDir, "migrate-rehearsal-latest.json"), `${JSON.stringify(report, null, 2)}\n`);
 }
 
 function run(label, env) {
@@ -230,23 +257,14 @@ try {
     );
   }
 
-  const outDir = path.join(root, "docs/audit");
-  mkdirSync(outDir, { recursive: true });
-  const reportPath = path.join(outDir, "migrate-rehearsal-latest.json");
-  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
-  console.log(`[migrate-rehearsal] report ${reportPath}`);
+  saveReport(report);
   console.log(
     `[migrate-rehearsal] finished empty=${report.emptyDb} seeded=${report.seededDb} large=${report.largeDbRehearsal}`,
   );
 } catch (error) {
   report.failed = true;
   report.notes.push(error instanceof Error ? error.message : String(error));
-  const outDir = path.join(root, "docs/audit");
-  mkdirSync(outDir, { recursive: true });
-  writeFileSync(
-    path.join(outDir, "migrate-rehearsal-latest.json"),
-    `${JSON.stringify(report, null, 2)}\n`,
-  );
+  saveReport(report);
   console.error(
     `[migrate-rehearsal] FAILED: ${error instanceof Error ? error.message : error}`,
   );

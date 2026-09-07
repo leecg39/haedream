@@ -4,6 +4,8 @@
 대상: 다른 Cursor 패널(이 대화 없이 실행)
 상태: Phase 8 CSV/webhook **내부 도구 APPROVE** 이후, 외부 blocker A~E 미완
 
+2026-09-07 재개 인계: Cursor API DNS 오류로 중단된 pass7 변경을 Codex가 이어서 보완·검증했다. [pass7 수정/검증](../audit/2026-09-07-ops-evidence-pass7-runner-harden.md)과 [배포·011·스케줄러·webhook 네 항목 점검](../audit/2026-09-07-deployment-readonly-review.md)을 먼저 읽는다. Hostinger에 없다고 확정된 것이 아니라 조사 범위에서 **실제 대상을 식별하지 못한 상태**다. 다음 작업은 실제 URL/서버를 확인한 뒤 네 항목을 읽기 전용으로 증명하는 것이다. 운영 배포·migration·env 변경·webhook 발송으로 범위를 넓히지 않는다.
+
 ## 1. 제목과 목표
 
 **최종 목표:** SolarSimz 잔여 운영 준비를 **증거 기반**으로 끝까지 완료한다.
