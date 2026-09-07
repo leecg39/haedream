@@ -336,6 +336,22 @@ export function createFirmForUser(
   })();
 }
 
+/**
+ * 현재 사용자가 해당 업체의 PII(고객정보) 필드를 쓸 수 있는지.
+ * 목록/상세 마스킹(maskFirmPii)과 같은 규칙이다 — 마스킹된 업체는 쓸 수도 없다.
+ * 편집 폼이 이 값을 알아야 PII 입력을 비활성화할 수 있다(ISSUE-001).
+ */
+export function canWriteFirmPii(
+  user: SessionUser,
+  fid: number,
+  db: AppDatabase = getDb(),
+): boolean {
+  if (!hasPermission(user.role, "firm:pii:read")) {
+    return false;
+  }
+  return requireFirmAccess(user, fid, {}, db).canViewPii;
+}
+
 /** 허용 필드만 갱신한다. fid+version 불일치 시 409. */
 export function updateFirmForUser(
   user: SessionUser,
@@ -347,9 +363,7 @@ export function updateFirmForUser(
   if (!hasPermission(user.role, "firm:update")) {
     throw new AppError(403, "FORBIDDEN", "이 작업을 수행할 권한이 없습니다.");
   }
-  const access = requireFirmAccess(user, fid, {}, db);
-  const canWritePii =
-    hasPermission(user.role, "firm:pii:read") && access.canViewPii;
+  const canWritePii = canWriteFirmPii(user, fid, db);
 
   // 마스킹된 상세 폼이 실수로 PII 칸을 실어 보내도 검증·덮어쓰기를 막는다.
   const sanitizedInput: FirmUpdateInput = canWritePii

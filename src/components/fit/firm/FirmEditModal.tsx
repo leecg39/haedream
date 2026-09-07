@@ -17,7 +17,12 @@ type FormValues = Record<string, string>;
 export type FirmModalState =
   | { readonly mode: "closed" }
   | { readonly mode: "create" }
-  | { readonly mode: "edit"; readonly row: PublicFirm };
+  | {
+      readonly mode: "edit";
+      readonly row: PublicFirm;
+      /** 상세 GET 의 canWritePii. false 면 PII 필드를 비활성화하고 저장에서 제외한다(ISSUE-001). */
+      readonly canWritePii: boolean;
+    };
 
 export const FIRM_MODAL_CLOSED: FirmModalState = { mode: "closed" };
 
@@ -96,9 +101,28 @@ const CREATE_FIELDS: readonly (readonly [string, string])[] = [
   ["edit-isDisable", "isDisable"],
 ];
 
-function toCreateBody(values: FormValues) {
+/**
+ * 서버(repository FIRM_PII_CREATE_KEYS)가 PII 로 취급하는 저장 키.
+ * canWritePii=false 인 편집에서는 이 키를 요청 본문에서 제외한다 —
+ * 서버도 무시하지만, 사용자에게 "입력했는데 사라진다"는 착각을 주지 않으려면
+ * 애초에 보내지 않는 것이 맞다(ISSUE-001).
+ */
+const PII_CREATE_KEYS: readonly string[] = [
+  "kepcoNo",
+  "bone",
+  "kepcoCyber",
+  "manager",
+  "phone",
+  "addressText",
+  "memo",
+  "boss",
+  "mapGeo",
+];
+
+function toCreateBody(values: FormValues, excludePii = false) {
   const body: Record<string, string> = {};
   for (const [fieldId, key] of CREATE_FIELDS) {
+    if (excludePii && PII_CREATE_KEYS.includes(key)) continue;
     const value = values[fieldId];
     // 빈 값은 보내지 않는다. 서버 스키마의 default 가 채운다.
     if (value !== undefined && value !== "") body[key] = value;
@@ -111,11 +135,13 @@ function FieldControl({
   value,
   onChange,
   inputRef,
+  disabled,
 }: {
   readonly field: FirmEditField;
   readonly value: string;
   readonly onChange: (value: string) => void;
   readonly inputRef?: React.Ref<HTMLInputElement | HTMLSelectElement>;
+  readonly disabled?: boolean;
 }) {
   if (field.kind === "select") {
     return (
@@ -124,6 +150,7 @@ function FieldControl({
         className="eSelect"
         id={field.id}
         value={value}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
       >
         {field.grouped ? (
@@ -161,6 +188,7 @@ function FieldControl({
       max={field.max}
       step={field.step}
       value={value}
+      disabled={disabled}
       onChange={(event) => onChange(event.target.value)}
     />
   );
@@ -187,6 +215,20 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
   const [error, setError] = useState("");
   const firstFieldRef = useRef<HTMLInputElement | HTMLSelectElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
+
+  /** 편집에서 PII 쓰기가 막혔을 때. PII 폼 필드(id) 목록과 함께 쓴다. */
+  const piiLocked = state.mode === "edit" ? !state.canWritePii : false;
+  const piiFieldIds: readonly string[] = [
+    "edit-kepcoNo",
+    "edit-bone",
+    "edit-kepcoCyber",
+    "edit-manager",
+    "edit-phone",
+    "edit-addressText",
+    "edit-memo",
+    "edit-boss",
+    "edit-mapGeo",
+  ];
 
   // 상태 객체는 열 때마다 새로 만들어지므로 참조 비교로 전환 시점을 잡는다.
   // create 는 toFormValues(null) 이 빈 객체를 돌려줘 모든 입력이 비워진다.
@@ -260,7 +302,7 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            ...toCreateBody(values),
+            ...toCreateBody(values, piiLocked),
             version: state.row.version,
           }),
         });
@@ -298,6 +340,22 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
           />
           <div className="modalContent">
             <div className="editTitle" id="firmEditTitle">업체관리</div>
+            {piiLocked ? (
+              <p
+                className="editNotice"
+                role="note"
+                style={{
+                  margin: "0 0 12px",
+                  padding: "8px 12px",
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  borderRadius: 4,
+                  fontSize: 13,
+                  color: "var(--color-leftNava, #cfd6ff)",
+                }}
+              >
+                고객정보 열람 권한이 없는 업체입니다. 연락처·주소·메모 등 일부 항목은 수정할 수 없습니다.
+              </p>
+            ) : null}
             <div className="editForm">
               <input type="hidden" id="edit-mapGeo" maxLength={32} value={values["edit-mapGeo"] ?? ""} readOnly />
               {FIRM_EDIT_FIELDS.map((field, index) => (
@@ -311,6 +369,7 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
                       value={values[field.id] ?? ""}
                       onChange={(value) => update(field.id, value)}
                       inputRef={index === 0 ? firstFieldRef : undefined}
+                      disabled={piiLocked && piiFieldIds.includes(field.id)}
                     />
                   </span>
                 </Fragment>
@@ -321,7 +380,10 @@ export function FirmEditModal({ state, onClose, onOpenMap, onCreated }: FirmEdit
             <p className="editError" role="alert">{error}</p>
           ) : null}
           <div className="modalTool">
-            <span className="modalAct" {...pressableProps(onOpenMap)}>
+            <span
+              className="modalAct"
+              {...pressableProps(onOpenMap, piiLocked)}
+            >
               주소검색
             </span>
             <span

@@ -52,9 +52,10 @@ export function FirmManager({ rows, canCreate = false, canUpdate = false }: Firm
       console.error("업체 상세 조회 실패", response.status);
       return;
     }
-    const body = (await response.json()) as { data?: PublicFirm };
+    const body = (await response.json()) as { data?: PublicFirm; canWritePii?: boolean };
     if (!body.data) return;
-    setModal({ mode: "edit", row: body.data });
+    // 플래그 누락은 안전 쪽(false)으로 처리한다 — PII 필드가 잠기는 쪽이 열리는 쪽보다 낫다.
+    setModal({ mode: "edit", row: body.data, canWritePii: body.canWritePii === true });
   };
 
   const openCreate = () => {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { apiError, assertSameOrigin, enforceRateLimit, readJson, requestId } from "@/lib/http";
-import { findFirmForUser, updateFirmForUser } from "@/features/firms/repository";
+import { canWriteFirmPii, findFirmForUser, updateFirmForUser } from "@/features/firms/repository";
 import { firmUpdateSchema } from "@/features/firms/schema";
 import { requirePermission } from "@/lib/auth";
 import { AppError } from "@/lib/errors";
@@ -24,9 +24,14 @@ export async function GET(request: NextRequest, context: Ctx) {
     const user = requirePermission(request, "firm:read");
     enforceRateLimit(`firm:detail:${user.id}`);
     const fid = fidParam.parse((await context.params).fid);
-    return NextResponse.json({ cat: 1, data: findFirmForUser(user, fid) }, {
-      headers: { "Cache-Control": "private, no-store", "X-Request-Id": id },
-    });
+    // 편집 폼이 PII 쓰기 가능 여부를 알 수 있게 함께 내려준다(ISSUE-001).
+    // false 면 폼이 PII 필드를 비활성화하고 저장 본문에서도 제외한다.
+    return NextResponse.json(
+      { cat: 1, data: findFirmForUser(user, fid), canWritePii: canWriteFirmPii(user, fid) },
+      {
+        headers: { "Cache-Control": "private, no-store", "X-Request-Id": id },
+      },
+    );
   } catch (error) {
     return apiError(error, id);
   }
