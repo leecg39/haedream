@@ -1,0 +1,15 @@
+{
+  "next": "16.3.3",
+  "react": "19.2.8",
+  "typescript": "5.9.3",
+  "eslint": "9.39.5",
+  "vitest": "4.1.11",
+  "@playwright/test": "1.62.1",
+  "better-sqlite3": "13.0.3",
+  "zod": "4.4.3",
+  "node": "v22.23.1",
+  "npm": "10.9.8",
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "commit": "aaf396a2a7e52b4d5451a7db43b78c71932d2fcf",
+  "build_id": "eOchbFX5r4al3CC3DPxZE"
+}

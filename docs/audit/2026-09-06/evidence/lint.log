@@ -1,0 +1,127 @@
+
+> solarsimz@0.1.0 lint
+> eslint
+
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/base.js
+  112:13  warning  Do not use `location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination         @next/next/no-location-assign-relative-destination
+  201:13  warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  834:19  warning  'authName' is assigned a value but never used                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/device.js
+  699:41  warning  'j' is defined but never used            @typescript-eslint/no-unused-vars
+  846:25  warning  'ws' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/gateNode.js
+  428:25  warning  'ws' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/gateRTU.js
+  347:25  warning  'ws' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/gateway.js
+  269:13  warning  'vipName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  763:37  warning  'j' is defined but never used                 @typescript-eslint/no-unused-vars
+  857:9   warning  'thisVip' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  859:9   warning  '_firm' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  952:25  warning  'ws' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/net.js
+   16:15  warning  'action' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  326:9   warning  'dt' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  327:9   warning  'thisVip' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  328:9   warning  'out' is assigned a value but never used      @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/sequence.js
+    14:9   warning  'dt' is assigned a value but never used       @typescript-eslint/no-unused-vars
+   372:13  warning  'nowTime' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   373:13  warning  'dom' is assigned a value but never used      @typescript-eslint/no-unused-vars
+   446:9   warning  'nowTime' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   615:25  warning  'outTemp' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   765:37  warning  'j' is defined but never used                 @typescript-eslint/no-unused-vars
+   990:41  warning  'j' is defined but never used                 @typescript-eslint/no-unused-vars
+  1062:9   warning  'thisVip' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1064:9   warning  '_firm' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  1155:25  warning  'ws' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/abc.watt/assets/js/user.js
+  297:9   warning  'out' is defined but never used          @typescript-eslint/no-unused-vars
+  364:25  warning  'ws' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/base.js
+   83:13  warning  Do not use `location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination         @next/next/no-location-assign-relative-destination
+  169:13  warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  217:32  warning  'data' is defined but never used                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  217:38  warning  'escape' is defined but never used                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/controlHis.js
+   96:55  warning  'event' is defined but never used        @typescript-eslint/no-unused-vars
+  366:25  warning  'ws' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/firm.js
+  237:34  warning  'reject' is defined but never used                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  660:21  warning  Do not use `location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  856:25  warning  'ws' is assigned a value but never used                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/peak.js
+  245:50  warning  'moment' is defined but never used                 @typescript-eslint/no-unused-vars
+  534:26  warning  'effectAmount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  534:40  warning  'goalAmount' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  669:9   warning  'lastDate' is assigned a value but never used      @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/peakUsage.js
+  122:21  warning  'minutes' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/powerUsage.js
+   20:5   warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+  362:11  warning  'datePicker' is assigned a value but never used                        @typescript-eslint/no-unused-vars
+  398:13  warning  'ws' is assigned a value but never used                                @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/reduce.js
+  65:9  warning  'dateFormat' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/report.js
+   952:9   warning  'ws' is assigned a value but never used                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  1111:13  warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  1116:9   warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  1161:5   warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+
+/Users/user01/Desktop/SolarSimz/docs/research/fit.rfenms.com/assets/js/stat.js
+  238:11  warning  'dom' is assigned a value but never used                               @typescript-eslint/no-unused-vars
+  265:5   warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+  866:1   warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+
+/Users/user01/Desktop/SolarSimz/scripts/collect-firm-kepco-passwds.mjs
+  168:32  warning  'pageIndex' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/user01/Desktop/SolarSimz/src/app/(abc)/layout.tsx
+  25:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  26:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  27:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  28:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  29:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  30:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  31:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  32:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+
+/Users/user01/Desktop/SolarSimz/src/app/(fit-app)/layout.tsx
+  24:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+
+/Users/user01/Desktop/SolarSimz/src/app/(fit-auth)/layout.tsx
+  19:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+  20:9  warning  Do not include stylesheets manually. See: https://nextjs.org/docs/messages/no-css-tags  @next/next/no-css-tags
+
+/Users/user01/Desktop/SolarSimz/src/components/abc/AbcPlatformSwitch.tsx
+  70:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  79:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/user01/Desktop/SolarSimz/src/components/fit/FitLeftNav.tsx
+  80:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  82:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  92:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/user01/Desktop/SolarSimz/src/components/fit/FitLoginForm.tsx
+  87:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  92:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+✖ 72 problems (0 errors, 72 warnings)
+

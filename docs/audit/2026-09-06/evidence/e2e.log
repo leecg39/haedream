@@ -1,0 +1,98 @@
+
+> solarsimz@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:24773) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24773) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24806) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24919) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24922) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24917) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24921) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24918) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24923) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:25123) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 63 tests using 2 workers
+
+(node:25189) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25190) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [desktop-chrome] › e2e/facilities.spec.ts:85:7 › 주요설비 CRUD › 목록 → 등록 → 상세 → 수정 → 삭제 → 복구 흐름 (5.0s)
+  ✓   3 [desktop-chrome] › e2e/facilities.spec.ts:192:7 › 주요설비 CRUD › 조회자는 변경 작업과 삭제 데이터에 접근할 수 없음 (1.5s)
+  ✓   4 [desktop-chrome] › e2e/facilities.spec.ts:206:7 › 주요설비 CRUD › 모바일에서 카드 목록과 상세 창을 사용할 수 있음 (1.2s)
+  ✓   5 [desktop-chrome] › e2e/facilities.spec.ts:222:7 › 주요설비 CRUD › 검색·필터·정렬·날짜 범위·페이지네이션·빈 상태 (1.5s)
+  ✓   6 [desktop-chrome] › e2e/facilities.spec.ts:283:7 › 주요설비 CRUD › 입력 오류를 필드에 연결하고 첫 오류로 포커스를 이동함 (844ms)
+  ✓   1 [desktop-chrome] › e2e/fit-platform-switch.spec.ts:10:7 › 플랫폼 전환 드롭다운 › 에그핏 셸에서 상단 로고 드롭다운으로 두 플랫폼을 오감 (10.6s)
+  ✓   7 [desktop-chrome] › e2e/facilities.spec.ts:297:7 › 주요설비 CRUD › 상세는 최신 데이터를 조회하고 원복한 변경은 이탈 경고를 만들지 않음 (2.0s)
+  ✓   8 [desktop-chrome] › e2e/fit-platform-switch.spec.ts:42:7 › 플랫폼 전환 드롭다운 › ABC 셸에서도 동일한 드롭다운으로 에그핏으로 전환됨 (1.7s)
+  ✓   9 [desktop-chrome] › e2e/facilities.spec.ts:344:7 › 주요설비 CRUD › 목록 오류 시 이전 결과를 제거함 (1.1s)
+  ✓  11 [desktop-chrome] › e2e/facilities.spec.ts:373:7 › 주요설비 CRUD › 수정 중 세션이 만료되면 로그인 필요 화면으로 전환함 (1.7s)
+  ✓  10 [desktop-chrome] › e2e/fit-platform-switch.spec.ts:64:7 › 플랫폼 전환 드롭다운 › ABC 정적 페이지(stat.html)에서도 같은 드롭다운으로 에그핏 전환됨 (3.0s)
+  ✓  12 [desktop-chrome] › e2e/facilities.spec.ts:397:7 › 주요설비 CRUD › 로그인 검증 오류를 알리고 해당 입력으로 포커스를 이동함 (864ms)
+  ✓  13 [desktop-chrome] › e2e/fit-platform-switch.spec.ts:92:7 › 플랫폼 전환 드롭다운 › base.js 정적 페이지(peak.html)에서도 드롭다운이 동작함 (2.6s)
+  ✓  15 [desktop-chrome] › e2e/fit-research.spec.ts:8:7 › 한전데이터 수집 (/fit/research) › 업체 선택·탭 전환·수집 상태 표시가 동작한다 (1.5s)
+  ✓  14 [desktop-chrome] › e2e/facilities.spec.ts:412:7 › 주요설비 CRUD › 두 사용자의 서로 다른 필드 수정이 충돌 후 보존됨 (4.0s)
+  ✓  16 [desktop-chrome] › e2e/fit-research.spec.ts:41:7 › 한전데이터 수집 (/fit/research) › 수집 내역이 없는 업체는 빈 상태 안내를 보여준다 (760ms)
+  ✓  17 [desktop-chrome] › e2e/facilities.spec.ts:484:7 › 주요설비 CRUD › 삭제 확인창이 키보드 포커스를 내부에 유지함 (1.2s)
+  ✓  19 [desktop-chrome] › e2e/facilities.spec.ts:506:7 › 주요설비 CRUD › 설비 편집창의 역방향 포커스도 내부에 유지함 (1.2s)
+  ✓  20 [desktop-chrome] › e2e/stat.spec.ts:9:7 › 통합관제 클론 › 영상의 핵심 패널과 실제 위성 지도를 렌더링함 (2.6s)
+  ✓  18 [desktop-chrome] › e2e/fit-settings-shell.spec.ts:42:7 › EggFit 환경설정 셸 유지 › 환경설정 9개 항목이 모두 /fit 내부 EggFit 셸로 이동함 (7.0s)
+  ✓  21 [desktop-chrome] › e2e/stat.spec.ts:29:7 › 통합관제 클론 › 표와 지도 깃발 선택·정렬·상세 팝업·지도 확대가 동작함 (3.0s)
+  ✓  22 [desktop-chrome] › e2e/fit-settings-shell.spec.ts:78:7 › EggFit 환경설정 셸 유지 › root 대시보드 환경설정 메뉴도 404 없이 각 플랫폼 화면으로 이동함 (3.4s)
+  ✓  24 [desktop-chrome] › e2e/fit-settings-shell.spec.ts:104:7 › EggFit 환경설정 셸 유지 › 대시보드 화면설정은 /widget-set ABC EMS 셸에서 동작함 (995ms)
+  ✓  25 [desktop-chrome] › e2e/watt-admin-video.spec.ts:4:7 › 5.58.58 WATT 환경설정 관리 영상 재현 › 사용자 행을 권한별 입력 폼에서 수정함 (1.3s)
+  ✓  26 [desktop-chrome] › e2e/watt-admin-video.spec.ts:21:7 › 5.58.58 WATT 환경설정 관리 영상 재현 › 업체 필터로 노드 게이트웨이를 찾고 노드 타입을 수정함 (1.2s)
+  ✓  23 [desktop-chrome] › e2e/stat.spec.ts:71:7 › 통합관제 클론 › 실시간 값과 기본 목록 순서를 5초 간격으로 갱신함 (6.2s)
+  ✓  27 [desktop-chrome] › e2e/watt-admin-video.spec.ts:37:7 › 5.58.58 WATT 환경설정 관리 영상 재현 › 복합제어기 필수값 오류와 중첩 그룹설정 후 추가를 처리함 (1.3s)
+  ✓  28 [desktop-chrome] › e2e/stat.spec.ts:97:7 › 통합관제 클론 › 모바일에서 지도와 패널을 세로 배치하고 상세를 화면 안에 표시함 (1.3s)
+  ✓  30 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 대시보드 화면설정 화면을 렌더링함 (662ms)
+  ✓  29 [desktop-chrome] › e2e/watt-admin-video.spec.ts:64:7 › 5.58.58 WATT 환경설정 관리 영상 재현 › 시퀀스 행 편집과 전체 모드·ON/OFF 제어가 동작함 (929ms)
+  ✓  31 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 사용자관리 화면을 렌더링함 (615ms)
+  ✓  32 [desktop-chrome] › e2e/watt-admin-video.spec.ts:82:7 › 5.58.58 WATT 환경설정 관리 영상 재현 › RTU 추가의 필수값 오류를 보여주고 유효 입력을 저장함 (945ms)
+  ✓  33 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 알람설정 화면을 렌더링함 (621ms)
+  ✓  35 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 게이트웨이 관리 화면을 렌더링함 (862ms)
+  ✓  34 [desktop-chrome] › e2e/watt-admin-video.spec.ts:103:7 › 5.58.58 WATT 환경설정 관리 영상 재현 › 모드버스 계측 필수값을 검증하고 새 계측기를 저장함 (1.1s)
+  ✓  36 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 복합제어기 관리 화면을 렌더링함 (817ms)
+  ✓  37 [desktop-chrome] › e2e/watt-firm.spec.ts:10:7 › Watt 업체관리 /firm.html › 로그인 리다이렉트 없이 영상의 1,654건 업체관리 화면을 렌더링함 (1.4s)
+  ✓  38 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 시퀀스 제어 화면을 렌더링함 (787ms)
+  ✓  40 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › RTU 관리 화면을 렌더링함 (777ms)
+  ✓  41 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 모드버스 계측 화면을 렌더링함 (668ms)
+  ✓  39 [desktop-chrome] › e2e/watt-firm.spec.ts:29:7 › Watt 업체관리 /firm.html › 상단에서 DB 업체 전체를 스크롤·검색하고 선택을 유지함 (1.7s)
+  ✓  42 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 실시간 데이터 화면을 렌더링함 (660ms)
+  ✓  43 [desktop-chrome] › e2e/watt-firm.spec.ts:80:7 › Watt 업체관리 /firm.html › 왼쪽 대시보드 카테고리의 시각·접근성 상태를 함께 전환함 (1.2s)
+  ✓  44 [desktop-chrome] › e2e/watt-admin.spec.ts:18:9 › WATT 관리 화면 클론 › 통신상태 불량 화면을 렌더링함 (620ms)
+  ✓  46 [desktop-chrome] › e2e/watt-admin.spec.ts:25:7 › WATT 관리 화면 클론 › 관리 표 검색과 편집 모달이 동작함 (1.0s)
+  ✓  45 [desktop-chrome] › e2e/watt-firm.spec.ts:101:7 › Watt 업체관리 /firm.html › 검색·서비스 필터·정렬·50건 페이지 이동이 동작함 (1.3s)
+  ✓  47 [desktop-chrome] › e2e/watt-admin.spec.ts:37:7 › WATT 관리 화면 클론 › 위젯 설정을 변경하고 저장함 (823ms)
+  ✓  49 [desktop-chrome] › e2e/watt-admin.spec.ts:48:7 › WATT 관리 화면 클론 › 특수 화면의 주요 제어가 동작함 (859ms)
+  ✓  48 [desktop-chrome] › e2e/watt-firm.spec.ts:125:7 › Watt 업체관리 /firm.html › 추가·수정·취소 업체관리 모달이 영상 크기와 필드 구성을 유지함 (1.7s)
+  ✓  50 [desktop-chrome] › e2e/watt-admin.spec.ts:61:7 › WATT 관리 화면 클론 › 모바일에서 셸과 핵심 관리 열을 표시함 (621ms)
+  ✓  51 [desktop-chrome] › e2e/watt-firm.spec.ts:162:7 › Watt 업체관리 /firm.html › 엑셀·인쇄와 요금표·한전수집 화면 이동이 동작함 (2.5s)
+  ✓  52 [desktop-chrome] › e2e/watt-peak.spec.ts:23:7 › Watt 피크 업체 선택 /peak.html › DB 업체 전체를 스크롤·검색하고 선택 상태를 저장함 (2.8s)
+  ✓  53 [desktop-chrome] › e2e/watt-firm.spec.ts:199:7 › /fit/firm steering › 편집 팝업이 원본의 넓은 2열 그리드 폼으로 열림 (1.0s)
+  ✓  55 [desktop-chrome] › e2e/watt-firm.spec.ts:215:7 › /fit/firm steering › 추가 버튼이 값이 채워지지 않은 빈 폼을 염 (1.1s)
+  ✓  54 [desktop-chrome] › e2e/watt-peak.spec.ts:79:7 › Watt 피크 업체 선택 /peak.html › 손상된 members 저장값이 있어도 DB 업체 선택을 초기화함 (1.8s)
+  ✓  56 [desktop-chrome] › e2e/watt-firm.spec.ts:236:7 › /fit/firm steering › 목록 프레임이 페이지당 10행을 스크롤 없이 모두 보여줌 (1.1s)
+  ✓  58 [desktop-chrome] › e2e/watt-firm.spec.ts:256:7 › /fit/firm steering › 프레임 최상단 검색이 목록과 툴바 검색창에 함께 반영됨 (1.2s)
+  ✓  57 [desktop-chrome] › e2e/watt-peak.spec.ts:111:7 › Watt 대시보드 업체 선택 /wattMain.html › 상단에서 DB 업체 전체를 스크롤·검색하고 선택함 (2.4s)
+  ✓  59 [desktop-chrome] › e2e/watt-stat.spec.ts:14:7 › Watt 통합관제 /stat.html › 로그인 리다이렉트 없이 영상의 전체 패널과 고밀도 지도를 렌더링함 (1.3s)
+  ✓  60 [desktop-chrome] › e2e/watt-stat.spec.ts:37:7 › Watt 통합관제 /stat.html › 왼쪽 대시보드 카테고리의 시각·접근성 상태를 함께 전환함 (1.1s)
+  ✓  61 [desktop-chrome] › e2e/watt-stat.spec.ts:65:7 › Watt 통합관제 /stat.html › 업체 검색·상태 필터·정렬·초기화가 동작함 (1.2s)
+  ✓  62 [desktop-chrome] › e2e/watt-stat.spec.ts:92:7 › Watt 통합관제 /stat.html › 업체 행과 지도 마커 상세, 지도 줌·이동, 환경설정 메뉴가 동작함 (4.7s)
+  ✓  63 [desktop-chrome] › e2e/watt-stat.spec.ts:142:7 › Watt 통합관제 /stat.html › 5초마다 실시간 업체 전력 데이터를 갱신함 (5.8s)
+
+  63 passed (1.4m)

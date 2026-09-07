@@ -1,0 +1,426 @@
+{
+  "checked": 84,
+  "non200": [],
+  "routes": [
+    {
+      "path": "/abc/bad",
+      "status": 200,
+      "finalPath": "/abc/bad"
+    },
+    {
+      "path": "/abc/device",
+      "status": 200,
+      "finalPath": "/abc/device"
+    },
+    {
+      "path": "/abc/gate-node",
+      "status": 200,
+      "finalPath": "/abc/gate-node"
+    },
+    {
+      "path": "/abc/gate-rtu",
+      "status": 200,
+      "finalPath": "/abc/gate-rtu"
+    },
+    {
+      "path": "/abc/gateway",
+      "status": 200,
+      "finalPath": "/abc/gateway"
+    },
+    {
+      "path": "/abc/net",
+      "status": 200,
+      "finalPath": "/abc/net"
+    },
+    {
+      "path": "/abc/notify",
+      "status": 200,
+      "finalPath": "/abc/notify"
+    },
+    {
+      "path": "/abc",
+      "status": 200,
+      "finalPath": "/abc/user"
+    },
+    {
+      "path": "/abc/research",
+      "status": 200,
+      "finalPath": "/abc/research"
+    },
+    {
+      "path": "/abc/sequence",
+      "status": 200,
+      "finalPath": "/abc/sequence"
+    },
+    {
+      "path": "/abc/user",
+      "status": 200,
+      "finalPath": "/abc/user"
+    },
+    {
+      "path": "/abc/widget-set",
+      "status": 200,
+      "finalPath": "/abc/widget-set"
+    },
+    {
+      "path": "/fit/acp",
+      "status": 200,
+      "finalPath": "/fit/acp"
+    },
+    {
+      "path": "/fit/bad",
+      "status": 200,
+      "finalPath": "/fit/bad"
+    },
+    {
+      "path": "/fit/control-his",
+      "status": 200,
+      "finalPath": "/fit/control-his"
+    },
+    {
+      "path": "/fit/device",
+      "status": 200,
+      "finalPath": "/fit/device"
+    },
+    {
+      "path": "/fit/firm",
+      "status": 200,
+      "finalPath": "/fit/firm"
+    },
+    {
+      "path": "/fit/gate-node",
+      "status": 200,
+      "finalPath": "/fit/gate-node"
+    },
+    {
+      "path": "/fit/gate-rtu",
+      "status": 200,
+      "finalPath": "/fit/gate-rtu"
+    },
+    {
+      "path": "/fit/gateway",
+      "status": 200,
+      "finalPath": "/fit/gateway"
+    },
+    {
+      "path": "/fit/net",
+      "status": 200,
+      "finalPath": "/fit/net"
+    },
+    {
+      "path": "/fit/notify",
+      "status": 200,
+      "finalPath": "/fit/notify"
+    },
+    {
+      "path": "/fit",
+      "status": 200,
+      "finalPath": "/fit/login"
+    },
+    {
+      "path": "/fit/peak",
+      "status": 200,
+      "finalPath": "/fit/peak"
+    },
+    {
+      "path": "/fit/peak-his",
+      "status": 200,
+      "finalPath": "/fit/peak-his"
+    },
+    {
+      "path": "/fit/peak-panel",
+      "status": 200,
+      "finalPath": "/fit/peak-panel"
+    },
+    {
+      "path": "/fit/peak-set",
+      "status": 200,
+      "finalPath": "/fit/peak-set"
+    },
+    {
+      "path": "/fit/peak-usage",
+      "status": 200,
+      "finalPath": "/fit/peak-usage"
+    },
+    {
+      "path": "/fit/power-usage",
+      "status": 200,
+      "finalPath": "/fit/power-usage"
+    },
+    {
+      "path": "/fit/rate-plan",
+      "status": 200,
+      "finalPath": "/fit/rate-plan"
+    },
+    {
+      "path": "/fit/reduce",
+      "status": 200,
+      "finalPath": "/fit/reduce"
+    },
+    {
+      "path": "/fit/report",
+      "status": 200,
+      "finalPath": "/fit/report"
+    },
+    {
+      "path": "/fit/research",
+      "status": 200,
+      "finalPath": "/fit/research"
+    },
+    {
+      "path": "/fit/sequence",
+      "status": 200,
+      "finalPath": "/fit/sequence"
+    },
+    {
+      "path": "/fit/stat",
+      "status": 200,
+      "finalPath": "/fit/stat"
+    },
+    {
+      "path": "/fit/user",
+      "status": 200,
+      "finalPath": "/fit/user"
+    },
+    {
+      "path": "/fit/widget-set",
+      "status": 200,
+      "finalPath": "/widget-set"
+    },
+    {
+      "path": "/widget-set",
+      "status": 200,
+      "finalPath": "/widget-set"
+    },
+    {
+      "path": "/fit/login",
+      "status": 200,
+      "finalPath": "/fit/login"
+    },
+    {
+      "path": "/admin/facilities",
+      "status": 200,
+      "finalPath": "/admin/facilities"
+    },
+    {
+      "path": "/hub",
+      "status": 200,
+      "finalPath": "/hub"
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "finalPath": "/"
+    },
+    {
+      "path": "/acp.html",
+      "status": 200,
+      "finalPath": "/acp.html"
+    },
+    {
+      "path": "/compressor.html",
+      "status": 200,
+      "finalPath": "/compressor.html"
+    },
+    {
+      "path": "/consulting.html",
+      "status": 200,
+      "finalPath": "/consulting.html"
+    },
+    {
+      "path": "/controlHis.html",
+      "status": 200,
+      "finalPath": "/controlHis.html"
+    },
+    {
+      "path": "/energyMonit.html",
+      "status": 200,
+      "finalPath": "/energyMonit.html"
+    },
+    {
+      "path": "/enpi.html",
+      "status": 200,
+      "finalPath": "/enpi.html"
+    },
+    {
+      "path": "/firm.html",
+      "status": 200,
+      "finalPath": "/firm.html"
+    },
+    {
+      "path": "/gasReports.html",
+      "status": 200,
+      "finalPath": "/gasReports.html"
+    },
+    {
+      "path": "/kpi.html",
+      "status": 200,
+      "finalPath": "/kpi.html"
+    },
+    {
+      "path": "/loads.html",
+      "status": 200,
+      "finalPath": "/loads.html"
+    },
+    {
+      "path": "/login.html",
+      "status": 200,
+      "finalPath": "/login.html"
+    },
+    {
+      "path": "/main.html",
+      "status": 200,
+      "finalPath": "/main.html"
+    },
+    {
+      "path": "/monit.html",
+      "status": 200,
+      "finalPath": "/monit.html"
+    },
+    {
+      "path": "/peak.html",
+      "status": 200,
+      "finalPath": "/peak.html"
+    },
+    {
+      "path": "/peakHis.html",
+      "status": 200,
+      "finalPath": "/peakHis.html"
+    },
+    {
+      "path": "/peakPanel.html",
+      "status": 200,
+      "finalPath": "/peakPanel.html"
+    },
+    {
+      "path": "/peakSet.html",
+      "status": 200,
+      "finalPath": "/peakSet.html"
+    },
+    {
+      "path": "/peakUsage.html",
+      "status": 200,
+      "finalPath": "/peakUsage.html"
+    },
+    {
+      "path": "/plc.html",
+      "status": 200,
+      "finalPath": "/plc.html"
+    },
+    {
+      "path": "/powerPage.html",
+      "status": 200,
+      "finalPath": "/powerPage.html"
+    },
+    {
+      "path": "/powerUsage.html",
+      "status": 200,
+      "finalPath": "/powerUsage.html"
+    },
+    {
+      "path": "/report.html",
+      "status": 200,
+      "finalPath": "/report.html"
+    },
+    {
+      "path": "/reportFacilities.html",
+      "status": 200,
+      "finalPath": "/reportFacilities.html"
+    },
+    {
+      "path": "/reportFine.html",
+      "status": 200,
+      "finalPath": "/reportFine.html"
+    },
+    {
+      "path": "/reportIK.html",
+      "status": 200,
+      "finalPath": "/reportIK.html"
+    },
+    {
+      "path": "/reportPower.html",
+      "status": 200,
+      "finalPath": "/reportPower.html"
+    },
+    {
+      "path": "/reportToe.html",
+      "status": 200,
+      "finalPath": "/reportToe.html"
+    },
+    {
+      "path": "/reportTotal.html",
+      "status": 200,
+      "finalPath": "/reportTotal.html"
+    },
+    {
+      "path": "/reportUnit.html",
+      "status": 200,
+      "finalPath": "/reportUnit.html"
+    },
+    {
+      "path": "/sensor.html",
+      "status": 200,
+      "finalPath": "/sensor.html"
+    },
+    {
+      "path": "/solar.html",
+      "status": 200,
+      "finalPath": "/solar.html"
+    },
+    {
+      "path": "/stat.html",
+      "status": 200,
+      "finalPath": "/stat.html"
+    },
+    {
+      "path": "/techFrozen.html",
+      "status": 200,
+      "finalPath": "/techFrozen.html"
+    },
+    {
+      "path": "/techHis.html",
+      "status": 200,
+      "finalPath": "/techHis.html"
+    },
+    {
+      "path": "/techOver.html",
+      "status": 200,
+      "finalPath": "/techOver.html"
+    },
+    {
+      "path": "/techPlan.html",
+      "status": 200,
+      "finalPath": "/techPlan.html"
+    },
+    {
+      "path": "/techSettings.html",
+      "status": 200,
+      "finalPath": "/techSettings.html"
+    },
+    {
+      "path": "/techTree.html",
+      "status": 200,
+      "finalPath": "/techTree.html"
+    },
+    {
+      "path": "/techUsage.html",
+      "status": 200,
+      "finalPath": "/techUsage.html"
+    },
+    {
+      "path": "/thermos.html",
+      "status": 200,
+      "finalPath": "/thermos.html"
+    },
+    {
+      "path": "/wattMain.html",
+      "status": 200,
+      "finalPath": "/wattMain.html"
+    },
+    {
+      "path": "/wattPrediction.html",
+      "status": 200,
+      "finalPath": "/wattPrediction.html"
+    }
+  ]
+}

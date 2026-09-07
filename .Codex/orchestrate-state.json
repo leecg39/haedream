@@ -1,0 +1,12 @@
+{
+  "project": "SolarSimz",
+  "integrationBranch": "feat/fit-clone",
+  "baselineCommit": "aaf396a2a7e52b4d5451a7db43b78c71932d2fcf",
+  "taskFile": "docs/planning/06-tasks.md",
+  "planFile": "docs/plans/solarsimz-improvement-plan.md",
+  "currentPhase": 1,
+  "currentTask": "P1-REVIEW-FIX",
+  "status": "cursor-active",
+  "completedTasks": ["P0-T1", "P0-T2"],
+  "updatedAt": "2026-09-07T00:00:00+09:00"
+}

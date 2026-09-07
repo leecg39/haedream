@@ -1,0 +1,256 @@
+{
+  "api": [
+    {
+      "path": "/api/auth/session",
+      "status": 401,
+      "bytes": 138,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/api/facilities",
+      "status": 401,
+      "bytes": 138,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "path": "/api/firm",
+      "status": 200,
+      "bytes": 1067106,
+      "cacheControl": "no-store",
+      "rows": 1654,
+      "fields": [
+        "fid",
+        "firmName",
+        "registTime",
+        "contract",
+        "kepcoNo",
+        "eoiTime",
+        "pct_ratio",
+        "peakLast",
+        "powerLimit",
+        "peakRunMode",
+        "peakControlMode",
+        "isDisable",
+        "serviceType",
+        "memo",
+        "frugal",
+        "contractLimit",
+        "ableLowPower",
+        "maxAbleWatt",
+        "maxAbleDate",
+        "pass",
+        "degreeCity",
+        "bone",
+        "kepcoCyber",
+        "manager",
+        "phone",
+        "addressText",
+        "checkDay",
+        "ableLimit",
+        "ableLimitTime",
+        "pulse_num",
+        "frugalTime",
+        "investGold",
+        "kepcoContract",
+        "boss",
+        "mapGeo"
+      ]
+    },
+    {
+      "path": "/api/firm/121",
+      "status": 200,
+      "bytes": 1067106,
+      "cacheControl": null,
+      "rows": 1654,
+      "fields": [
+        "fid",
+        "firmName",
+        "registTime",
+        "contract",
+        "kepcoNo",
+        "eoiTime",
+        "pct_ratio",
+        "peakLast",
+        "powerLimit",
+        "peakRunMode",
+        "peakControlMode",
+        "isDisable",
+        "serviceType",
+        "memo",
+        "frugal",
+        "contractLimit",
+        "ableLowPower",
+        "maxAbleWatt",
+        "maxAbleDate",
+        "pass",
+        "degreeCity",
+        "bone",
+        "kepcoCyber",
+        "manager",
+        "phone",
+        "addressText",
+        "checkDay",
+        "ableLimit",
+        "ableLimitTime",
+        "pulse_num",
+        "frugalTime",
+        "investGold",
+        "kepcoContract",
+        "boss",
+        "mapGeo"
+      ]
+    },
+    {
+      "path": "/api/kepco/status",
+      "status": 200,
+      "bytes": 206909,
+      "cacheControl": null,
+      "rows": 1431,
+      "fields": [
+        "fid",
+        "firmName",
+        "kepcoNo",
+        "hasPasswd",
+        "lastStatus",
+        "lastMessage",
+        "lastCollectedAt"
+      ]
+    },
+    {
+      "path": "/api/kepco/firm/7",
+      "status": 200,
+      "bytes": 142,
+      "cacheControl": null
+    }
+  ],
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "finalPath": "/",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "domNodes": 44,
+      "unlabeledInputs": 0,
+      "nonKeyboardButtons": 0,
+      "navigation": {
+        "domContentLoaded": 74,
+        "load": 147,
+        "response": 50
+      },
+      "pageErrors": []
+    },
+    {
+      "path": "/fit/login",
+      "status": 200,
+      "finalPath": "/fit/login",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "domNodes": 48,
+      "unlabeledInputs": 2,
+      "nonKeyboardButtons": 0,
+      "navigation": {
+        "domContentLoaded": 66,
+        "load": 137,
+        "response": 41
+      },
+      "pageErrors": []
+    },
+    {
+      "path": "/fit/peak",
+      "status": 200,
+      "finalPath": "/fit/peak",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "domNodes": 546,
+      "unlabeledInputs": 0,
+      "nonKeyboardButtons": 2,
+      "navigation": {
+        "domContentLoaded": 82,
+        "load": 144,
+        "response": 40
+      },
+      "pageErrors": []
+    },
+    {
+      "path": "/fit/firm",
+      "status": 200,
+      "finalPath": "/fit/firm",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "domNodes": 782,
+      "unlabeledInputs": 29,
+      "nonKeyboardButtons": 16,
+      "navigation": {
+        "domContentLoaded": 206,
+        "load": 271,
+        "response": 167
+      },
+      "pageErrors": []
+    },
+    {
+      "path": "/fit/stat",
+      "status": 200,
+      "finalPath": "/fit/stat",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "domNodes": 1645,
+      "unlabeledInputs": 2,
+      "nonKeyboardButtons": 6,
+      "navigation": {
+        "domContentLoaded": 70,
+        "load": 209,
+        "response": 43
+      },
+      "pageErrors": []
+    },
+    {
+      "path": "/abc/user",
+      "status": 200,
+      "finalPath": "/abc/user",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "domNodes": 320,
+      "unlabeledInputs": 1,
+      "nonKeyboardButtons": 11,
+      "navigation": {
+        "domContentLoaded": 68,
+        "load": 137,
+        "response": 41
+      },
+      "pageErrors": []
+    },
+    {
+      "path": "/admin/facilities",
+      "status": 200,
+      "finalPath": "/admin/facilities",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "domNodes": 32,
+      "unlabeledInputs": 0,
+      "nonKeyboardButtons": 0,
+      "navigation": {
+        "domContentLoaded": 65,
+        "load": 117,
+        "response": 38
+      },
+      "pageErrors": []
+    }
+  ],
+  "unauthenticatedCreate": {
+    "status": 403
+  },
+  "unauthenticatedCollect": {
+    "status": 403,
+    "note": "empty credential map; no external authentication"
+  },
+  "fitInvalidLogin": {
+    "finalPath": "/fit/peak",
+    "sessionCookiePresent": false
+  },
+  "firmMobile": {
+    "width": 390,
+    "scrollWidth": 400,
+    "tableWidth": 1256.65625
+  }
+}

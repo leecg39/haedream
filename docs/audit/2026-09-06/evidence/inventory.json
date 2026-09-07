@@ -1,0 +1,36 @@
+{
+  "src": {
+    "files": 193,
+    "bytes": 2302476
+  },
+  "e2e": {
+    "files": 11,
+    "bytes": 76246
+  },
+  "tests": {
+    "files": 13,
+    "bytes": 68332
+  },
+  "scripts": {
+    "files": 26,
+    "bytes": 1058149
+  },
+  "db/migrations": {
+    "files": 6,
+    "bytes": 16364
+  },
+  "public": {
+    "files": 522,
+    "bytes": 35307954
+  },
+  "page_groups": {
+    "(abc)": 12,
+    "(fit-app)": 26,
+    "(fit-auth)": 1,
+    "(watt)": 3
+  },
+  "public_root_html": 42,
+  "mock_ts_files": 12,
+  "tests_total_lines": 2019,
+  "e2e_total_lines": 1696
+}

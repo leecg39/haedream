@@ -1,0 +1,20 @@
+{
+  "unauthenticatedCreate": {
+    "status": 201,
+    "fid": 1662
+  },
+  "unauthenticatedCollect": {
+    "status": 200,
+    "result": "no_credentials",
+    "externalCredentialsUsed": false
+  },
+  "newFirmInCollectionList": {
+    "created": true,
+    "found": false
+  },
+  "invalidCollectJson": {
+    "status": 404,
+    "error": "NOT_FOUND",
+    "note": "empty credential file; full-batch target list empty"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "fitEditPersistence": {
+    "rowsWithOriginalName": 1,
+    "attemptedName": "평가용_수정후_20260906",
+    "originalName": "평가용_임시업체_20260906"
+  },
+  "facilityLoginStatus": 200,
+  "facilities": {
+    "viewport": 1440,
+    "scrollWidth": 1440,
+    "headings": [
+      "주요설비 관리"
+    ]
+  },
+  "publicChunk": {
+    "status": 200,
+    "bytes": 1114819,
+    "cookieSent": false
+  }
+}

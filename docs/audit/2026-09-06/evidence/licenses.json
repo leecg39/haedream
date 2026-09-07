@@ -1,0 +1,22 @@
+{
+  "source": "package-lock.json",
+  "package_entries": 509,
+  "licenses": {
+    "MIT": 397,
+    "Apache-2.0": 38,
+    "LGPL-3.0-or-later": 10,
+    "Apache-2.0 AND LGPL-3.0-or-later AND MIT": 1,
+    "Apache-2.0 AND LGPL-3.0-or-later": 3,
+    "BlueOak-1.0.0": 1,
+    "ISC": 18,
+    "PolyForm-Shield-1.0.0": 1,
+    "Python-2.0": 1,
+    "MPL-2.0": 25,
+    "BSD-3-Clause": 3,
+    "CC-BY-4.0": 1,
+    "BSD-2-Clause": 8,
+    "CC0-1.0": 1,
+    "0BSD": 1
+  },
+  "note": "Lockfile metadata includes optional platform packages; mirrored assets are not covered."
+}

@@ -1,0 +1,13 @@
+
+> solarsimz@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/user01/Desktop/SolarSimz
+
+
+ Test Files  13 passed (13)
+      Tests  99 passed (99)
+   Start at  02:47:13
+   Duration  2.30s (transform 2.73s, setup 0ms, import 4.95s, tests 3.09s, environment 1ms)
+

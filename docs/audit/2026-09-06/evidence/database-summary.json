@@ -1,0 +1,56 @@
+{
+  "tables": {
+    "_migrations": 6,
+    "tenants": 1,
+    "users": 3,
+    "sessions": 1,
+    "gateways": 2,
+    "facilities": 9,
+    "audit_logs": 245,
+    "kepco_summary": 1168,
+    "kepco_hourly": 28128,
+    "kepco_monthly": 14016,
+    "kepco_collect_log": 2845,
+    "sqlite_sequence": 1,
+    "kepco_daily_total": 1170,
+    "kepco_interval": 3364032,
+    "kepco_billing": 14016,
+    "kepco_contract": 1168,
+    "firms": 1654
+  },
+  "collection_dates": {
+    "earliest": "2026-08-30T01:43:17.578Z",
+    "latest": "2026-09-01T08:14:17.266Z",
+    "firms": 1168
+  },
+  "collection_attempt_status": [
+    {
+      "status": "error",
+      "n": 11
+    },
+    {
+      "status": "login_failed",
+      "n": 489
+    },
+    {
+      "status": "success",
+      "n": 2345
+    }
+  ],
+  "latest_status": [
+    {
+      "status": "login_failed",
+      "n": 231
+    },
+    {
+      "status": "success",
+      "n": 1168
+    }
+  ],
+  "interval": {
+    "firms": 1168,
+    "earliest": "20260801",
+    "latest": "20260901",
+    "no_data_slots": 514365
+  }
+}
