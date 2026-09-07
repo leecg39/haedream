@@ -27,6 +27,40 @@
     {
       "type": "migrate-rehearsal",
       "sourceDb": "/ABS/PATH/OUTSIDE/REPO/deid-or-approved-offline.db"
+    },
+    {
+      "type": "attest-large-db",
+      "iApproveAttestation": true,
+      "operator": "REPLACE_OPERATOR_ID",
+      "statement": "I approve this deidentified offline snapshot for P7-T2 migrate/backup rehearsal evidence",
+      "snapshotPath": "/ABS/PATH/OUTSIDE/REPO/local-live-post-011.deid.db",
+      "expectedSha256": "REPLACE_HEX64"
+    },
+    {
+      "type": "register-observation",
+      "envAlias": "REPLACE_SCHEDULER_ENV",
+      "startDate": "YYYY-MM-DD",
+      "plannedDays": 7,
+      "alertOwner": "REPLACE_ONCALL_ALIAS",
+      "faultInjectApproved": false
+    },
+    {
+      "type": "declare-external-env",
+      "iConfirmInventory": true,
+      "operator": "REPLACE_OPERATOR_ID",
+      "environments": [
+        {
+          "alias": "hostinger-vps-1",
+          "hostsSolarSimz": false,
+          "pre011BackupProvenance": "n/a-no-solarsimz-on-host"
+        },
+        {
+          "alias": "REPLACE_REAL_ENV",
+          "hostsSolarSimz": true,
+          "offlineSnapshotPath": "/ABS/PATH/OUTSIDE/REPO/env-offline.db",
+          "pre011BackupProvenance": "REPLACE_BACKUP_HASH_ALIAS_OR_NONE"
+        }
+      ]
     }
   ]
 }

@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -364,5 +365,107 @@ describe("ops readiness prep scripts", () => {
     expect(statSync(path.join(evidenceDir, "runner-summary.json")).mode & 0o777).toBe(
       0o600,
     );
+  });
+
+  it("ops-external-input-runner records B/D/E operator attestations without completing goals", () => {
+    const snapshotPath = path.join(directory, "tiny-offline.db");
+    writeFileSync(snapshotPath, "offline-db-bytes");
+    chmodSync(snapshotPath, 0o600);
+    const sha256 = createHash("sha256")
+      .update(readFileSync(snapshotPath))
+      .digest("hex");
+
+    const evidenceDir = path.join(directory, "evidence-attest");
+    const manifestPath = path.join(directory, "attest-manifest.json");
+    writeFileSync(
+      manifestPath,
+      `${JSON.stringify(
+        {
+          envAlias: "ops-attest-test",
+          evidenceDir,
+          actions: [
+            {
+              type: "attest-large-db",
+              iApproveAttestation: true,
+              operator: "test-operator",
+              statement:
+                "Approve this deidentified offline snapshot for P7-T2 rehearsal evidence",
+              snapshotPath,
+              expectedSha256: sha256,
+            },
+            {
+              type: "register-observation",
+              envAlias: "scheduler-staging",
+              startDate: "2026-09-07",
+              plannedDays: 7,
+              alertOwner: "oncall-alias",
+              faultInjectApproved: false,
+            },
+            {
+              type: "declare-external-env",
+              iConfirmInventory: true,
+              operator: "test-operator",
+              environments: [
+                {
+                  alias: "hostinger-vps-1",
+                  hostsSolarSimz: false,
+                  pre011BackupProvenance: "n/a-no-solarsimz-on-host",
+                },
+                {
+                  alias: "local-dev-post-011",
+                  hostsSolarSimz: true,
+                  offlineSnapshotPath: snapshotPath,
+                  pre011BackupProvenance: "alias:pre-011-backup-unknown",
+                },
+              ],
+            },
+          ],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+
+    const deniedGate = runNode(
+      "scripts/ops-external-input-runner.mjs",
+      ["--manifest", manifestPath],
+      {},
+    );
+    expect(deniedGate.status).toBe(1);
+    expect(deniedGate.stderr).toMatch(/required minimum/i);
+
+    const ok = runNode(
+      "scripts/ops-external-input-runner.mjs",
+      ["--manifest", manifestPath],
+      { OPS_ATTEST_MIN_BYTES: "1" },
+    );
+    expect(ok.status, ok.stderr || ok.stdout).toBe(0);
+    const summary = JSON.parse(
+      readFileSync(path.join(evidenceDir, "runner-summary.json"), "utf8"),
+    );
+    expect(summary.ok).toBe(true);
+    expect(summary.results).toHaveLength(3);
+    expect(summary.results.every((row: { ok: boolean }) => row.ok)).toBe(true);
+
+    const attest = JSON.parse(
+      readFileSync(path.join(evidenceDir, "attest-large-db.json"), "utf8"),
+    );
+    expect(attest.attestationRecorded).toBe(true);
+    expect(attest.p7t2CheckboxAutoChecked).toBe(false);
+    expect(attest.sha256).toBe(sha256);
+    expect(JSON.stringify(attest)).not.toMatch(/Users\//);
+
+    const observation = JSON.parse(
+      readFileSync(path.join(evidenceDir, "observation-registry.json"), "utf8"),
+    );
+    expect(observation.observationComplete).toBe(false);
+    expect(observation.plannedDays).toBe(7);
+
+    const envDecl = JSON.parse(
+      readFileSync(path.join(evidenceDir, "declare-external-env.json"), "utf8"),
+    );
+    expect(envDecl.migration011AuditComplete).toBe(false);
+    expect(envDecl.hostingSolarSimzCount).toBe(1);
+    expect(envDecl.environments[0].hostsSolarSimz).toBe(false);
   });
 });

@@ -2,7 +2,7 @@
 
 작성일: 2026-09-07  
 기준 브랜치: `feat/fit-clone`  
-기준 SHA: `05cff53a1b1b587b9ba96bd47b58c1862aa85b04` (갱신 시 tip 따름)  
+기준 SHA: `0c3b624f2057e4a49f9e0673353455b6aa60bb97` (갱신 시 tip 따름)  
 관련: [cursor-handoff-remaining-work.md](cursor-handoff-remaining-work.md), [phase-8-measurement-csv-and-alerts.md](phase-8-measurement-csv-and-alerts.md), [2026-09-07-ops-evidence-pass4.md](../audit/2026-09-07-ops-evidence-pass4.md)
 
 이 문서는 **완료 체크가 아니다**. 외부 입력이 오면 여기의 요청 목록으로 실행하고, 증거는 `docs/audit/YYYY-MM-DD-…`에만 기록한다.
@@ -12,10 +12,10 @@
 | ID | 항목 | 상태 | 내부 준비 |
 |---|---|---|---|
 | A | P5-T1 승인 CSV 원본 대조 | **blocked** — 승인 CSV·메타 미제공 (합성 dry-run/apply/reconcile 리허설은 `ops:synth-rehearsal`로 통과, 완료 아님) | CLI/가드/합성 회귀·합성 운영 리허설 |
-| B | ≥1GB migrate/backup rehearsal | **부분** — 합성 크기 verified + local deid `1149865984` bytes rehearsal verified. **운영자 attestation 전 P7-T2 체크 금지** | offline/deid/synthetic large 도구 |
+| B | ≥1GB migrate/backup rehearsal | **부분** — 합성 크기 verified + local deid `1149865984` bytes rehearsal verified. **운영자 `attest-large-db` attestation 전 P7-T2 체크 금지** | offline/deid/synthetic large 도구 + external-input attestation |
 | C | 실 HTTPS webhook HMAC | **blocked** — endpoint/secret/allowlist/수신자 미제공 (`ops:external-input` 매니페스트로 실행 가능) | config 동기 검증 CLI; 송신 0회 |
-| D | 7일 운영 관찰 | **blocked** — 스케줄러 환경·관찰 창 미지정 (합성 Day0 monitor no-alert만 준비) | 일별 로그 템플릿 + synth rehearsal |
-| E | 외부 환경 migration 011 감사 | **blocked** — Hostinger 인증·RO 목록 OK이나 이 계정에 SolarSimz/haedream 배포 프로젝트 없음; 외부 offline snapshot·pre-011 backup provenance 미제공 (local-dev offline 감사 ok) | read-only 감사 CLI + external-input runner |
+| D | 7일 운영 관찰 | **blocked** — 스케줄러 환경·관찰 창 미지정 (`register-observation`으로 Day0 등록 가능, 완료 아님) | 일별 로그 템플릿 + synth rehearsal + registry action |
+| E | 외부 환경 migration 011 감사 | **blocked** — Hostinger RO OK·SolarSimz 프로젝트 없음; `declare-external-env` + offline `audit-migration-011`·pre-011 backup provenance 필요 | read-only 감사 CLI + external-input runner |
 
 로컬 `data/solarsimz.db`(약 1.1GB)는 라이브 경로이며 WAL/SHM 이 다시 생길 수 있다. B/E 입력으로 직접 쓰지 말고, 승인 후 `npm run db:offline-snapshot` → (필요 시) `npm run db:deid-snapshot` 만 사용한다.
 
@@ -50,6 +50,7 @@
 | 승인된 **비식별** offline snapshot 경로 | ≥1GB, `-wal`/`-shm`/`-journal` 없음 |
 | 동일 크기급 temp disk | 복사+backup 여유 |
 | backup/restore 위치 | 저장소 밖 |
+| 운영자 attestation | `ops:external-input` action `attest-large-db` (`iApproveAttestation=true`, operator, statement, expectedSha256). **체크박스 자동 변경 없음** |
 
 합성 크기 경로(운영 사본 대체 아님):
 
@@ -93,6 +94,7 @@ npm run ops:verify-webhook-config
 | 관찰 시작일 (달력) | 최소 7일 |
 | 알림 수신 담당자 | |
 | 장애 주입 승인 여부 | 무단 주입 금지 |
+| Day0 등록 | `register-observation` (plannedDays≥7). 등록 ≠ 7일 완료 |
 
 일별 기록 템플릿: [observation-log-template.md](observation-log-template.md)
 
@@ -107,6 +109,7 @@ npm run ops:verify-webhook-config
 | 011 적용 전 backup 존재·해시(별칭) | |
 | 배포 기록상 unsafe-011(`bc0a40d` 전후) 적용 여부 | |
 | (선택) Hostinger 외 배포면 그 플랫폼의 RO 접근 방법 | MCP로 보이지 않으면 운영자 제공 경로로만 감사 |
+| 환경 목록 attestation | `declare-external-env` (`iConfirmInventory=true`). 호스팅 env마다 offline snapshot + `audit-migration-011` 필요. inventory만으로 E 완료 금지 |
 
 ```bash
 npm run ops:audit-migration-011 -- \
