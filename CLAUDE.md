@@ -7,3 +7,23 @@
 - 비밀번호 갱신: `node scripts/export-kepco-passwds.mjs` → `node scripts/match-kepco-passwds.mjs`
 - 매칭은 fid 기준(한전고객번호는 중복 26개로 키 사용 불가, 검증용으로만 사용).
 - 상세: `docs/research/pp.kepco.co.kr/INTEGRATION.md`
+
+## Skill routing
+
+When the user's request matches an available skill, ALWAYS invoke it using the Skill
+tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
+The skill has specialized workflows that produce better results than ad-hoc answers.
+
+Key routing rules:
+- Product ideas, "is this worth building", brainstorming → invoke office-hours
+- Bugs, errors, "why is this broken", 500 errors → invoke investigate
+- Ship, deploy, push, create PR → invoke ship
+- QA, test the site, find bugs → invoke qa
+- Code review, check my diff → invoke review
+- Update docs after shipping → invoke document-release
+- Weekly retro → invoke retro
+- Design system, brand → invoke design-consultation
+- Visual audit, design polish → invoke design-review
+- Architecture review → invoke plan-eng-review
+- Save progress, checkpoint, resume → invoke checkpoint
+- Code quality, health check → invoke health
