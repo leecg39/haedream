@@ -9,7 +9,7 @@ import { seedDatabase } from "@/lib/seed";
 import { loginUser, SESSION_COOKIE } from "@/lib/auth";
 import { importFirmCsv, parseFirmCsv } from "@/features/firms/csv-import.server";
 import { listFirmsForUser, findFirmForUser, updateFirmForUser, createFirmForUser } from "@/features/firms/repository";
-import { enqueueSingleCollectJob, getCollectionJobForUser } from "@/features/kepco/jobs.repository";
+import { enqueueSingleCollectJob, getCollectionJobForUser, processQueuedJobs } from "@/features/kepco/jobs.repository";
 import { decryptFirmPassword } from "@/lib/firm-secrets.server";
 import { getKepcoPassword } from "@/lib/kepco/credentials.server";
 import { GET as firmGET, PATCH as firmPATCH } from "@/app/api/firm/[fid]/route";
@@ -105,6 +105,46 @@ describe("private CSV firms", () => {
     expect(() => runImport(csv(), true, operator.id)).toThrow(/ADMIN/);
     expect(getDb().prepare("SELECT COUNT(*) AS n FROM firms WHERE fid IN (77,78)").get()).toEqual({ n: 0 });
     expect(getDb().prepare("SELECT COUNT(*) AS n FROM firm_import_runs").get()).toEqual({ n: 0 });
+  });
+
+  it("runs an admin-only collection using the requesting admin's actual role", async () => {
+    runImport();
+    const db = getDb();
+    db.prepare("UPDATE tenant_firm_access SET can_collect = 1 WHERE fid = 77").run();
+    const job = enqueueSingleCollectJob(admin, 77, "admin-worker", db);
+    let called = false;
+    await processQueuedJobs(1, db, async (firm) => {
+      called = true;
+      expect(firm.kepcoPasswd).toBe(source.kepcoPasswd);
+      return { fid: firm.fid, status: "success", message: "synthetic", startedAt: new Date().toISOString(), finishedAt: new Date().toISOString() };
+    });
+    expect(called).toBe(true);
+    expect(getCollectionJobForUser(admin, job.id, db)?.status).toBe("SUCCEEDED");
+  });
+
+  it.each([
+    "UPDATE users SET active = 0 WHERE username = 'admin'",
+    "UPDATE users SET role = 'VIEWER' WHERE username = 'admin'",
+    "UPDATE users SET role = 'OPERATOR' WHERE username = 'admin'",
+    "UPDATE tenant_firm_access SET can_collect = 0 WHERE fid = 77",
+  ])("refuses queued collection after authorization changes: %s", async (change) => {
+    runImport();
+    const db = getDb();
+    // 계정/역할 회수는 일반 업체에서도 외부 호출을 막아야 한다.
+    if (change.includes("active = 0") || change.includes("'VIEWER'")) {
+      db.prepare("UPDATE firms SET admin_only = 0 WHERE fid = 77").run();
+    }
+    db.prepare("UPDATE tenant_firm_access SET can_collect = 1 WHERE fid = 77").run();
+    const job = enqueueSingleCollectJob(admin, 77, "revoked-worker", db);
+    db.exec(change);
+    let called = false;
+    await processQueuedJobs(1, db, async () => {
+      called = true;
+      throw new Error("must not collect");
+    });
+    expect(called).toBe(false);
+    expect(db.prepare("SELECT status, attempt_count FROM collection_jobs WHERE id = ?").get(job.id))
+      .toEqual({ status: "FAILED", attempt_count: 1 });
   });
 
   it("rolls back firms, credentials, grants and import history on a database failure", () => {

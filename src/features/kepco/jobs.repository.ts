@@ -54,6 +54,8 @@ const NON_RETRYABLE_CODES = new Set([
   "LOGIN_FAILED",
   "FORBIDDEN",
   "FIRM_NOT_FOUND",
+  "FIRM_ACCESS_DENIED",
+  "FIRM_COLLECTION_DENIED",
 ]);
 
 const TERMINAL_STATUSES = new Set<CollectionJobStatus>([
@@ -328,14 +330,6 @@ export async function runCollectionJob(
   db: AppDatabase = getDb(),
   collect: CollectAdapter = collectFirm,
 ): Promise<CollectionJob> {
-  const actor = {
-    id: job.actorId,
-    tenantId: job.tenantId,
-    username: "worker",
-    name: "worker",
-    role: "OPERATOR" as const,
-  };
-
   const failOrRetry = (errorCode: string, errorMessage: string) => {
     if (shouldRetry(job, errorCode)) {
       requeueForRetry(db, job, errorCode, errorMessage);
@@ -349,6 +343,12 @@ export async function runCollectionJob(
   };
 
   try {
+    // 대기 중 계정 비활성화·역할 변경도 실행 직전 권한에 반영한다.
+    const actor = db.prepare(
+      `SELECT id, tenant_id AS tenantId, username, name, role
+       FROM users WHERE id = ? AND tenant_id = ? AND active = 1`,
+    ).get(job.actorId, job.tenantId) as SessionUser | undefined;
+    if (!actor) throw new AppError(403, "FORBIDDEN", "수집 요청자의 권한을 확인할 수 없습니다.");
     const firm = findFirmForCollection(actor, job.fid, db);
     const result = await collect({
       fid: firm.fid,

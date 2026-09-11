@@ -5,7 +5,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const build = path.resolve(root, process.env.NEXT_DIST_DIR || ".next");
-const privateKey = process.env.FIRM_CREDENTIAL_KEY_PATH ? path.resolve(process.env.FIRM_CREDENTIAL_KEY_PATH) : null;
+const privateKey = path.resolve(root, process.env.FIRM_CREDENTIAL_KEY_PATH || "data/firm-credentials.key");
 function canonical(file) {
   const suffix = [];
   let current = file;
@@ -32,13 +32,18 @@ for (const manifest of files(build)) {
   try {
     const trace = JSON.parse(readFileSync(manifest, "utf8"));
     if (!Array.isArray(trace.files) || trace.files.some((file) => typeof file !== "string")) throw new Error();
-    const keyPath = privateKey ? canonical(privateKey) : null;
+    const keyPath = canonical(privateKey);
+    const dataPath = canonical(path.join(root, "data"));
+    const databasePath = path.resolve(root, process.env.DATABASE_PATH || "data/solarsimz.db");
+    const databaseFiles = new Set(["", "-wal", "-shm", "-journal"].map((suffix) => canonical(databasePath + suffix)));
     const unsafe = trace.files.some((file) => {
-      const resolved = canonical(path.resolve(path.dirname(manifest), file));
+      const traced = path.resolve(path.dirname(manifest), file);
+      const resolved = canonical(traced);
       const basename = path.basename(resolved);
-      return resolved === keyPath ||
+      return resolved === keyPath || databaseFiles.has(resolved) ||
         ["firm-details.csv", "firm-credentials.key", "pre-import.db"].includes(basename) ||
-        (resolved.startsWith(path.join(root, "data") + path.sep) && /\.(?:db|sqlite|sqlite3)(?:-(?:wal|shm|journal))?$/.test(basename));
+        (traced.startsWith(path.join(root, "data") + path.sep) && /\.(?:db|sqlite|sqlite3)(?:-(?:wal|shm|journal))?$/.test(path.basename(traced))) ||
+        (resolved.startsWith(dataPath + path.sep) && /\.(?:db|sqlite|sqlite3)(?:-(?:wal|shm|journal))?$/.test(basename));
     });
     if (unsafe) throw new Error();
   } catch {
