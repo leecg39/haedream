@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "target": "src/features/pilot/ops-repository.ts",
+  "metric": "sum(inner.scenario.queries * 10 + inner.scenario.rows)",
+  "direction": "lower_is_better",
+  "min_delta": 1,
+  "timing": "diagnostic_only; wall-clock latency is not the acceptance metric",
+  "guard": ["frozen response assertions", "npm test", "npm run typecheck", "npm run lint"],
+  "outer_metric": "100 * (1 - current_outer_work / baseline_outer_work)",
+  "notes": "Rows are materialized all/get rows, not SQLite scanned rows. SQL count includes writes and transaction statements. Fixed workload score is a proxy for avoidable DB/JS work, not end-to-end API speed."
+}

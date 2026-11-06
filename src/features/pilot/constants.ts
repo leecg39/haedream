@@ -1,7 +1,11 @@
 import mapping from "./mapping.json";
-import type { DataSource } from "@/features/pilot/types";
+import bom from "./bom.json";
+import type { DataSource, PilotChecklistKey } from "@/features/pilot/types";
+import { PILOT_CHECKLIST_KEYS } from "@/features/pilot/types";
 
 export const PILOT_MAPPING = mapping;
+export const PILOT_BOM = bom;
+export { PILOT_CHECKLIST_KEYS };
 
 export const PILOT_TENANT_ID = "121";
 export const PILOT_GATEWAY_ID = mapping.gateway.id;
@@ -20,6 +24,23 @@ export const PILOT_DEFAULT_SOURCE = mapping.gateway.source as DataSource;
 export const PILOT_READING_HOURS = 48;
 
 export const DATA_SOURCE_ENV = "DATA_SOURCE";
+
+export const PILOT_CHECKLIST_ITEMS: ReadonlyArray<{
+  key: PilotChecklistKey;
+  label: string;
+}> = [
+  { key: "rtu_485_led", label: "RTU 485_A / 485_B 통신 LED" },
+  { key: "lte_link", label: "LTE 등록·신호·데이터 송출 (안테나·SIM)" },
+  { key: "meter_ct", label: "전력계 전압·CT 극성·적산값" },
+  {
+    key: "gateway_tag_match",
+    label: "게이트웨이↔설비 ID · 관제점 태그 일치 (gw-pilot-01 ↔ PANEL_PM)",
+  },
+  {
+    key: "disconnect_alarm_operator",
+    label: "끊김·알람 수신 (operator)",
+  },
+];
 
 /** Not MockDB sources. Do not stub portal APIs for these. */
 export const FORBIDDEN_DATA_SOURCE_ALIASES = [

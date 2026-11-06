@@ -1,0 +1,5 @@
+{
+  "purpose": "hypothesis selection only; not evaluation weights",
+  "generation": 3,
+  "priorities": { "inspection": 1, "summary": 1, "dailyCreate": 3, "dailyUpdate": 3, "mapping": 1, "ack": 1 }
+}

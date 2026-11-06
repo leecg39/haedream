@@ -1,0 +1,28 @@
+{
+  "package": "A",
+  "gatewayId": "gw-pilot-01",
+  "standardBom": [
+    { "item": "KFE RTU", "note": "RS-485 A/B · 명판 확인 범위" },
+    { "item": "LTE 모듈", "note": "함체 내장 · 등록·신호·송출 검수" },
+    { "item": "Panel Power Meter", "note": "관제점 PANEL_PM · 활성" },
+    { "item": "DIN 계측기", "note": "관제점 DIN_TBD · 형번 미확정 · 비활성" },
+    { "item": "함내 전원·어댑터", "note": "함내 설치" },
+    { "item": "금속함·덕트·접지", "note": "현장 표준" },
+    { "item": "전선관", "note": "현장 표준" }
+  ],
+  "optionalBom": [
+    { "item": "외부 안테나", "note": "현장 확정 후" },
+    { "item": "SIM", "note": "현장 확정 후" },
+    { "item": "CT", "note": "현장 확정 후" },
+    { "item": "서지", "note": "현장 확정 후" },
+    { "item": "UPS", "note": "현장 확정 후" },
+    { "item": "ID 라벨", "note": "현장 확정 후" }
+  ],
+  "checklistKeys": [
+    "rtu_485_led",
+    "lte_link",
+    "meter_ct",
+    "gateway_tag_match",
+    "disconnect_alarm_operator"
+  ]
+}

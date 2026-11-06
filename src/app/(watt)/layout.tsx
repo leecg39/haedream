@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function WattLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko" className="h-full">
       <body className="min-h-full antialiased">{children}</body>
