@@ -1,3 +1,4 @@
+import { formatSeoulDateTime } from "@/features/pilot/format";
 import type { SerializedPilotSnapshot } from "@/features/pilot/mains";
 import type { PilotSnapshot } from "@/features/pilot/types";
 
@@ -7,15 +8,6 @@ function formatNumber(value: number | null | undefined, digits = 1) {
     minimumFractionDigits: 0,
     maximumFractionDigits: digits,
   });
-}
-
-function formatTime(value: string | null | undefined) {
-  if (!value) return "-";
-  return new Intl.DateTimeFormat("ko-KR", {
-    timeZone: "Asia/Seoul",
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
 }
 
 interface Props {
@@ -84,7 +76,7 @@ export function PilotSnapshotCard({ snapshot, compact = false }: Props) {
         </div>
       </dl>
       <p className="mt-2 text-[11px] text-white/40">
-        최근 시각 {formatTime(latest?.observedAt)} · 활성 계측점 {enabledPoints.length}개
+        최근 시각 {formatSeoulDateTime(latest?.observedAt)} · 활성 계측점 {enabledPoints.length}개
         · 후보 {candidatePoints.length}개 · 시간열 {snapshot.readings.length}건
       </p>
 
